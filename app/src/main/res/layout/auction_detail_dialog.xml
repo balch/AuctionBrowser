@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cardview_light_background"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/auction_detail_value_title"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:singleLine="true"
+            android:textSize="16sp"/>
+
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/auction_detail_item_img"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/auction_detail_value_title"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/auction_detail_value_location"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/auction_detail_value_title"
+            android:singleLine="true"
+            android:layout_marginEnd="5dp"/>
+
+        <TextView
+            android:id="@+id/auction_detail_value_shipping_cost"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/auction_detail_value_location"
+            android:singleLine="true"
+            android:layout_marginEnd="5dp"/>
+
+        <TextView
+            android:id="@+id/auction_detail_label_end_time"
+            style="@style/CardLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_realname"
+            android:layout_alignTop="@id/auction_detail_item_img"
+            android:layout_toEndOf="@id/auction_detail_item_img"
+            android:layout_marginStart="20dp"/>
+
+        <TextView
+            android:id="@+id/auction_detail_value_end_time"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_toEndOf="@id/auction_detail_label_end_time"
+            android:layout_alignTop="@id/auction_detail_label_end_time"/>
+
+        <TextView
+            android:id="@+id/auction_detail_label_price"
+            style="@style/CardLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_age"
+            android:singleLine="true"
+            android:layout_below="@id/auction_detail_label_end_time"
+            android:layout_alignEnd="@id/auction_detail_label_end_time"/>
+
+        <TextView
+            android:id="@+id/auction_detail_value_price"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_below="@id/auction_detail_value_end_time"
+            android:layout_alignStart="@id/auction_detail_value_end_time"/>
+
+
+        <TextView
+            android:id="@+id/auction_detail_label_buy_it_now"
+            style="@style/CardLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_height"
+            android:singleLine="true"
+            android:layout_below="@id/auction_detail_label_price"
+            android:layout_alignEnd="@id/auction_detail_label_price"/>
+
+        <CheckBox
+            android:id="@+id/auction_detail_value_buy_it_now"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_below="@id/auction_detail_value_price"
+            android:layout_alignStart="@id/auction_detail_value_price"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/member_detail_label_note"
+        style="@style/CardLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_note"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/auction_detail_note"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:lines="5"
+        android:inputType="textMultiLine"
+        android:textColor="@android:color/black"
+        android:padding="2dp"
+        android:gravity="start|top"
+        android:background="@android:color/background_light"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/member_detail_button_clear"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_clear"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- TODO: Figure out how to make this button green -->
+        <Button
+            android:id="@+id/member_detail_button_save"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_save"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
+</LinearLayout>

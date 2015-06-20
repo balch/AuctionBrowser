@@ -1,0 +1,4 @@
+<resources>
+    <string name="ebay_app_id_sandbox">ebay_app_id_sandbox</string>
+    <string name="ebay_app_id_production">ebay_app_id_production</string>
+</resources>

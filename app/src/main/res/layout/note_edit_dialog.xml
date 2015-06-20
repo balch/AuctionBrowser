@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/dialog_note_edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"/>
+
+    <EditText
+        android:id="@+id/dialog_note_edit_note"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:lines="5"
+        android:inputType="textMultiLine"
+        android:textColor="@android:color/black"
+        android:padding="2dp"
+        android:gravity="start|top"
+        android:background="@android:color/background_light"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/dialog_note_edit_button_clear"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_clear"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- TODO: Figure out how to make this button green -->
+        <Button
+            android:id="@+id/dialog_note_edit_button_save"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_save"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
+</LinearLayout>

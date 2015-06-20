@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    android:id="@+id/list_item_member_card_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="95dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="10dp"
+    card_view:cardCornerRadius="2dp"
+    card_view:contentPaddingTop="10dp"
+    card_view:contentPaddingBottom="5dp"
+    card_view:contentPaddingLeft="10dp"
+    card_view:contentPaddingRight="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/list_item_auction_img"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/list_item_auction_label_title"
+            style="@style/CardLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_username"
+            android:layout_toEndOf="@id/list_item_auction_img"
+            android:layout_alignTop="@id/list_item_auction_img"
+            android:layout_marginStart="10dp"/>
+
+        <TextView
+            android:id="@+id/list_item_auction_value_title"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/list_item_auction_label_title"
+            android:layout_alignTop="@id/list_item_auction_label_title"
+            android:layout_marginStart="2dp"/>
+
+        <TextView
+            android:id="@+id/list_item_auction_label_end_time"
+            style="@style/CardLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_age"
+            android:layout_toStartOf="@id/list_item_auction_value_title"
+            android:layout_below="@id/list_item_auction_label_title"
+            android:layout_marginStart="10dp"/>
+
+        <TextView
+            android:id="@+id/list_item_auction_value_end_time"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/list_item_auction_label_end_time"
+            android:layout_alignTop="@id/list_item_auction_label_end_time"
+            android:layout_marginStart="2dp"/>
+
+        <TextView
+            android:id="@+id/list_item_auction_value_location"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/list_item_auction_label_title"
+            android:layout_marginEnd="5dp"/>
+
+        <TextView
+            android:id="@+id/list_item_auction_value_shipping_cost"
+            style="@style/CardValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/list_item_auction_value_location"
+            android:layout_marginEnd="5dp"/>
+
+        <Button
+            android:id="@+id/list_item_auction_button_note"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="@string/button_note"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/background_button_note"/>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

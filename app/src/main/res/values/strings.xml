@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">BalchAuctionBrowser</string>
+    <string name="app_title">Balch Auction Browser</string>
+
+    <string name="error_auction_get">Error getting Auctions :-(</string>
+
+    <string-array name="member_sort_col">
+        <item>Name</item>
+        <item>Age</item>
+    </string-array>
+
+    <string name="label_username">Name:</string>
+    <string name="label_realname">Name:</string>
+    <string name="label_age">Age:</string>
+    <string name="label_height">Height:</string>
+    <string name="label_weight">Weight:</string>
+    <string name="label_bodyfat">BodyFat:</string>
+    <string name="label_note">Note:</string>
+
+    <string name="unit_pounds">%1$dlbs</string>
+    <string name="unit_feet_inches">%1$d\' %2$d\'\'</string>
+    <string name="unit_percent">%1$.0f%%</string>
+
+    <string name="value_not_available">N/A</string>
+
+    <string name="button_note">Note</string>
+
+    <string name="button_note_save">Save</string>
+    <string name="button_note_clear">Clear</string>
+
+    <string name="edit_note_label">Edit Note for %1$s</string>
+    <string name="title_activity_main_activity2">MainActivity2Activity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
