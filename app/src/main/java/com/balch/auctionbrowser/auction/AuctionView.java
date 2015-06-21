@@ -54,7 +54,7 @@ public class AuctionView extends LinearLayout
     private RecyclerOnScrollListener recyclerOnScrollListener;
 
     public interface MainViewListener {
-        void onLoadMore(int currentPage);
+        boolean onLoadMore(int currentPage);
         void onChangeSort(int position);
         void onClickNoteButton(Auction auction);
         void onClickAuction(Auction auction);
@@ -88,6 +88,8 @@ public class AuctionView extends LinearLayout
 
     public void clearAuctions() {
         this.auctionAdapter.clearAuctions();
+        this.recyclerOnScrollListener.reset();
+
 //        this.recyclerView.getLayoutManager().removeAllViews();
     }
 
@@ -127,10 +129,9 @@ public class AuctionView extends LinearLayout
         this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
                 new RecyclerOnScrollListener.LoadMoreListener() {
                     @Override
-                    public void onLoadMore(int currentPage) {
-                        if (AuctionView.this.mainViewListener != null) {
+                    public boolean onLoadMore(int currentPage) {
+                        return (AuctionView.this.mainViewListener == null) ||
                             AuctionView.this.mainViewListener.onLoadMore(currentPage);
-                        }
                     }
                 });
 
@@ -188,8 +189,8 @@ public class AuctionView extends LinearLayout
         private static int VISIBLE_THRESHOLD = 10;
 
         private int currentPage = 1;
-        private int previousTotal = 0; // The total number of items in the dataset after the last load
-        private boolean loading = true; // True if we are still waiting for the last set of data to load.        private int currentPage = 1;
+        private int previousTotal = 0;
+        private boolean loading = true;
 
         private final LinearLayoutManager linearLayoutManager;
         private final LoadMoreListener loadMoreListener;
@@ -198,6 +199,12 @@ public class AuctionView extends LinearLayout
                                         LoadMoreListener loadMoreListener) {
             this.linearLayoutManager = linearLayoutManager;
             this.loadMoreListener = loadMoreListener;
+        }
+
+        protected void reset() {
+            currentPage = 1;
+            previousTotal = 0;
+            loading = true;
         }
 
         @Override
@@ -214,6 +221,7 @@ public class AuctionView extends LinearLayout
                     previousTotal = totalItemCount;
                 }
             }
+
             if (!loading &&
                     (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
                 loadMoreListener.onLoadMore(++currentPage);
@@ -222,7 +230,7 @@ public class AuctionView extends LinearLayout
         }
 
         public interface LoadMoreListener {
-            void onLoadMore(int currentPage);
+            boolean onLoadMore(int currentPage);
         }
     }
 }

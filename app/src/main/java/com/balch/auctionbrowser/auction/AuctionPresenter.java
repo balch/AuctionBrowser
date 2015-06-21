@@ -79,7 +79,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
     public void initialize(Bundle savedInstanceState) {
         this.auctionView.setMainViewListener(new AuctionView.MainViewListener() {
             @Override
-            public void onLoadMore(int currentPage) {
+            public boolean onLoadMore(int currentPage) {
                 boolean hasMore = ((totalPages == -1) ||
                                     (currentPage < totalPages));
                 if (isLoadFinished && hasMore) {
@@ -87,6 +87,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
                     AuctionPresenter.this.currentPage = currentPage;
                     loaderManager.restartLoader(AUCTION_LOADER_ID, null, AuctionPresenter.this).forceLoad();
                 }
+                return hasMore;
             }
 
             @Override
