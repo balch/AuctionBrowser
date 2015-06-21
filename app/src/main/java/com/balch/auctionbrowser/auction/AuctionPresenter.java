@@ -62,6 +62,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
     protected int currentPage = 1;
     protected int sortPosition = 0;
     protected long totalPages = -1;
+    protected String searchString = "";
 
 
     @Override
@@ -77,6 +78,11 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
 
     @Override
     public void initialize(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // TODO
+//            this.auctionView.setSearchString(searchString);
+        }
+
         this.auctionView.setMainViewListener(new AuctionView.MainViewListener() {
             @Override
             public boolean onLoadMore(int currentPage) {
@@ -97,6 +103,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
                     currentPage = 1;
                     totalPages = -1;
 
+                    auctionView.showBusy();
                     auctionView.clearAuctions();
                     loaderManager.restartLoader(AUCTION_LOADER_ID, null, AuctionPresenter.this).forceLoad();
                 }
@@ -168,6 +175,20 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
                         "NoteDetailDialog");
             }
 
+            @Override
+            public void onClickSearch(String keyword) {
+                if (isLoadFinished) {
+                    searchString = keyword;
+                    currentPage = 1;
+                    totalPages = -1;
+
+                    auctionView.showBusy();
+                    auctionView.clearAuctions();
+                    loaderManager.restartLoader(AUCTION_LOADER_ID, null, AuctionPresenter.this).forceLoad();
+                }
+
+            }
+
         });
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);
@@ -177,7 +198,8 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
 
     @Override
     public Loader<AuctionData> onCreateLoader(int id, Bundle args) {
-        return new MemberLoader(this.application, this.currentPage, this.sortColumns[this.sortPosition],
+        return new MemberLoader(this.application, this.searchString,
+                this.currentPage, this.sortColumns[this.sortPosition],
                 this.auctionModel, this.notesModel);
     }
 
@@ -212,11 +234,14 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
         protected int currentPage;
         protected EBayModel auctionModel;
         protected NotesModel notesModel;
+        protected String searchText;
         protected String sortOrder;
 
-        public MemberLoader(Context context, int currentPage, String sortOrder,
+        public MemberLoader(Context context, String searchText,
+                            int currentPage, String sortOrder,
                             EBayModel auctionModel, NotesModel notesModel) {
             super(context);
+            this.searchText = searchText;
             this.currentPage = currentPage;
             this.sortOrder = sortOrder;
             this.auctionModel = auctionModel;
@@ -229,7 +254,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
             try {
 
                 EBayModel.AuctionInfo info = this.auctionModel.getAuctions(
-                        "multi-rotor",
+                        searchText,
                         currentPage  * AUCTION_FETCH_COUNT,
                         AUCTION_FETCH_COUNT,
                         sortOrder);

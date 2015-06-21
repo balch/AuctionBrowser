@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">BalchAuctionBrowser</string>
-    <string name="app_title">Balch Auction Browser</string>
+    <string name="app_name">Balch\'s Auction Browser</string>
+    <string name="app_title">Auctions</string>
 
     <string name="error_auction_get">Error getting Auctions :-(</string>
 
@@ -9,6 +9,8 @@
         <item>Ending Soonest</item>
         <item>Lowest Price</item>
     </string-array>
+
+    <string name="edit_hint_search_keyword">search for ..</string>
 
     <string name="label_username">Name:</string>
     <string name="label_realname">Name:</string>

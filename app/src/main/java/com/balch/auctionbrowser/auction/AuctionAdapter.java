@@ -84,7 +84,10 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
 
             this.priceTextView.setText(auction.getCurrentPrice().getFormatted(2));
             this.locationTextView.setText(auction.getLocation());
-            this.shippingCostTextView.setText(auction.getShippingCost().getFormatted(2));
+            this.shippingCostTextView.setText(
+                    (auction.getShippingCost() != null) ?
+                    auction.getShippingCost().getFormatted(2) :
+                    "???");
 
             this.noteEditButton.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -30,6 +30,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -52,12 +53,15 @@ public class AuctionView extends LinearLayout
     private AuctionAdapter auctionAdapter;
     private RecyclerView recyclerView;
     private RecyclerOnScrollListener recyclerOnScrollListener;
+    private EditText searchEditText;
+
 
     public interface MainViewListener {
         boolean onLoadMore(int currentPage);
         void onChangeSort(int position);
         void onClickNoteButton(Auction auction);
         void onClickAuction(Auction auction);
+        void onClickSearch(String keyword);
     }
 
     protected MainViewListener mainViewListener;
@@ -115,23 +119,35 @@ public class AuctionView extends LinearLayout
         this.sortSpinner.setOnItemSelectedListener(this);
     }
 
+    public void setSearchString(String searchString) {
+        this.searchEditText.setText(searchString);
+    }
+
     @Override
     public void initializeLayout() {
         inflate(getContext(), R.layout.auction_view, this);
         setupToolbar();
 
+        this.searchEditText = (EditText)findViewById(R.id.auction_view_search_text);
+        findViewById(R.id.auction_view_search_button).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mainViewListener != null) {
+                    mainViewListener.onClickSearch(searchEditText.getText().toString());
+                }
+            }
+        });
+
         this.recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
         this.recyclerView.setHasFixedSize(true);
 
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-
         this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
                 new RecyclerOnScrollListener.LoadMoreListener() {
                     @Override
                     public boolean onLoadMore(int currentPage) {
-                        return (AuctionView.this.mainViewListener == null) ||
-                            AuctionView.this.mainViewListener.onLoadMore(currentPage);
+                        return (mainViewListener == null) ||
+                            mainViewListener.onLoadMore(currentPage);
                     }
                 });
 
@@ -142,15 +158,15 @@ public class AuctionView extends LinearLayout
                 new AuctionAdapter.MembersAdapterListener() {
                     @Override
                     public void onClickNoteButton(Auction auction) {
-                        if (AuctionView.this.mainViewListener != null) {
-                            AuctionView.this.mainViewListener.onClickNoteButton(auction);
+                        if (mainViewListener != null) {
+                            mainViewListener.onClickNoteButton(auction);
                         }
                     }
 
                     @Override
                     public void onClickMember(Auction auction) {
-                        if (AuctionView.this.mainViewListener != null) {
-                            AuctionView.this.mainViewListener.onClickAuction(auction);
+                        if (mainViewListener != null) {
+                            mainViewListener.onClickAuction(auction);
                         }
                     }
                 });

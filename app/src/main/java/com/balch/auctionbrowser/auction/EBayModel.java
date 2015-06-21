@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,18 +81,19 @@ public class EBayModel {
     public AuctionInfo getAuctions(String keyword, long start, int count, String sortOrder) {
         List<Auction> auctions = new ArrayList<>(count);
         int totalPages = -1;
-
-        String url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
-                String.format(EBAY_SERVICE_PARAMS, start + 1, count,
-                        eBayApiKey,
-                        "findItemsByKeywords",
-                        keyword, sortOrder);
-
-        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(url, future, future);
-        modelProvider.getRequestQueue().add(request);
-
+        String url = "";
         try {
+
+            url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
+                    String.format(EBAY_SERVICE_PARAMS, start + 1, count,
+                            eBayApiKey,
+                            "findItemsByKeywords",
+                            URLEncoder.encode(keyword, "UTF-8"), sortOrder);
+
+            RequestFuture<JSONObject> future = RequestFuture.newFuture();
+            JsonObjectRequest request = new JsonObjectRequest(url, future, future);
+            modelProvider.getRequestQueue().add(request);
+
             JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
             response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
 
