@@ -30,8 +30,8 @@ import android.util.LruCache;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.Volley;
 import com.balch.android.app.framework.sql.SqlConnection;
-import com.balch.android.app.framework.view.VolleyBackground;
 import com.balch.auctionbrowser.settings.Settings;
 
 public class AuctionApplication extends Application implements ModelProvider {
@@ -71,11 +71,10 @@ public class AuctionApplication extends Application implements ModelProvider {
         this.sqlConnection = new SqlConnection(this, DATABASE_NAME, DATABASE_VERSION,
                 DATABASE_CREATES_SCRIPT, DATABASE_UPDATE_SCRIPT_FORMAT);
 
-        // TODO: clean this up
-        this.requestQueue = VolleyBackground.newRequestQueue(this, 10);
+        this.requestQueue = Volley.newRequestQueue(this, 10);
         this.imageLoader = new ImageLoader(this.requestQueue,
                 new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap> cache = new LruCache<>(200);
+            private final LruCache<String, Bitmap> cache = new LruCache<>(20);
             public void putBitmap(String url, Bitmap bitmap) {
                 cache.put(url, bitmap);
             }

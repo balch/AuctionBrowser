@@ -186,9 +186,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
                     auctionView.clearAuctions();
                     loaderManager.restartLoader(AUCTION_LOADER_ID, null, AuctionPresenter.this).forceLoad();
                 }
-
             }
-
         });
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);

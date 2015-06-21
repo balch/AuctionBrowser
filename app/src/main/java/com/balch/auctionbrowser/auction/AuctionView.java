@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -129,17 +130,21 @@ public class AuctionView extends LinearLayout
         setupToolbar();
 
         this.searchEditText = (EditText)findViewById(R.id.auction_view_search_text);
+        this.recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
+        this.recyclerView.setHasFixedSize(true);
+
+        final InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
         findViewById(R.id.auction_view_search_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mainViewListener != null) {
                     mainViewListener.onClickSearch(searchEditText.getText().toString());
                 }
+                inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
             }
         });
 
-        this.recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
-        this.recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
