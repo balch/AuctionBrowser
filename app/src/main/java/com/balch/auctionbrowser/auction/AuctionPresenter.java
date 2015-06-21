@@ -41,22 +41,23 @@ import com.balch.auctionbrowser.note.NotesModel;
 import java.util.List;
 import java.util.Map;
 
-public class AuctionPresenter extends BasePresenter<AuctionApplication> implements LoaderManager.LoaderCallbacks<AuctionPresenter.MemberData> {
+public class AuctionPresenter extends BasePresenter<AuctionApplication>
+        implements LoaderManager.LoaderCallbacks<AuctionPresenter.AuctionData> {
     private static final String TAG = AuctionPresenter.class.getSimpleName();
 
     protected final AuctionView auctionView;
     protected final EBayModel auctionModel;
     protected final NotesModel notesModel;
 
-    protected static final int MEMBER_LOADER_ID = 0;
+    protected static final int AUCTION_LOADER_ID = 0;
+    protected static final int AUCTION_FETCH_COUNT = 30;
 
-    protected static final int MEMBER_FETCH_COUNT = 10;
+    protected boolean isLoadFinished = false;
 
     // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
     protected int sortPosition = 0;
-    protected boolean hasMoreMembers;
-    protected boolean isLoadFinished = false;
+    protected long totalPages = -1;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -74,10 +75,12 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication> implemen
         this.auctionView.setMainViewListener(new AuctionView.MainViewListener() {
             @Override
             public void onLoadMore(int currentPage) {
-                if (isLoadFinished && !hasMoreMembers) {
+                boolean hasMore = ((totalPages == -1) ||
+                                    (currentPage < totalPages));
+                if (isLoadFinished && hasMore) {
                     auctionView.showBusy();
                     AuctionPresenter.this.currentPage = currentPage;
-                    loaderManager.restartLoader(MEMBER_LOADER_ID, null, AuctionPresenter.this).forceLoad();
+                    loaderManager.restartLoader(AUCTION_LOADER_ID, null, AuctionPresenter.this).forceLoad();
                 }
             }
 
@@ -86,10 +89,10 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication> implemen
                 if (isLoadFinished) {
                     sortPosition = position;
                     currentPage = 1;
-                    hasMoreMembers = true;
+                    totalPages = -1;
 
-                    auctionView.clearMembers();
-                    loaderManager.restartLoader(MEMBER_LOADER_ID, null, AuctionPresenter.this).forceLoad();
+                    auctionView.clearAuctions();
+                    loaderManager.restartLoader(AUCTION_LOADER_ID, null, AuctionPresenter.this).forceLoad();
                 }
             }
 
@@ -122,7 +125,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication> implemen
             }
 
             @Override
-            public void onClickMember(final Auction auction) {
+            public void onClickAuction(final Auction auction) {
                 AuctionDetailDialog dialog = new AuctionDetailDialog();
                 Bundle args = new Bundle();
 
@@ -163,22 +166,24 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication> implemen
 
         this.auctionView.setSortStrings(R.array.member_sort_col);
         this.auctionView.showBusy();
-        this.loaderManager.initLoader(MEMBER_LOADER_ID, null, this).forceLoad();
+        this.loaderManager.initLoader(AUCTION_LOADER_ID, null, this).forceLoad();
     }
 
     @Override
-    public Loader<MemberData> onCreateLoader(int id, Bundle args) {
+    public Loader<AuctionData> onCreateLoader(int id, Bundle args) {
         return new MemberLoader(this.application, this.currentPage, this.sortPosition,
                 this.auctionModel, this.notesModel);
     }
 
     @Override
-    public void onLoadFinished(Loader<MemberData> loader, MemberData data) {
+    public void onLoadFinished(Loader<AuctionData> loader, AuctionData data) {
         auctionView.hideBusy();
 
         if (data.auctions != null) {
-            hasMoreMembers = data.auctions.size() < MEMBER_FETCH_COUNT;
-            auctionView.addMembers(data.auctions, data.notes);
+            if (totalPages == -1) {
+                totalPages = data.totalPages;
+            }
+            auctionView.addAuctions(data.auctions, data.notes);
         } else {
             Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
         }
@@ -187,17 +192,17 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication> implemen
     }
 
     @Override
-    public void onLoaderReset(Loader<MemberData> loader) {
+    public void onLoaderReset(Loader<AuctionData> loader) {
 
     }
 
-    protected static class MemberData {
+    protected static class AuctionData {
         protected List<Auction> auctions;
         protected Map<Long, Note> notes;
-        protected long totalAuctions;
+        protected int totalPages;
     }
 
-    protected static class MemberLoader extends AsyncTaskLoader<MemberData> {
+    protected static class MemberLoader extends AsyncTaskLoader<AuctionData> {
         protected int currentPage;
         protected EBayModel auctionModel;
         protected NotesModel notesModel;
@@ -213,28 +218,28 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication> implemen
         }
 
         @Override
-        public MemberData loadInBackground() {
-            MemberData memberData = new MemberData();
+        public AuctionData loadInBackground() {
+            AuctionData auctionData = new AuctionData();
             try {
 
                 EBayModel.AuctionInfo info = this.auctionModel.getAuctions(
                         "multi-rotor",
-                        currentPage  * MEMBER_FETCH_COUNT,
-                        MEMBER_FETCH_COUNT,
+                        currentPage  * AUCTION_FETCH_COUNT,
+                        AUCTION_FETCH_COUNT,
                         (sortPosition == 0) ? "userName" : "birthday",
                         (sortPosition == 0) ? EBayModel.SortDirection.ASC : EBayModel.SortDirection.DESC);
 
 
-                memberData.totalAuctions = info.totalCount;
-                memberData.auctions = info.auctions;
-                if (memberData.auctions != null) {
-                    memberData.notes = this.notesModel.getNotes(memberData.auctions);
+                auctionData.totalPages = info.totalPages;
+                auctionData.auctions = info.auctions;
+                if (auctionData.auctions != null) {
+                    auctionData.notes = this.notesModel.getNotes(auctionData.auctions);
                 }
             } catch (Exception ex) {
                 Log.e(TAG, "error getting auctions", ex);
             }
 
-            return memberData;
+            return auctionData;
         }
     }
 

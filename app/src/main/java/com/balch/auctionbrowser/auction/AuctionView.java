@@ -36,27 +36,28 @@ import android.widget.Spinner;
 
 import com.balch.android.app.framework.domain.EditView;
 import com.balch.android.app.framework.view.BaseView;
-import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.ModelProvider;
+import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
-import com.balch.auctionbrowser.ui.EndlessRecyclerOnScrollListener;
 
 import java.util.List;
 import java.util.Map;
 
-public class AuctionView extends LinearLayout implements BaseView, AdapterView.OnItemSelectedListener {
+public class AuctionView extends LinearLayout
+        implements BaseView, AdapterView.OnItemSelectedListener {
     private static final String TAG = EditView.class.getName();
 
     private ProgressBar progressBar;
     private Spinner sortSpinner;
     private AuctionAdapter auctionAdapter;
     private RecyclerView recyclerView;
+    private RecyclerOnScrollListener recyclerOnScrollListener;
 
     public interface MainViewListener {
         void onLoadMore(int currentPage);
         void onChangeSort(int position);
         void onClickNoteButton(Auction auction);
-        void onClickMember(Auction auction);
+        void onClickAuction(Auction auction);
     }
 
     protected MainViewListener mainViewListener;
@@ -81,13 +82,13 @@ public class AuctionView extends LinearLayout implements BaseView, AdapterView.O
         this.progressBar.setVisibility(View.INVISIBLE);
     }
 
-    public void addMembers(List<Auction> auctions, Map<Long, Note> notes) {
-        this.auctionAdapter.addMembers(auctions, notes);
+    public void addAuctions(List<Auction> auctions, Map<Long, Note> notes) {
+        this.auctionAdapter.addAuctions(auctions, notes);
     }
 
-    public void clearMembers() {
-        this.auctionAdapter.clearMembers();
-        resetRecyclerView();  // call the clear the EndlessRecyclerOnScrollListener
+    public void clearAuctions() {
+        this.auctionAdapter.clearAuctions();
+//        this.recyclerView.getLayoutManager().removeAllViews();
     }
 
     public Note getNote(Auction auction) {
@@ -119,21 +120,22 @@ public class AuctionView extends LinearLayout implements BaseView, AdapterView.O
 
         this.recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
         this.recyclerView.setHasFixedSize(true);
-        resetRecyclerView();
-    }
 
-    private void resetRecyclerView() {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+
+        this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
+                new RecyclerOnScrollListener.LoadMoreListener() {
+                    @Override
+                    public void onLoadMore(int currentPage) {
+                        if (AuctionView.this.mainViewListener != null) {
+                            AuctionView.this.mainViewListener.onLoadMore(currentPage);
+                        }
+                    }
+                });
+
         this.recyclerView.setLayoutManager(layoutManager);
-        this.recyclerView.setOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int currentPage) {
-                if (AuctionView.this.mainViewListener != null) {
-                    AuctionView.this.mainViewListener.onLoadMore(currentPage);
-                }
-            }
-        });
+        this.recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
 
         this.auctionAdapter = new AuctionAdapter((ModelProvider) getContext().getApplicationContext(),
                 new AuctionAdapter.MembersAdapterListener() {
@@ -147,7 +149,7 @@ public class AuctionView extends LinearLayout implements BaseView, AdapterView.O
                     @Override
                     public void onClickMember(Auction auction) {
                         if (AuctionView.this.mainViewListener != null) {
-                            AuctionView.this.mainViewListener.onClickMember(auction);
+                            AuctionView.this.mainViewListener.onClickAuction(auction);
                         }
                     }
                 });
@@ -162,7 +164,7 @@ public class AuctionView extends LinearLayout implements BaseView, AdapterView.O
 
     @Override
     public void destroy() {
-
+        this.recyclerView.removeOnScrollListener(recyclerOnScrollListener);
     }
 
     public void setMainViewListener(MainViewListener mainViewListener) {
@@ -181,5 +183,46 @@ public class AuctionView extends LinearLayout implements BaseView, AdapterView.O
 
     }
 
+    public static class RecyclerOnScrollListener extends RecyclerView.OnScrollListener {
 
+        private static int VISIBLE_THRESHOLD = 10;
+
+        private int currentPage = 1;
+        private int previousTotal = 0; // The total number of items in the dataset after the last load
+        private boolean loading = true; // True if we are still waiting for the last set of data to load.        private int currentPage = 1;
+
+        private final LinearLayoutManager linearLayoutManager;
+        private final LoadMoreListener loadMoreListener;
+
+        public RecyclerOnScrollListener(LinearLayoutManager linearLayoutManager,
+                                        LoadMoreListener loadMoreListener) {
+            this.linearLayoutManager = linearLayoutManager;
+            this.loadMoreListener = loadMoreListener;
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            int visibleItemCount = recyclerView.getChildCount();
+            int totalItemCount = linearLayoutManager.getItemCount();
+            int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+
+            if (loading) {
+                if (totalItemCount > previousTotal) {
+                    loading = false;
+                    previousTotal = totalItemCount;
+                }
+            }
+            if (!loading &&
+                    (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
+                loadMoreListener.onLoadMore(++currentPage);
+                loading = true;
+            }
+        }
+
+        public interface LoadMoreListener {
+            void onLoadMore(int currentPage);
+        }
+    }
 }

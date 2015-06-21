@@ -73,18 +73,18 @@ public class EBayModel {
 
     public static class AuctionInfo {
         public final List<Auction> auctions;
-        public final long totalCount;
+        public final int totalPages;
 
 
-        public AuctionInfo(List<Auction> auctions, long totalCount) {
+        public AuctionInfo(List<Auction> auctions, int totalPages) {
             this.auctions = auctions;
-            this.totalCount = totalCount;
+            this.totalPages = totalPages;
         }
     }
 
     public AuctionInfo getAuctions(String keyword, long start, int count, String sortColumn, SortDirection direction) {
         List<Auction> auctions = new ArrayList<>(count);
-        long totalCount = -1;
+        int totalPages = -1;
 
         String url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
                 String.format(EBAY_SERVICE_PARAMS, start + 1, count,
@@ -101,7 +101,7 @@ public class EBayModel {
             response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
 
             if (validateResponse(response)) {
-                totalCount = getTotalItems(response);
+                totalPages = getTotalPages(response);
                 auctions = parseAuctions(response);
             }
 
@@ -110,7 +110,7 @@ public class EBayModel {
             auctions = null;
         }
 
-        return new AuctionInfo(auctions, totalCount);
+        return new AuctionInfo(auctions, totalPages);
     }
 
     private boolean validateResponse(JSONObject json) throws JSONException {
@@ -118,9 +118,9 @@ public class EBayModel {
                 json.getJSONArray("ack").getString(0).equals("Success"));
     }
 
-    private long getTotalItems(JSONObject json) throws JSONException {
+    private int getTotalPages(JSONObject json) throws JSONException {
         JSONObject paginationOutput = json.getJSONArray("paginationOutput").getJSONObject(0);
-        return paginationOutput.getJSONArray("totalEntries").optLong(0, -1);
+        return paginationOutput.getJSONArray("totalPages").optInt(0, -1);
     }
 
     private List<Auction> parseAuctions(JSONObject response) throws JSONException, ParseException {

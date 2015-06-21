@@ -127,13 +127,13 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
         return auctions.size();
     }
 
-    public void addMembers(List<Auction> auctions, Map<Long, Note> notes) {
+    public void addAuctions(List<Auction> auctions, Map<Long, Note> notes) {
         this.auctions.addAll(auctions);
         this.notes.putAll(notes);
         notifyDataSetChanged();
     }
 
-    public void clearMembers() {
+    public void clearAuctions() {
         this.auctions.clear();
         this.notes.clear();
         notifyDataSetChanged();
