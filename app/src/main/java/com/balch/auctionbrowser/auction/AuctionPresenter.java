@@ -54,10 +54,15 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
 
     protected boolean isLoadFinished = false;
 
+    // keep in sync with auction_sort_col string array
+    private final String[] sortColumns =
+            new String[]{"BestMatch", "EndTimeSoonest", "PricePlusShippingLowest"};
+
     // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
     protected int sortPosition = 0;
     protected long totalPages = -1;
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -164,14 +169,14 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
 
         });
 
-        this.auctionView.setSortStrings(R.array.member_sort_col);
+        this.auctionView.setSortStrings(R.array.auction_sort_col);
         this.auctionView.showBusy();
         this.loaderManager.initLoader(AUCTION_LOADER_ID, null, this).forceLoad();
     }
 
     @Override
     public Loader<AuctionData> onCreateLoader(int id, Bundle args) {
-        return new MemberLoader(this.application, this.currentPage, this.sortPosition,
+        return new MemberLoader(this.application, this.currentPage, this.sortColumns[this.sortPosition],
                 this.auctionModel, this.notesModel);
     }
 
@@ -206,13 +211,13 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
         protected int currentPage;
         protected EBayModel auctionModel;
         protected NotesModel notesModel;
-        protected int sortPosition;
+        protected String sortOrder;
 
-        public MemberLoader(Context context, int currentPage, int sortPosition,
+        public MemberLoader(Context context, int currentPage, String sortOrder,
                             EBayModel auctionModel, NotesModel notesModel) {
             super(context);
             this.currentPage = currentPage;
-            this.sortPosition = sortPosition;
+            this.sortOrder = sortOrder;
             this.auctionModel = auctionModel;
             this.notesModel = notesModel;
         }
@@ -226,9 +231,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
                         "multi-rotor",
                         currentPage  * AUCTION_FETCH_COUNT,
                         AUCTION_FETCH_COUNT,
-                        (sortPosition == 0) ? "userName" : "birthday",
-                        (sortPosition == 0) ? EBayModel.SortDirection.ASC : EBayModel.SortDirection.DESC);
-
+                        sortOrder);
 
                 auctionData.totalPages = info.totalPages;
                 auctionData.auctions = info.auctions;

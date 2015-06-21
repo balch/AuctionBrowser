@@ -54,7 +54,8 @@ public class EBayModel {
                     "&SERVICE-VERSION=1.0.0" +
                     "&RESPONSE-DATA-FORMAT=JSON" +
                     "&REST-PAYLOAD" +
-                    "&keywords=%s";
+                    "&keywords=%s" +
+                    "&sortOrder=%s";
 
     private static final long TIMEOUT_SECS = 30;
 
@@ -66,15 +67,9 @@ public class EBayModel {
         this.eBayApiKey = eBayApiKey;
     }
 
-    public enum SortDirection {
-        ASC,
-        DESC
-    }
-
     public static class AuctionInfo {
         public final List<Auction> auctions;
         public final int totalPages;
-
 
         public AuctionInfo(List<Auction> auctions, int totalPages) {
             this.auctions = auctions;
@@ -82,7 +77,7 @@ public class EBayModel {
         }
     }
 
-    public AuctionInfo getAuctions(String keyword, long start, int count, String sortColumn, SortDirection direction) {
+    public AuctionInfo getAuctions(String keyword, long start, int count, String sortOrder) {
         List<Auction> auctions = new ArrayList<>(count);
         int totalPages = -1;
 
@@ -90,7 +85,7 @@ public class EBayModel {
                 String.format(EBAY_SERVICE_PARAMS, start + 1, count,
                         eBayApiKey,
                         "findItemsByKeywords",
-                        keyword);
+                        keyword, sortOrder);
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest request = new JsonObjectRequest(url, future, future);
@@ -145,10 +140,10 @@ public class EBayModel {
         double convertedCurrentPrice = sellingStatus.getJSONArray("convertedCurrentPrice").getJSONObject(0).getDouble("__value__");
         auction.setCurrentPrice(new Money(convertedCurrentPrice));
 
-        JSONArray shippingInfo = item.optJSONArray("shippingInfo");
-        if (shippingInfo != null) {
-            double shippingServiceCost = shippingInfo.getJSONObject(0).getJSONArray("shippingServiceCost").getJSONObject(0).getDouble("__value__");
-            auction.setShippingCost(new Money(shippingServiceCost));
+        JSONArray shippingServiceCost = item.optJSONArray("shippingInfo").getJSONObject(0).optJSONArray("shippingServiceCost");
+        if (shippingServiceCost != null) {
+            double cost = shippingServiceCost.getJSONObject(0).getDouble("__value__");
+            auction.setShippingCost(new Money(cost));
         }
 
         JSONArray listingInfoWrapper = item.getJSONArray("listingInfo");

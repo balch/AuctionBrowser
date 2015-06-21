@@ -4,9 +4,10 @@
 
     <string name="error_auction_get">Error getting Auctions :-(</string>
 
-    <string-array name="member_sort_col">
-        <item>Name</item>
-        <item>Age</item>
+    <string-array name="auction_sort_col">
+        <item>Best Match</item>
+        <item>Ending Soonest</item>
+        <item>Lowest Price</item>
     </string-array>
 
     <string name="label_username">Name:</string>
