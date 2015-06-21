@@ -12,12 +12,11 @@
 
     <string name="edit_hint_search_keyword">search for ..</string>
 
-    <string name="label_username">Name:</string>
-    <string name="label_realname">Name:</string>
-    <string name="label_age">Age:</string>
-    <string name="label_height">Height:</string>
-    <string name="label_weight">Weight:</string>
-    <string name="label_bodyfat">BodyFat:</string>
+    <string name="label_title">Title:</string>
+    <string name="label_end_time">Ending:</string>
+    <string name="label_price">Price:</string>
+    <string name="label_location">Location:</string>
+    <string name="label_shipping_cost">Shipping:</string>
     <string name="label_note">Note:</string>
 
     <string name="unit_pounds">%1$dlbs</string>

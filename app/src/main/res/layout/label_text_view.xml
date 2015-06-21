@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal">
+
+    <TextView
+        style="@style/CardLabel"
+        android:id="@+id/label_text_view_label"
+        android:layout_weight=".4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:gravity="end"
+        tools:text="Label"/>
+
+    <TextView
+        style="@style/CardValue"
+        android:id="@+id/label_text_view_value"
+        android:layout_weight=".6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:maxLines="3"
+        android:ellipsize="marquee"
+        tools:text="Value"/>
+
+</LinearLayout>

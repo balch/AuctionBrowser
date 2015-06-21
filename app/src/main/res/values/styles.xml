@@ -35,7 +35,7 @@
 
     <style name="CardValue">
         <item name="android:textColor">@android:color/black</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="CardLabel" parent="CardValue">

@@ -58,7 +58,7 @@
             style="@style/CardLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_realname"
+            android:text="@string/label_price"
             android:layout_alignTop="@id/auction_detail_item_img"
             android:layout_toEndOf="@id/auction_detail_item_img"
             android:layout_marginStart="20dp"/>
@@ -77,7 +77,7 @@
             style="@style/CardLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_age"
+            android:text="@string/label_end_time"
             android:singleLine="true"
             android:layout_below="@id/auction_detail_label_end_time"
             android:layout_alignEnd="@id/auction_detail_label_end_time"/>
@@ -97,7 +97,7 @@
             style="@style/CardLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_height"
+            android:text="@string/label_location"
             android:singleLine="true"
             android:layout_below="@id/auction_detail_label_price"
             android:layout_alignEnd="@id/auction_detail_label_price"/>

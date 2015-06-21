@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="95dp"
+    android:layout_height="100dp"
     android:layout_marginTop="3dp"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="10dp"
@@ -17,69 +17,42 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/list_item_auction_img"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_alignParentStart="true" />
 
-        <TextView
-            android:id="@+id/list_item_auction_label_title"
-            style="@style/CardLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_username"
-            android:layout_toEndOf="@id/list_item_auction_img"
-            android:layout_alignTop="@id/list_item_auction_img"
-            android:layout_marginStart="10dp"/>
 
-        <TextView
-            android:id="@+id/list_item_auction_value_title"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/list_item_auction_label_title"
-            android:layout_alignTop="@id/list_item_auction_label_title"
-            android:layout_marginStart="2dp"/>
+            android:orientation="vertical"
+            android:layout_alignTop="@id/auction_detail_item_img"
+            android:layout_toEndOf="@id/auction_detail_item_img">
 
-        <TextView
-            android:id="@+id/list_item_auction_label_end_time"
-            style="@style/CardLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_age"
-            android:layout_toStartOf="@id/list_item_auction_value_title"
-            android:layout_below="@id/list_item_auction_label_title"
-            android:layout_marginStart="10dp"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/list_item_auction_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:label_text="@string/label_title"/>
 
-        <TextView
-            android:id="@+id/list_item_auction_value_end_time"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/list_item_auction_label_end_time"
-            android:layout_alignTop="@id/list_item_auction_label_end_time"
-            android:layout_marginStart="2dp"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/list_item_auction_end_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:label_text="@string/label_end_time"/>
 
-        <TextView
-            android:id="@+id/list_item_auction_value_location"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@id/list_item_auction_label_title"
-            android:layout_marginEnd="5dp"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/list_item_auction_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:label_text="@string/label_price"/>
 
-        <TextView
-            android:id="@+id/list_item_auction_value_shipping_cost"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/list_item_auction_value_location"
-            android:layout_marginEnd="5dp"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/list_item_auction_button_note"

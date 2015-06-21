@@ -35,7 +35,6 @@ import com.balch.android.app.framework.BasePresenter;
 import com.balch.auctionbrowser.AuctionApplication;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
-import com.balch.auctionbrowser.note.NoteEditDialog;
 import com.balch.auctionbrowser.note.NotesModel;
 
 import java.util.List;
@@ -110,69 +109,13 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
             }
 
             @Override
-            public void onClickNoteButton(final Auction auction) {
-                NoteEditDialog dialog = new NoteEditDialog();
-                Bundle args = new Bundle();
-
-                final Note note = auctionView.getNote(auction);
-                if (note != null) {
-                    args.putString(NoteEditDialog.ARG_NOTE, note.getNote());
-                    args.putString(NoteEditDialog.ARG_TITLE, auction.getTitle());
-                    dialog.setArguments(args);
-                    dialog.setNoteEditDialogListener(new NoteEditDialog.NoteEditDialogListener() {
-                        @Override
-                        public void onSave(String text) {
-                            note.setNote(text);
-                            notesModel.update(note);
-                        }
-
-                        @Override
-                        public void onClear() {
-                            notesModel.delete(note);
-                            auctionView.clearNote(auction);
-                        }
-                    });
-                    dialog.show(((BaseAppCompatActivity) auctionView.getContext()).getSupportFragmentManager(),
-                            "NoteEditDialog");
-                }
+            public void onClickNoteButton(Auction auction) {
+                showDetail(auction);
             }
 
             @Override
-            public void onClickAuction(final Auction auction) {
-                AuctionDetailDialog dialog = new AuctionDetailDialog();
-                Bundle args = new Bundle();
-
-                final Note note = auctionView.getNote(auction);
-                if (note != null) {
-                    args.putString(AuctionDetailDialog.ARG_NOTE, note.getNote());
-                }
-                args.putSerializable(AuctionDetailDialog.ARG_AUCTION, auction);
-                dialog.setArguments(args);
-                dialog.setNoteDetailDialogListener(new AuctionDetailDialog.NoteDetailDialogListener() {
-                    @Override
-                    public void onSave(String text) {
-                        if (note == null) {
-                            Note note1 = new Note();
-                            note1.setNote(text);
-                            note1.setItemId(auction.getItemId());
-                            notesModel.insert(note1);
-                            auctionView.addNote(auction, note1);
-                        } else {
-                            note.setNote(text);
-                            notesModel.update(note);
-                        }
-                    }
-
-                    @Override
-                    public void onClear() {
-                        if (note != null) {
-                            notesModel.delete(note);
-                            auctionView.clearNote(auction);
-                        }
-                    }
-                });
-                dialog.show(((BaseAppCompatActivity) auctionView.getContext()).getSupportFragmentManager(),
-                        "NoteDetailDialog");
+            public void onClickAuction(Auction auction) {
+                showDetail(auction);
             }
 
             @Override
@@ -194,9 +137,46 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
         this.loaderManager.initLoader(AUCTION_LOADER_ID, null, this).forceLoad();
     }
 
+    private void showDetail(final Auction auction) {
+        AuctionDetailDialog dialog = new AuctionDetailDialog();
+        Bundle args = new Bundle();
+
+        final Note note = auctionView.getNote(auction);
+        if (note != null) {
+            args.putString(AuctionDetailDialog.ARG_NOTE, note.getNote());
+        }
+        args.putSerializable(AuctionDetailDialog.ARG_AUCTION, auction);
+        dialog.setArguments(args);
+        dialog.setNoteDetailDialogListener(new AuctionDetailDialog.NoteDetailDialogListener() {
+            @Override
+            public void onSave(String text) {
+                if (note == null) {
+                    Note note1 = new Note();
+                    note1.setNote(text);
+                    note1.setItemId(auction.getItemId());
+                    notesModel.insert(note1);
+                    auctionView.addNote(auction, note1);
+                } else {
+                    note.setNote(text);
+                    notesModel.update(note);
+                }
+            }
+
+            @Override
+            public void onClear() {
+                if (note != null) {
+                    notesModel.delete(note);
+                    auctionView.clearNote(auction);
+                }
+            }
+        });
+        dialog.show(((BaseAppCompatActivity) auctionView.getContext()).getSupportFragmentManager(),
+                "AuctionDetailDialog");
+    }
+
     @Override
     public Loader<AuctionData> onCreateLoader(int id, Bundle args) {
-        return new MemberLoader(this.application, this.searchString,
+        return new AuctionLoader(this.application, this.searchString,
                 this.currentPage, this.sortColumns[this.sortPosition],
                 this.auctionModel, this.notesModel);
     }
@@ -228,16 +208,16 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
         protected int totalPages;
     }
 
-    protected static class MemberLoader extends AsyncTaskLoader<AuctionData> {
+    protected static class AuctionLoader extends AsyncTaskLoader<AuctionData> {
         protected int currentPage;
         protected EBayModel auctionModel;
         protected NotesModel notesModel;
         protected String searchText;
         protected String sortOrder;
 
-        public MemberLoader(Context context, String searchText,
-                            int currentPage, String sortOrder,
-                            EBayModel auctionModel, NotesModel notesModel) {
+        public AuctionLoader(Context context, String searchText,
+                             int currentPage, String sortOrder,
+                             EBayModel auctionModel, NotesModel notesModel) {
             super(context);
             this.searchText = searchText;
             this.currentPage = currentPage;

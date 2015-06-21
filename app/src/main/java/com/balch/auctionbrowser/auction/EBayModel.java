@@ -132,7 +132,7 @@ public class EBayModel {
     private Auction parseAuction(JSONObject item) throws JSONException, ParseException {
 
         Auction auction = new Auction();
-        auction.setId(item.getJSONArray("itemId").getLong(0));
+        auction.setItemId(item.getJSONArray("itemId").getLong(0));
         auction.setTitle(item.getJSONArray("title").getString(0));
         auction.setListingUrl(item.getJSONArray("viewItemURL").getString(0));
         auction.setImageUrl(item.getJSONArray("galleryURL").getString(0));

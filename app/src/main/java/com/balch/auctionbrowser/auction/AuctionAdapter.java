@@ -28,13 +28,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.balch.auctionbrowser.ModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
+import com.balch.auctionbrowser.ui.LabelTextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,8 @@ import java.util.Map;
 
 public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHolder>  {
     private static final String TAG = AuctionAdapter.class.getSimpleName();
+
+    public static final DateFormat DATE_TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
 
     public interface MembersAdapterListener {
         void onClickNoteButton(Auction auction);
@@ -58,10 +62,11 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
         private MembersAdapterListener membersAdapterListener;
 
         private NetworkImageView itemImageView;
-        private TextView titleTextView;
-        private TextView priceTextView;
-        private TextView locationTextView;
-        private TextView shippingCostTextView;
+        private LabelTextView titleTextView;
+        private LabelTextView priceTextView;
+        private LabelTextView endTimeTextView;
+//        private LabelTextView locationTextView;
+//        private LabelTextView shippingCostTextView;
         private Button noteEditButton;
 
         public MemberHolder(View itemView, MembersAdapterListener membersAdapterListener) {
@@ -69,26 +74,28 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
 
             this.membersAdapterListener = membersAdapterListener;
             this.itemImageView = (NetworkImageView) itemView.findViewById(R.id.list_item_auction_img);
-            this.titleTextView = (TextView) itemView.findViewById(R.id.list_item_auction_value_title);
-            this.priceTextView = (TextView) itemView.findViewById(R.id.list_item_auction_value_end_time);
-            this.locationTextView = (TextView) itemView.findViewById(R.id.list_item_auction_value_location);
-            this.shippingCostTextView = (TextView) itemView.findViewById(R.id.list_item_auction_value_shipping_cost);
+            this.titleTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_title);
+            this.endTimeTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_end_time);
+            this.priceTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_price);
+//            this.locationTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_location);
+//            this.shippingCostTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_shipping_cost);
             this.noteEditButton = (Button) itemView.findViewById(R.id.list_item_auction_button_note);
         }
 
         public void bind(final Auction auction, Note note, ModelProvider modelProvider) {
 
             this.itemImageView.setImageUrl(auction.getImageUrl(), modelProvider.getImageLoader());
-            this.titleTextView.setText(auction.getTitle());
+            this.titleTextView.setValue(auction.getTitle());
 
+            this.priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
+            this.endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime().getDate()));
 
-            this.priceTextView.setText(auction.getCurrentPrice().getFormatted(2));
-            this.locationTextView.setText(auction.getLocation());
-            this.shippingCostTextView.setText(
+/*            this.locationTextView.setValue(auction.getLocation());
+            this.shippingCostTextView.setValue(
                     (auction.getShippingCost() != null) ?
-                    auction.getShippingCost().getFormatted(2) :
-                    "???");
-
+                            auction.getShippingCost().getFormatted(2) :
+                            "???");
+*/
             this.noteEditButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
