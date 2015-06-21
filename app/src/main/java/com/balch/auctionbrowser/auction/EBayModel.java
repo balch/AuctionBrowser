@@ -113,18 +113,14 @@ public class EBayModel {
         return new AuctionInfo(auctions, totalCount);
     }
 
-    private boolean validateResponse(JSONObject json){
+    private boolean validateResponse(JSONObject json) throws JSONException {
         return ((json != null) &&
-                json.optString("ack").equals("Success"));
+                json.getJSONArray("ack").getString(0).equals("Success"));
     }
 
-    private long getTotalItems(JSONObject json){
-        long itemCount = -1L;
-        JSONObject paginationOutput = json.optJSONObject("paginationOutput");
-        if (paginationOutput != null) {
-            itemCount = paginationOutput.optLong("totalEntries", -1);
-        }
-        return itemCount;
+    private long getTotalItems(JSONObject json) throws JSONException {
+        JSONObject paginationOutput = json.getJSONArray("paginationOutput").getJSONObject(0);
+        return paginationOutput.getJSONArray("totalEntries").optLong(0, -1);
     }
 
     private List<Auction> parseAuctions(JSONObject response) throws JSONException, ParseException {
