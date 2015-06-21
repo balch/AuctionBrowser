@@ -102,13 +102,13 @@ public class AuctionDetailDialog extends DialogFragment {
                 tv.setText(DATE_TIME_FORMAT.format(auction.getEndTime().getDate()));
 
                 tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_price);
-                tv.setText(auction.getCurrentPrice().getCurrency(2));
+                tv.setText(auction.getCurrentPrice().getFormatted(2));
 
                 tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_location);
                 tv.setText(auction.getLocation());
 
                 tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_shipping_cost);
-                tv.setText(auction.getShippingCost().getCurrency(2));
+                tv.setText(auction.getShippingCost().getFormatted(2));
 
                 CheckBox checkBox = (CheckBox) getDialog().findViewById(R.id.auction_detail_value_buy_it_now);
                 checkBox.setChecked(auction.isBuyItNow());
