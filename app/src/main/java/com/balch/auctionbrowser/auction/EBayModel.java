@@ -134,9 +134,15 @@ public class EBayModel {
         Auction auction = new Auction();
         auction.setItemId(item.getJSONArray("itemId").getLong(0));
         auction.setTitle(item.getJSONArray("title").getString(0));
-        auction.setListingUrl(item.getJSONArray("viewItemURL").getString(0));
-        auction.setImageUrl(item.getJSONArray("galleryURL").getString(0));
-        auction.setLocation(item.getJSONArray("location").getString(0));
+
+        JSONArray jsonArray = item.optJSONArray("viewItemURL");
+        auction.setListingUrl((jsonArray != null) ? jsonArray.getString(0) : "");
+
+        jsonArray = item.optJSONArray("galleryURL");
+        auction.setImageUrl((jsonArray != null) ? jsonArray.getString(0) : "");
+
+        jsonArray = item.optJSONArray("location");
+        auction.setLocation((jsonArray != null) ? jsonArray.getString(0) : "");
 
         JSONObject sellingStatus = item.getJSONArray("sellingStatus").getJSONObject(0);
         double convertedCurrentPrice = sellingStatus.getJSONArray("convertedCurrentPrice").getJSONObject(0).getDouble("__value__");
