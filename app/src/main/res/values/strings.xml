@@ -17,11 +17,8 @@
     <string name="label_price">Price:</string>
     <string name="label_location">Location:</string>
     <string name="label_shipping_cost">Shipping:</string>
+    <string name="label_buy_it_now">Buy It Now:</string>
     <string name="label_note">Note:</string>
-
-    <string name="unit_pounds">%1$dlbs</string>
-    <string name="unit_feet_inches">%1$d\' %2$d\'\'</string>
-    <string name="unit_percent">%1$.0f%%</string>
 
     <string name="value_not_available">N/A</string>
 
@@ -29,11 +26,5 @@
 
     <string name="button_note_save">Save</string>
     <string name="button_note_clear">Clear</string>
-
-    <string name="edit_note_label">Edit Note for %1$s</string>
-    <string name="title_activity_main_activity2">MainActivity2Activity</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
 
 </resources>

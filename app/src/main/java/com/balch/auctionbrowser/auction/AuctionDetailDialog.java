@@ -30,13 +30,13 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.balch.auctionbrowser.ModelProvider;
 import com.balch.auctionbrowser.R;
+import com.balch.auctionbrowser.ui.LabelTextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -92,26 +92,28 @@ public class AuctionDetailDialog extends DialogFragment {
 
                 enableSaveButtons = (auction.getItemId() != -1L);
 
-                TextView tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_title);
+                TextView tv = (TextView) getDialog().findViewById(R.id.auction_detail_title);
                 tv.setText(auction.getTitle());
 
                 NetworkImageView profileImageView = (NetworkImageView) getDialog().findViewById(R.id.auction_detail_item_img);
                 profileImageView.setImageUrl(auction.getImageUrl(), ((ModelProvider) getActivity().getApplication()).getImageLoader());
 
-                tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_end_time);
-                tv.setText(DATE_TIME_FORMAT.format(auction.getEndTime().getDate()));
+                LabelTextView ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_end_time);
+                ltv.setValue(DATE_TIME_FORMAT.format(auction.getEndTime().getDate()));
 
-                tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_price);
-                tv.setText(auction.getCurrentPrice().getFormatted(2));
+                ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_price);
+                ltv.setValue(auction.getCurrentPrice().getFormatted(2));
 
-                tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_location);
-                tv.setText(auction.getLocation());
+                ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_location);
+                ltv.setValue(auction.getLocation());
 
-                tv = (TextView) getDialog().findViewById(R.id.auction_detail_value_shipping_cost);
-                tv.setText(auction.getShippingCost().getFormatted(2));
+                if (auction.getShippingCost() != null) {
+                    ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_shipping_cost);
+                    ltv.setValue(auction.getShippingCost().getFormatted(2));
+                }
 
-                CheckBox checkBox = (CheckBox) getDialog().findViewById(R.id.auction_detail_value_buy_it_now);
-                checkBox.setChecked(auction.isBuyItNow());
+                ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_buy_it_now);
+                ltv.setValue(auction.isBuyItNow()?"\u2714" : "\u2718");
 
             }
         }

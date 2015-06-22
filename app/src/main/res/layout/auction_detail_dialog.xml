@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,107 +9,64 @@
     android:paddingEnd="20dp"
     android:paddingStart="20dp">
 
+    <TextView
+        android:id="@+id/auction_detail_title"
+        style="@style/CardValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textSize="16sp"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/auction_detail_value_title"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:singleLine="true"
-            android:textSize="16sp"/>
-
 
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/auction_detail_item_img"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/auction_detail_value_title"
             android:layout_marginTop="20dp"/>
 
-        <TextView
-            android:id="@+id/auction_detail_value_location"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@id/auction_detail_value_title"
-            android:singleLine="true"
-            android:layout_marginEnd="5dp"/>
 
-        <TextView
-            android:id="@+id/auction_detail_value_shipping_cost"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/auction_detail_value_location"
-            android:singleLine="true"
-            android:layout_marginEnd="5dp"/>
-
-        <TextView
-            android:id="@+id/auction_detail_label_end_time"
-            style="@style/CardLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_price"
+            android:orientation="vertical"
             android:layout_alignTop="@id/auction_detail_item_img"
-            android:layout_toEndOf="@id/auction_detail_item_img"
-            android:layout_marginStart="20dp"/>
+            android:layout_toEndOf="@id/auction_detail_item_img">
 
-        <TextView
-            android:id="@+id/auction_detail_value_end_time"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:layout_toEndOf="@id/auction_detail_label_end_time"
-            android:layout_alignTop="@id/auction_detail_label_end_time"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/auction_detail_end_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:label_text="@string/label_end_time"/>
 
-        <TextView
-            android:id="@+id/auction_detail_label_price"
-            style="@style/CardLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_end_time"
-            android:singleLine="true"
-            android:layout_below="@id/auction_detail_label_end_time"
-            android:layout_alignEnd="@id/auction_detail_label_end_time"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/auction_detail_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:label_text="@string/label_price"/>
 
-        <TextView
-            android:id="@+id/auction_detail_value_price"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:layout_below="@id/auction_detail_value_end_time"
-            android:layout_alignStart="@id/auction_detail_value_end_time"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/auction_detail_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:label_text="@string/label_location"/>
 
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/auction_detail_shipping_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:label_text="@string/label_shipping_cost"/>
 
-        <TextView
-            android:id="@+id/auction_detail_label_buy_it_now"
-            style="@style/CardLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_location"
-            android:singleLine="true"
-            android:layout_below="@id/auction_detail_label_price"
-            android:layout_alignEnd="@id/auction_detail_label_price"/>
+            <com.balch.auctionbrowser.ui.LabelTextView
+                android:id="@+id/auction_detail_buy_it_now"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:label_text="@string/label_buy_it_now"/>
 
-        <CheckBox
-            android:id="@+id/auction_detail_value_buy_it_now"
-            style="@style/CardValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:layout_below="@id/auction_detail_value_price"
-            android:layout_alignStart="@id/auction_detail_value_price"/>
+        </LinearLayout>
 
     </RelativeLayout>
 
