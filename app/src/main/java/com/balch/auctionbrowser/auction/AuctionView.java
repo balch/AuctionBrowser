@@ -94,8 +94,10 @@ public class AuctionView extends LinearLayout
     public void clearAuctions() {
         this.auctionAdapter.clearAuctions();
         this.recyclerOnScrollListener.reset();
+    }
 
-//        this.recyclerView.getLayoutManager().removeAllViews();
+    public void doneLoading() {
+        this.recyclerOnScrollListener.doneLoading();
     }
 
     public Note getNote(Auction auction) {
@@ -207,11 +209,9 @@ public class AuctionView extends LinearLayout
 
     public static class RecyclerOnScrollListener extends RecyclerView.OnScrollListener {
 
-        private static int VISIBLE_THRESHOLD = 10;
-
         private int currentPage = 1;
-        private int previousTotal = 0;
-        private boolean loading = true;
+        private boolean loading = false;
+        private boolean hasMore = true;
 
         private final LinearLayoutManager linearLayoutManager;
         private final LoadMoreListener loadMoreListener;
@@ -224,29 +224,26 @@ public class AuctionView extends LinearLayout
 
         protected void reset() {
             currentPage = 1;
-            previousTotal = 0;
-            loading = true;
+            hasMore = true;
+            loading = false;
+        }
+
+        protected void doneLoading() {
+            loading = false;
         }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
 
-            int visibleItemCount = recyclerView.getChildCount();
-            int totalItemCount = linearLayoutManager.getItemCount();
-            int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+            if (hasMore && !loading) {
+                int visibleItemCount = linearLayoutManager.getChildCount();
+                int totalItemCount = linearLayoutManager.getItemCount();
+                int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
 
-            if (loading) {
-                if (totalItemCount > previousTotal) {
-                    loading = false;
-                    previousTotal = totalItemCount;
+                if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
+                    loading = hasMore = loadMoreListener.onLoadMore(++currentPage);
                 }
-            }
-
-            if (!loading &&
-                    (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
-                loadMoreListener.onLoadMore(++currentPage);
-                loading = true;
             }
         }
 

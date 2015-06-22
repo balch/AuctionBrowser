@@ -23,6 +23,7 @@
 
 package com.balch.auctionbrowser.auction;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -81,30 +82,33 @@ public class EBayModel {
     public AuctionInfo getAuctions(String keyword, long start, int count, String sortOrder) {
         List<Auction> auctions = new ArrayList<>(count);
         int totalPages = -1;
-        String url = "";
-        try {
 
-            url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
-                    String.format(EBAY_SERVICE_PARAMS, start + 1, count,
-                            eBayApiKey,
-                            "findItemsByKeywords",
-                            URLEncoder.encode(keyword, "UTF-8"), sortOrder);
+        if (!TextUtils.isEmpty(keyword)) {
+            String url = "";
+            try {
 
-            RequestFuture<JSONObject> future = RequestFuture.newFuture();
-            JsonObjectRequest request = new JsonObjectRequest(url, future, future);
-            modelProvider.getRequestQueue().add(request);
+                url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
+                        String.format(EBAY_SERVICE_PARAMS, start + 1, count,
+                                eBayApiKey,
+                                "findItemsByKeywords",
+                                URLEncoder.encode(keyword, "UTF-8"), sortOrder);
 
-            JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
-            response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
+                RequestFuture<JSONObject> future = RequestFuture.newFuture();
+                JsonObjectRequest request = new JsonObjectRequest(url, future, future);
+                modelProvider.getRequestQueue().add(request);
 
-            if (validateResponse(response)) {
-                totalPages = getTotalPages(response);
-                auctions = parseAuctions(response);
+                JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
+                response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
+
+                if (validateResponse(response)) {
+                    totalPages = getTotalPages(response);
+                    auctions = parseAuctions(response);
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Exception on " + url, e);
+                auctions = null;
             }
-
-        } catch (Exception e) {
-            Log.e(TAG, "Exception on " + url, e);
-            auctions = null;
         }
 
         return new AuctionInfo(auctions, totalPages);

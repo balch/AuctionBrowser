@@ -193,7 +193,8 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
         } else {
             Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
         }
-        
+
+        auctionView.doneLoading();
         isLoadFinished = true;
     }
 
