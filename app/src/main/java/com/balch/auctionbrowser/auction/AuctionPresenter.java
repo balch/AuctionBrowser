@@ -234,7 +234,7 @@ public class AuctionPresenter extends BasePresenter<AuctionApplication>
 
                 EBayModel.AuctionInfo info = this.auctionModel.getAuctions(
                         searchText,
-                        currentPage  * AUCTION_FETCH_COUNT,
+                        currentPage,
                         AUCTION_FETCH_COUNT,
                         sortOrder);
 

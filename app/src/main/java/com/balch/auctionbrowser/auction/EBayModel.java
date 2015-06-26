@@ -93,6 +93,9 @@ public class EBayModel {
                                 "findItemsByKeywords",
                                 URLEncoder.encode(keyword, "UTF-8"), sortOrder);
 
+
+                Log.d(TAG, "ebay request: " + url.replace(eBayApiKey, "{secured}"));
+
                 RequestFuture<JSONObject> future = RequestFuture.newFuture();
                 JsonObjectRequest request = new JsonObjectRequest(url, future, future);
                 modelProvider.getRequestQueue().add(request);
@@ -100,9 +103,16 @@ public class EBayModel {
                 JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
                 response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
 
-                if (validateResponse(response)) {
+                boolean success = validateResponse(response);
+
+                Log.d(TAG, "ebay request success status: " + success);
+
+                if (success) {
                     totalPages = getTotalPages(response);
                     auctions = parseAuctions(response);
+
+                    Log.d(TAG, "ebay request total pages: " + totalPages);
+
                 }
 
             } catch (Exception e) {
