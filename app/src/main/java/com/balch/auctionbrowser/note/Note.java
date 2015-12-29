@@ -24,9 +24,9 @@
 package com.balch.auctionbrowser.note;
 
 import com.balch.android.app.framework.domain.DomainObject;
-import com.balch.android.app.framework.types.ISO8601DateTime;
 
 import java.io.Serializable;
+import java.util.Date;
 
 // TODO: make Parcelable
 public class Note extends DomainObject  implements Serializable {
@@ -35,8 +35,8 @@ public class Note extends DomainObject  implements Serializable {
     private long itemId;
     private String note;
 
-    public Note(long id, long itemId, String note, ISO8601DateTime created,
-                ISO8601DateTime updated) {
+    public Note(long id, long itemId, String note, Date created,
+                Date updated) {
         this.id = id;
         this.itemId = itemId;
         this.note = note;

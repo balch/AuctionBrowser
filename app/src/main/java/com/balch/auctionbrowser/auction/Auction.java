@@ -24,10 +24,10 @@
 package com.balch.auctionbrowser.auction;
 
 import com.balch.android.app.framework.domain.DomainObject;
-import com.balch.android.app.framework.types.ISO8601DateTime;
 import com.balch.android.app.framework.types.Money;
 
 import java.io.Serializable;
+import java.util.Date;
 
 // TODO: make Parcelable
 public class Auction extends DomainObject implements Serializable {
@@ -41,8 +41,8 @@ public class Auction extends DomainObject implements Serializable {
     private Money shippingCost;
     private Money currentPrice;
     private String auctionSource;
-    private ISO8601DateTime startTime;
-    private ISO8601DateTime endTime;
+    private Date startTime;
+    private Date endTime;
     private boolean auction;
     private boolean buyItNow;
 
@@ -52,8 +52,8 @@ public class Auction extends DomainObject implements Serializable {
 
     public Auction(long itemId, String title, String imageUrl,
                    String listingUrl, String location, Money shippingCost,
-                   Money currentPrice, String auctionSource, ISO8601DateTime startTime,
-                   ISO8601DateTime endTime, boolean auction, boolean buyItNow) {
+                   Money currentPrice, String auctionSource, Date startTime,
+                   Date endTime, boolean auction, boolean buyItNow) {
         this.itemId = itemId;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -132,19 +132,19 @@ public class Auction extends DomainObject implements Serializable {
         this.auctionSource = auctionSource;
     }
 
-    public ISO8601DateTime getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(ISO8601DateTime startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public ISO8601DateTime getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(ISO8601DateTime endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 

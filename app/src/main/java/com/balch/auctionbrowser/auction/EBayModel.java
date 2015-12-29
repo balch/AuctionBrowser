@@ -28,7 +28,7 @@ import android.util.Log;
 
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
-import com.balch.android.app.framework.types.ISO8601DateTime;
+import com.balch.android.app.framework.ISO8601DateTime;
 import com.balch.android.app.framework.types.Money;
 import com.balch.auctionbrowser.ModelProvider;
 
@@ -181,8 +181,8 @@ public class EBayModel {
                 auction.setBuyItNow(true);
             }
 
-            auction.setStartTime(new ISO8601DateTime(listingInfo.getJSONArray("startTime").getString(0)));
-            auction.setEndTime(new ISO8601DateTime(listingInfo.getJSONArray("endTime").getString(0)));
+            auction.setStartTime(ISO8601DateTime.toDate(listingInfo.getJSONArray("startTime").getString(0)));
+            auction.setEndTime(ISO8601DateTime.toDate(listingInfo.getJSONArray("endTime").getString(0)));
         }
 
         return auction;

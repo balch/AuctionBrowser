@@ -186,11 +186,6 @@ public class AuctionView extends LinearLayout
         this.sortSpinner = (Spinner)toolbar.findViewById(R.id.view_auction_toolbar_spinner_sort_col);
     }
 
-    @Override
-    public void destroy() {
-        this.recyclerView.removeOnScrollListener(recyclerOnScrollListener);
-    }
-
     public void setMainViewListener(MainViewListener mainViewListener) {
         this.mainViewListener = mainViewListener;
     }
