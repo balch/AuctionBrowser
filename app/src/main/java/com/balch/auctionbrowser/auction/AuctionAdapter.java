@@ -88,7 +88,7 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
             this.titleTextView.setValue(auction.getTitle());
 
             this.priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
-            this.endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime().getDate()));
+            this.endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
 
 /*            this.locationTextView.setValue(auction.getLocation());
             this.shippingCostTextView.setValue(

@@ -23,12 +23,10 @@
 
 package com.balch.auctionbrowser;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.balch.android.app.framework.BaseAppCompatActivity;
@@ -39,12 +37,8 @@ import com.balch.auctionbrowser.auction.EBayModel;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
-import java.util.List;
-import java.util.Map;
-
-
 public class MainActivity extends BaseAppCompatActivity<AuctionView>
-        implements LoaderManager.LoaderCallbacks<MainActivity.AuctionData>{
+        implements LoaderManager.LoaderCallbacks<AuctionData>{
     private static final String TAG = MainActivity.class.getSimpleName();
 
     protected AuctionView auctionView;
@@ -52,7 +46,6 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
     protected NotesModel notesModel;
 
     protected static final int AUCTION_LOADER_ID = 0;
-    protected static final int AUCTION_FETCH_COUNT = 30;
 
     protected boolean isLoadFinished = false;
 
@@ -69,7 +62,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
     @Override
     protected void onCreateBase(Bundle bundle) {
         ModelProvider modelProvider = (ModelProvider)getApplication();
-        auctionModel = new EBayModel(getString(R.string.ebay_app_id_production), modelProvider);
+        auctionModel = new EBayModel(getString(R.string.ebay_app_id), modelProvider);
         notesModel = new NotesModel(modelProvider);
 
         this.auctionView.setMainViewListener(new AuctionView.MainViewListener() {
@@ -80,7 +73,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
                 if (isLoadFinished && hasMore) {
                     auctionView.showBusy();
                     MainActivity.this.currentPage = currentPage;
-                    getSupportLoaderManager().restartLoader(AUCTION_LOADER_ID, null, MainActivity.this).forceLoad();
+                    updateView();
                 }
                 return hasMore;
             }
@@ -94,7 +87,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
 
                     auctionView.showBusy();
                     auctionView.clearAuctions();
-                    getSupportLoaderManager().restartLoader(AUCTION_LOADER_ID, null, MainActivity.this).forceLoad();
+                    updateView();
                 }
             }
 
@@ -117,14 +110,14 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
 
                     auctionView.showBusy();
                     auctionView.clearAuctions();
-                    getSupportLoaderManager().restartLoader(AUCTION_LOADER_ID, null, MainActivity.this).forceLoad();
+                    updateView();
                 }
             }
         });
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);
         this.auctionView.showBusy();
-        this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this).forceLoad();
+        this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
 
     }
 
@@ -173,22 +166,22 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
 
     @Override
     public Loader<AuctionData> onCreateLoader(int id, Bundle args) {
-        return new AuctionLoader(this, this.searchString,
-                this.currentPage, this.sortColumns[this.sortPosition],
-                this.auctionModel, this.notesModel);
+        return new AuctionLoader(this, this.auctionModel, this.notesModel);
     }
 
     @Override
     public void onLoadFinished(Loader<AuctionData> loader, AuctionData data) {
         auctionView.hideBusy();
 
-        if (data.auctions != null) {
+        if (data.getAuctions() != null) {
             if (totalPages == -1) {
-                totalPages = data.totalPages;
+                totalPages = data.getTotalPages();
             }
-            auctionView.addAuctions(data.auctions, data.notes);
+            auctionView.addAuctions(data.getAuctions(), data.getNotes());
         } else {
-            Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+            if (!TextUtils.isEmpty(searchString)) {
+                Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+            }
         }
 
         auctionView.doneLoading();
@@ -200,52 +193,8 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
 
     }
 
-    protected static class AuctionData {
-        protected List<Auction> auctions;
-        protected Map<Long, Note> notes;
-        protected int totalPages;
-    }
-
-    protected static class AuctionLoader extends AsyncTaskLoader<AuctionData> {
-        protected int currentPage;
-        protected EBayModel auctionModel;
-        protected NotesModel notesModel;
-        protected String searchText;
-        protected String sortOrder;
-
-        public AuctionLoader(Context context, String searchText,
-                             int currentPage, String sortOrder,
-                             EBayModel auctionModel, NotesModel notesModel) {
-            super(context);
-            this.searchText = searchText;
-            this.currentPage = currentPage;
-            this.sortOrder = sortOrder;
-            this.auctionModel = auctionModel;
-            this.notesModel = notesModel;
-        }
-
-        @Override
-        public AuctionData loadInBackground() {
-            AuctionData auctionData = new AuctionData();
-            try {
-
-                EBayModel.AuctionInfo info = this.auctionModel.getAuctions(
-                        searchText,
-                        currentPage,
-                        AUCTION_FETCH_COUNT,
-                        sortOrder);
-
-                auctionData.totalPages = info.totalPages;
-                auctionData.auctions = info.auctions;
-                if (auctionData.auctions != null) {
-                    auctionData.notes = this.notesModel.getNotes(auctionData.auctions);
-                }
-            } catch (Exception ex) {
-                Log.e(TAG, "error getting auctions", ex);
-            }
-
-            return auctionData;
-        }
+    private void updateView() {
+        AuctionLoader.update(this, this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
     }
 
 }

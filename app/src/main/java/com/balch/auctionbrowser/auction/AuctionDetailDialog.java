@@ -99,7 +99,7 @@ public class AuctionDetailDialog extends DialogFragment {
                 profileImageView.setImageUrl(auction.getImageUrl(), ((ModelProvider) getActivity().getApplication()).getImageLoader());
 
                 LabelTextView ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_end_time);
-                ltv.setValue(DATE_TIME_FORMAT.format(auction.getEndTime().getDate()));
+                ltv.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
 
                 ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_price);
                 ltv.setValue(auction.getCurrentPrice().getFormatted(2));
