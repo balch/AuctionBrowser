@@ -1,6 +1,6 @@
 # Auction Browser
 
-### Android Material Design Reference App
+### Android Material Design App
 
 * Gradle Dependency on [AppFramework Library](https://github.com/balch/MockTrade#application-framework)
     * MVP
