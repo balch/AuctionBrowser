@@ -53,6 +53,8 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
     private final String[] sortColumns =
             new String[]{"BestMatch", "EndTimeSoonest", "PricePlusShippingLowest"};
 
+    private AuctionLoader auctionLoader;
+
     // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
     protected int sortPosition = 0;
@@ -117,7 +119,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);
         this.auctionView.showBusy();
-        this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
+        this.auctionLoader = (AuctionLoader)this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
 
     }
 
@@ -194,7 +196,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
     }
 
     private void updateView() {
-        AuctionLoader.update(this, this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
+        this.auctionLoader.update(this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
     }
 
 }

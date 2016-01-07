@@ -1,11 +1,7 @@
 package com.balch.auctionbrowser;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -18,10 +14,6 @@ import com.balch.auctionbrowser.note.NotesModel;
 public class AuctionLoader extends AsyncTaskLoader<AuctionData> {
     private static final String TAG = AuctionLoader.class.getSimpleName();
 
-    private static final String EXTRA_CURRENT_PAGE = "EXTRA_CURRENT_PAGE";
-    private static final String EXTRA_SEARCH_TEXT = "EXTRA_SEARCH_TEXT";
-    private static final String EXTRA_SORT_ORDER = "EXTRA_SORT_ORDER";
-
     private static final int AUCTION_FETCH_COUNT = 30;
 
     private final EBayModel auctionModel;
@@ -32,7 +24,6 @@ public class AuctionLoader extends AsyncTaskLoader<AuctionData> {
     private String sortOrder;
 
     private AuctionData mAuctionData;
-    private UpdateReceiver mUpdateReceiver;
 
     public AuctionLoader(Context context,
                          EBayModel auctionModel, NotesModel notesModel) {
@@ -69,13 +60,9 @@ public class AuctionLoader extends AsyncTaskLoader<AuctionData> {
     public void deliverResult(AuctionData data) {
         if (isReset()) {
             // The Loader has been reset; ignore the result and invalidate the data.
-            releaseResources(data);
             return;
         }
 
-        // Hold a reference to the old data so it doesn't get garbage collected.
-        // We must protect it until the new data has been delivered.
-        AuctionData oldData = mAuctionData;
         mAuctionData = data;
 
         if (isStarted()) {
@@ -84,10 +71,6 @@ public class AuctionLoader extends AsyncTaskLoader<AuctionData> {
             super.deliverResult(data);
         }
 
-        // Invalidate the old data as we don't need it any more.
-        if (oldData != null && oldData != data) {
-            releaseResources(oldData);
-        }
     }
 
     @Override
@@ -95,14 +78,6 @@ public class AuctionLoader extends AsyncTaskLoader<AuctionData> {
         if (mAuctionData != null) {
             // Deliver any previously loaded data immediately.
             deliverResult(mAuctionData);
-        }
-
-        // Begin monitoring the underlying data source.
-        if (mUpdateReceiver == null) {
-            mUpdateReceiver = new UpdateReceiver();
-
-            LocalBroadcastManager.getInstance(getContext())
-                    .registerReceiver(mUpdateReceiver, new IntentFilter(UpdateReceiver.class.getName()));
         }
 
         if (takeContentChanged() || mAuctionData == null) {
@@ -134,68 +109,17 @@ public class AuctionLoader extends AsyncTaskLoader<AuctionData> {
 
         // At this point we can release the resources associated with 'mData'.
         if (mAuctionData != null) {
-            releaseResources(mAuctionData);
             mAuctionData = null;
         }
 
-        // The Loader is being reset, so we should stop monitoring for changes.
-        if (mUpdateReceiver != null) {
-            LocalBroadcastManager.getInstance(getContext())
-                    .unregisterReceiver(mUpdateReceiver);
-            mUpdateReceiver = null;
-        }
     }
 
-    @Override
-    public void onCanceled(AuctionData data) {
-        // Attempt to cancel the current asynchronous load.
-        super.onCanceled(data);
-
-        // The load has been canceled, so we should release the resources
-        // associated with 'data'.
-        releaseResources(data);
+    public void update(int currentPage, String searchText, String sortOrder) {
+        this.currentPage = currentPage;
+        this.searchText = searchText;
+        this.sortOrder = sortOrder;
+        onContentChanged();
     }
-
-    private void releaseResources(AuctionData data) {
-        // For a simple List, there is nothing to do. For something like a Cursor, we
-        // would close it in this method. All resources associated with the Loader
-        // should be released here.
-    }
-
-    static public void update(Context context, int currentPage, String searchText, String sortOrder) {
-        Intent intent = new Intent(UpdateReceiver.class.getName());
-        intent.putExtra(EXTRA_CURRENT_PAGE, currentPage);
-        intent.putExtra(EXTRA_SEARCH_TEXT, searchText);
-        intent.putExtra(EXTRA_SORT_ORDER, sortOrder);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-    }
-
-
-    private class UpdateReceiver extends BroadcastReceiver {
-        private UpdateReceiver() {
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            if (intent.hasExtra(EXTRA_CURRENT_PAGE)) {
-                currentPage = intent.getIntExtra(EXTRA_CURRENT_PAGE, 0);
-            }
-
-            if (intent.hasExtra(EXTRA_SEARCH_TEXT)) {
-                searchText = intent.getStringExtra(EXTRA_SEARCH_TEXT);
-            }
-
-            if (intent.hasExtra(EXTRA_SORT_ORDER)) {
-                sortOrder = intent.getStringExtra(EXTRA_SORT_ORDER);
-            }
-
-            onContentChanged();
-        }
-
-    }
-
-
 
 }
 
