@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser;
 
-import com.android.volley.RequestQueue;
+import com.android.volley.Request;
 import com.android.volley.toolbox.ImageLoader;
 import com.balch.android.app.framework.sql.SqlConnection;
 import com.balch.auctionbrowser.settings.Settings;
@@ -32,7 +32,9 @@ public interface ModelProvider {
 
     SqlConnection getSqlConnection();
 
-    RequestQueue getRequestQueue();
+    <T> Request<T> addRequest(Request<T> request);
+
+    <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy);
 
     ImageLoader getImageLoader();
 

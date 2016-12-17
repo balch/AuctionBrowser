@@ -28,6 +28,8 @@ import android.graphics.Bitmap;
 import android.os.StrictMode;
 import android.util.LruCache;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
@@ -36,6 +38,10 @@ import com.balch.auctionbrowser.settings.Settings;
 
 public class AuctionApplication extends Application implements ModelProvider {
     private static final String TAG = AuctionApplication.class.getSimpleName();
+
+    private static final int REQUEST_TIMEOUT_SECS = 30;
+    private static final DefaultRetryPolicy DEFAULT_RETRY_POlICY = new DefaultRetryPolicy(
+            REQUEST_TIMEOUT_SECS * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
     private static final String DATABASE_NAME = "auction_browser.db";
     private static final int DATABASE_VERSION = 1;
@@ -96,9 +102,19 @@ public class AuctionApplication extends Application implements ModelProvider {
     }
 
     @Override
-    public RequestQueue getRequestQueue() {
-        return this.requestQueue;
+    public <T> Request<T> addRequest(Request<T> request) {
+        return addRequest(request, false);
     }
+
+    @Override
+    public <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy) {
+        if (!customRetryPolicy) {
+            request.setRetryPolicy(DEFAULT_RETRY_POlICY);
+        }
+
+        return requestQueue.add(request);
+    }
+
 
     @Override
     public ImageLoader getImageLoader() {

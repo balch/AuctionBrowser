@@ -28,7 +28,7 @@ import android.util.Log;
 
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
-import com.balch.android.app.framework.ISO8601DateTime;
+import com.balch.android.app.framework.types.ISO8601DateTime;
 import com.balch.android.app.framework.types.Money;
 import com.balch.auctionbrowser.ModelProvider;
 
@@ -98,7 +98,7 @@ public class EBayModel {
 
                 RequestFuture<JSONObject> future = RequestFuture.newFuture();
                 JsonObjectRequest request = new JsonObjectRequest(url, future, future);
-                modelProvider.getRequestQueue().add(request);
+                modelProvider.addRequest(request);
 
                 JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
                 response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);

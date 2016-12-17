@@ -38,7 +38,7 @@ import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
 public class MainActivity extends BaseAppCompatActivity<AuctionView>
-        implements LoaderManager.LoaderCallbacks<AuctionData>{
+        implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.MainViewListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     protected AuctionView auctionView;
@@ -63,64 +63,63 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
 
     @Override
     protected void onCreateBase(Bundle bundle) {
-        ModelProvider modelProvider = (ModelProvider)getApplication();
+        ModelProvider modelProvider = (ModelProvider) getApplication();
         auctionModel = new EBayModel(getString(R.string.ebay_app_id), modelProvider);
         notesModel = new NotesModel(modelProvider);
 
-        this.auctionView.setMainViewListener(new AuctionView.MainViewListener() {
-            @Override
-            public boolean onLoadMore(int currentPage) {
-                boolean hasMore = ((totalPages == -1) ||
-                        (currentPage < totalPages));
-                if (isLoadFinished && hasMore) {
-                    auctionView.showBusy();
-                    MainActivity.this.currentPage = currentPage;
-                    updateView();
-                }
-                return hasMore;
-            }
-
-            @Override
-            public void onChangeSort(int position) {
-                if (isLoadFinished) {
-                    sortPosition = position;
-                    currentPage = 1;
-                    totalPages = -1;
-
-                    auctionView.showBusy();
-                    auctionView.clearAuctions();
-                    updateView();
-                }
-            }
-
-            @Override
-            public void onClickNoteButton(Auction auction) {
-                showDetail(auction);
-            }
-
-            @Override
-            public void onClickAuction(Auction auction) {
-                showDetail(auction);
-            }
-
-            @Override
-            public void onClickSearch(String keyword) {
-                if (isLoadFinished) {
-                    searchString = keyword;
-                    currentPage = 1;
-                    totalPages = -1;
-
-                    auctionView.showBusy();
-                    auctionView.clearAuctions();
-                    updateView();
-                }
-            }
-        });
+        this.auctionView.setMainViewListener(this);
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);
         this.auctionView.showBusy();
-        this.auctionLoader = (AuctionLoader)this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
+        this.auctionLoader = (AuctionLoader) this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
 
+    }
+
+    @Override
+    public boolean onLoadMore(int currentPage) {
+        boolean hasMore = ((totalPages == -1) || (currentPage < totalPages));
+        if (isLoadFinished && hasMore) {
+            auctionView.showBusy();
+            MainActivity.this.currentPage = currentPage;
+            updateView();
+        }
+        return hasMore;
+    }
+
+    @Override
+    public void onChangeSort(int position) {
+        if (isLoadFinished) {
+            sortPosition = position;
+            currentPage = 1;
+            totalPages = -1;
+
+            auctionView.showBusy();
+            auctionView.clearAuctions();
+            updateView();
+        }
+    }
+
+    @Override
+    public void onClickNoteButton(Auction auction) {
+        showDetail(auction);
+    }
+
+    @Override
+    public void onClickAuction(Auction auction) {
+        showDetail(auction);
+    }
+
+    @Override
+    public void onClickSearch(String keyword) {
+        if (isLoadFinished) {
+            searchString = keyword;
+            currentPage = 1;
+            totalPages = -1;
+
+            auctionView.showBusy();
+            auctionView.clearAuctions();
+            updateView();
+        }
     }
 
     @Override
@@ -142,28 +141,36 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
         dialog.setNoteDetailDialogListener(new AuctionDetailDialog.NoteDetailDialogListener() {
             @Override
             public void onSave(String text) {
-                if (note == null) {
-                    Note note1 = new Note();
-                    note1.setNote(text);
-                    note1.setItemId(auction.getItemId());
-                    notesModel.insert(note1);
-                    auctionView.addNote(auction, note1);
-                } else {
-                    note.setNote(text);
-                    notesModel.update(note);
-                }
+                saveNote(auction, note, text);
             }
 
             @Override
             public void onClear() {
-                if (note != null) {
-                    notesModel.delete(note);
-                    auctionView.clearNote(auction);
-                }
+                clearNote(auction, note);
             }
         });
         dialog.show(((BaseAppCompatActivity) auctionView.getContext()).getSupportFragmentManager(),
                 "AuctionDetailDialog");
+    }
+
+    private void saveNote(Auction auction, Note note, String text) {
+        if (note == null) {
+            Note note1 = new Note();
+            note1.setNote(text);
+            note1.setItemId(auction.getItemId());
+            notesModel.insert(note1);
+            auctionView.addNote(auction, note1);
+        } else {
+            note.setNote(text);
+            notesModel.update(note);
+        }
+    }
+
+    private void clearNote(Auction auction, Note note) {
+        if (note != null) {
+            notesModel.delete(note);
+            auctionView.clearNote(auction);
+        }
     }
 
     @Override

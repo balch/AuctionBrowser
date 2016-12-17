@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,8 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
+import com.balch.android.app.framework.BaseView;
 import com.balch.android.app.framework.domain.EditView;
-import com.balch.android.app.framework.view.BaseView;
 import com.balch.auctionbrowser.ModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
@@ -128,6 +129,8 @@ public class AuctionView extends LinearLayout
 
     @Override
     public void initializeLayout() {
+        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setOrientation(VERTICAL);
         inflate(getContext(), R.layout.auction_view, this);
         setupToolbar();
 

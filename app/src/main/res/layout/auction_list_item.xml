@@ -13,11 +13,13 @@
     app:contentPaddingTop="10dp"
     app:contentPaddingBottom="5dp"
     app:contentPaddingLeft="10dp"
-    app:contentPaddingRight="10dp">
+    app:contentPaddingRight="10dp"
+    app:cardBackgroundColor="@color/cardview_light_background">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/list_item_auction_img"
