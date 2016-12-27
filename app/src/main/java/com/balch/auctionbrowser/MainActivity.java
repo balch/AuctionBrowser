@@ -29,7 +29,7 @@ import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.balch.android.app.framework.BaseAppCompatActivity;
+import com.balch.android.app.framework.PresenterActivity;
 import com.balch.auctionbrowser.auction.Auction;
 import com.balch.auctionbrowser.auction.AuctionDetailDialog;
 import com.balch.auctionbrowser.auction.AuctionView;
@@ -37,7 +37,7 @@ import com.balch.auctionbrowser.auction.EBayModel;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
-public class MainActivity extends BaseAppCompatActivity<AuctionView>
+public class MainActivity extends PresenterActivity<AuctionView>
         implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.MainViewListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -62,7 +62,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
     protected String searchString = "";
 
     @Override
-    protected void onCreateBase(Bundle bundle) {
+    public void onCreateBase(Bundle bundle) {
         ModelProvider modelProvider = (ModelProvider) getApplication();
         auctionModel = new EBayModel(getString(R.string.ebay_app_id), modelProvider);
         notesModel = new NotesModel(modelProvider);
@@ -123,7 +123,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
     }
 
     @Override
-    protected AuctionView createView() {
+    public AuctionView createView() {
         auctionView = new AuctionView(this);
         return auctionView;
     }
@@ -149,8 +149,7 @@ public class MainActivity extends BaseAppCompatActivity<AuctionView>
                 clearNote(auction, note);
             }
         });
-        dialog.show(((BaseAppCompatActivity) auctionView.getContext()).getSupportFragmentManager(),
-                "AuctionDetailDialog");
+        dialog.show(getSupportFragmentManager(), "AuctionDetailDialog");
     }
 
     private void saveNote(Auction auction, Note note, String text) {
