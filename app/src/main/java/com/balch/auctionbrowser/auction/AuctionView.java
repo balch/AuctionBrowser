@@ -53,7 +53,6 @@ public class AuctionView extends LinearLayout
     private ProgressBar progressBar;
     private Spinner sortSpinner;
     private AuctionAdapter auctionAdapter;
-    private RecyclerView recyclerView;
     private RecyclerOnScrollListener recyclerOnScrollListener;
     private EditText searchEditText;
 
@@ -135,8 +134,8 @@ public class AuctionView extends LinearLayout
         setupToolbar();
 
         this.searchEditText = (EditText)findViewById(R.id.auction_view_search_text);
-        this.recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
-        this.recyclerView.setHasFixedSize(true);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
+        recyclerView.setHasFixedSize(true);
 
         final InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -161,8 +160,8 @@ public class AuctionView extends LinearLayout
                     }
                 });
 
-        this.recyclerView.setLayoutManager(layoutManager);
-        this.recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
 
         this.auctionAdapter = new AuctionAdapter((ModelProvider) getContext().getApplicationContext(),
                 new AuctionAdapter.MembersAdapterListener() {
@@ -195,8 +194,8 @@ public class AuctionView extends LinearLayout
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (AuctionView.this.mainViewListener != null) {
-            AuctionView.this.mainViewListener.onChangeSort(position);
+        if (this.mainViewListener != null) {
+            this.mainViewListener.onChangeSort(position);
         }
     }
 
