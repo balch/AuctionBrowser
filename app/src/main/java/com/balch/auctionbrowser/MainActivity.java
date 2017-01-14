@@ -24,6 +24,7 @@
 package com.balch.auctionbrowser;
 
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
@@ -41,25 +42,24 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.MainViewListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    protected AuctionView auctionView;
-    protected EBayModel auctionModel;
-    protected NotesModel notesModel;
-
     protected static final int AUCTION_LOADER_ID = 0;
-
-    protected boolean isLoadFinished = false;
 
     // keep in sync with auction_sort_col string array
     private final String[] sortColumns =
             new String[]{"BestMatch", "EndTimeSoonest", "PricePlusShippingLowest"};
 
+    protected AuctionView auctionView;
     private AuctionLoader auctionLoader;
+
+    @VisibleForTesting EBayModel auctionModel;
+    @VisibleForTesting NotesModel notesModel;
+    @VisibleForTesting boolean isLoadFinished = false;
 
     // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
     protected int sortPosition = 0;
-    protected long totalPages = -1;
     protected String searchString = "";
+    @VisibleForTesting long totalPages = -1;
 
     @Override
     public void onCreateBase(Bundle bundle) {
@@ -153,7 +153,8 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         dialog.show(getSupportFragmentManager(), "AuctionDetailDialog");
     }
 
-    private void saveNote(Auction auction, Note note, String text) {
+    @VisibleForTesting
+    void saveNote(Auction auction, Note note, String text) {
         if (note == null) {
             Note note1 = new Note();
             note1.setNote(text);
@@ -202,7 +203,8 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     }
 
-    private void updateView() {
+    @VisibleForTesting
+    void updateView() {
         this.auctionLoader.update(this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
     }
 
