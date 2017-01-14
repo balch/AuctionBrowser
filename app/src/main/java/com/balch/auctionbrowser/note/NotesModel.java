@@ -28,7 +28,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.balch.auctionbrowser.auction.Auction;
-import com.balch.auctionbrowser.ModelProvider;
+import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.android.app.framework.sql.SqlMapper;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,14 +40,14 @@ import java.util.Map;
 public class NotesModel implements SqlMapper<Note> {
     private static final String TAG = NotesModel.class.getSimpleName();
 
-    private final ModelProvider modelProvider;
+    private final AuctionModelProvider modelProvider;
 
     public static final String TABLE_NAME = "notes";
 
     public static final String COLUMN_ITEM_ID = "item_id";
     public static final String COLUMN_NOTE = "note";
 
-    public NotesModel(ModelProvider modelProvider) {
+    public NotesModel(AuctionModelProvider modelProvider) {
         this.modelProvider = modelProvider;
     }
 

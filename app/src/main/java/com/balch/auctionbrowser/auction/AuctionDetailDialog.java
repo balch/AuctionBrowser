@@ -34,7 +34,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
-import com.balch.auctionbrowser.ModelProvider;
+import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.ui.LabelTextView;
 
@@ -96,7 +96,7 @@ public class AuctionDetailDialog extends DialogFragment {
                 tv.setText(auction.getTitle());
 
                 NetworkImageView profileImageView = (NetworkImageView) getDialog().findViewById(R.id.auction_detail_item_img);
-                profileImageView.setImageUrl(auction.getImageUrl(), ((ModelProvider) getActivity().getApplication()).getImageLoader());
+                profileImageView.setImageUrl(auction.getImageUrl(), ((AuctionModelProvider) getActivity().getApplication()).getImageLoader());
 
                 LabelTextView ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_end_time);
                 ltv.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));

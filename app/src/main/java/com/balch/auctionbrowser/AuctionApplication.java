@@ -36,7 +36,7 @@ import com.android.volley.toolbox.Volley;
 import com.balch.android.app.framework.sql.SqlConnection;
 import com.balch.auctionbrowser.settings.Settings;
 
-public class AuctionApplication extends Application implements ModelProvider {
+public class AuctionApplication extends Application implements AuctionModelProvider {
     private static final String TAG = AuctionApplication.class.getSimpleName();
 
     private static final int REQUEST_TIMEOUT_SECS = 30;

@@ -30,7 +30,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.android.volley.toolbox.NetworkImageView;
-import com.balch.auctionbrowser.ModelProvider;
+import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.ui.LabelTextView;
@@ -55,7 +55,7 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
     private MembersAdapterListener membersAdapterListener;
     private List<Auction> auctions = new ArrayList<>();
     private Map<Long,Note> notes = new HashMap<>();
-    private ModelProvider modelProvider;
+    private AuctionModelProvider modelProvider;
 
     public static class MemberHolder extends RecyclerView.ViewHolder {
 
@@ -82,7 +82,7 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
             this.noteEditButton = (Button) itemView.findViewById(R.id.list_item_auction_button_note);
         }
 
-        public void bind(final Auction auction, Note note, ModelProvider modelProvider) {
+        public void bind(final Auction auction, Note note, AuctionModelProvider modelProvider) {
 
             this.itemImageView.setImageUrl(auction.getImageUrl(), modelProvider.getImageLoader());
             this.titleTextView.setValue(auction.getTitle());
@@ -115,7 +115,7 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
             });
         }
     }
-    public AuctionAdapter(ModelProvider modelProvider, MembersAdapterListener membersAdapterListener) {
+    public AuctionAdapter(AuctionModelProvider modelProvider, MembersAdapterListener membersAdapterListener) {
         this.membersAdapterListener = membersAdapterListener;
         this.modelProvider = modelProvider;
     }

@@ -39,7 +39,7 @@ import android.widget.Spinner;
 
 import com.balch.android.app.framework.BaseView;
 import com.balch.android.app.framework.domain.EditView;
-import com.balch.auctionbrowser.ModelProvider;
+import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
 
@@ -163,7 +163,7 @@ public class AuctionView extends LinearLayout
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
 
-        this.auctionAdapter = new AuctionAdapter((ModelProvider) getContext().getApplicationContext(),
+        this.auctionAdapter = new AuctionAdapter((AuctionModelProvider) getContext().getApplicationContext(),
                 new AuctionAdapter.MembersAdapterListener() {
                     @Override
                     public void onClickNoteButton(Auction auction) {

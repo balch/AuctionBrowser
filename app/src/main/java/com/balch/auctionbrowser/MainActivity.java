@@ -37,7 +37,7 @@ import com.balch.auctionbrowser.auction.EBayModel;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
-public class MainActivity extends PresenterActivity<AuctionView>
+public class MainActivity extends PresenterActivity<AuctionView, AuctionModelProvider>
         implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.MainViewListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -63,16 +63,11 @@ public class MainActivity extends PresenterActivity<AuctionView>
 
     @Override
     public void onCreateBase(Bundle bundle) {
-        ModelProvider modelProvider = (ModelProvider) getApplication();
-        auctionModel = new EBayModel(getString(R.string.ebay_app_id), modelProvider);
-        notesModel = new NotesModel(modelProvider);
-
         this.auctionView.setMainViewListener(this);
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);
         this.auctionView.showBusy();
         this.auctionLoader = (AuctionLoader) this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
-
     }
 
     @Override
@@ -126,6 +121,12 @@ public class MainActivity extends PresenterActivity<AuctionView>
     public AuctionView createView() {
         auctionView = new AuctionView(this);
         return auctionView;
+    }
+
+    @Override
+    protected void createModel(AuctionModelProvider modelProvider) {
+        auctionModel = new EBayModel(getString(R.string.ebay_app_id), modelProvider);
+        notesModel = new NotesModel(modelProvider);
     }
 
     private void showDetail(final Auction auction) {
