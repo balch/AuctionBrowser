@@ -29,13 +29,18 @@ import com.balch.android.app.framework.sql.SqlConnection;
 import com.balch.auctionbrowser.settings.Settings;
 
 public interface AuctionModelProvider extends ModelProvider {
+
+    interface NetworkRequest {
+        <T> Request<T> addRequest(Request<T> request);
+
+        <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy);
+    }
+
     Settings getSettings();
 
     SqlConnection getSqlConnection();
 
-    <T> Request<T> addRequest(Request<T> request);
-
-    <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy);
+    NetworkRequest getNetworkRequest();
 
     ImageLoader getImageLoader();
 

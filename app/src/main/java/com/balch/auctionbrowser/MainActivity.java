@@ -125,8 +125,9 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     protected void createModel(AuctionModelProvider modelProvider) {
-        auctionModel = new EBayModel(getString(R.string.ebay_app_id), modelProvider);
-        notesModel = new NotesModel(modelProvider);
+        auctionModel = new EBayModel(getString(R.string.ebay_app_id),
+                modelProvider.getNetworkRequest());
+        notesModel = new NotesModel(modelProvider.getSqlConnection());
     }
 
     private void showDetail(final Auction auction) {

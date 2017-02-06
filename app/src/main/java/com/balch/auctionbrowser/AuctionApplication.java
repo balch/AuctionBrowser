@@ -52,6 +52,8 @@ public class AuctionApplication extends Application implements AuctionModelProvi
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
 
+    private NetworkRequest networkRequest;
+
     private Settings settings;
 
     @Override
@@ -89,6 +91,22 @@ public class AuctionApplication extends Application implements AuctionModelProvi
             }
         });
 
+        this.networkRequest = new NetworkRequest() {
+            @Override
+            public <T> Request<T> addRequest(Request<T> request) {
+                return addRequest(request, false);
+            }
+
+            @Override
+            public <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy) {
+                if (!customRetryPolicy) {
+                    request.setRetryPolicy(DEFAULT_RETRY_POlICY);
+                }
+
+                return requestQueue.add(request);
+            }
+        };
+
     }
 
     @Override
@@ -102,19 +120,9 @@ public class AuctionApplication extends Application implements AuctionModelProvi
     }
 
     @Override
-    public <T> Request<T> addRequest(Request<T> request) {
-        return addRequest(request, false);
+    public NetworkRequest getNetworkRequest() {
+        return this.networkRequest;
     }
-
-    @Override
-    public <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy) {
-        if (!customRetryPolicy) {
-            request.setRetryPolicy(DEFAULT_RETRY_POlICY);
-        }
-
-        return requestQueue.add(request);
-    }
-
 
     @Override
     public ImageLoader getImageLoader() {

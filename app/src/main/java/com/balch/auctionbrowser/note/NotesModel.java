@@ -27,9 +27,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.balch.auctionbrowser.auction.Auction;
-import com.balch.auctionbrowser.AuctionModelProvider;
+import com.balch.android.app.framework.sql.SqlConnection;
 import com.balch.android.app.framework.sql.SqlMapper;
+import com.balch.auctionbrowser.auction.Auction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -40,15 +40,15 @@ import java.util.Map;
 public class NotesModel implements SqlMapper<Note> {
     private static final String TAG = NotesModel.class.getSimpleName();
 
-    private final AuctionModelProvider modelProvider;
+    private final SqlConnection sqlConnection;
 
     public static final String TABLE_NAME = "notes";
 
     public static final String COLUMN_ITEM_ID = "item_id";
     public static final String COLUMN_NOTE = "note";
 
-    public NotesModel(AuctionModelProvider modelProvider) {
-        this.modelProvider = modelProvider;
+    public NotesModel(SqlConnection sqlConnection) {
+        this.sqlConnection = sqlConnection;
     }
 
     public Map<Long, Note> getNotes(List<Auction> auctions) {
@@ -68,7 +68,7 @@ public class NotesModel implements SqlMapper<Note> {
         where += ")";
 
         try {
-            List<Note> notes = modelProvider.getSqlConnection().query(this, Note.class, where, null, null);
+            List<Note> notes = sqlConnection.query(this, Note.class, where, null, null);
             noteMap = new HashMap<>(notes.size());
             for (Note note :notes) {
                 noteMap.put(note.getItemId(), note);
@@ -91,7 +91,7 @@ public class NotesModel implements SqlMapper<Note> {
     public long insert(Note note) {
         long id = -1;
         try {
-            id = modelProvider.getSqlConnection().insert(this, note);
+            id = sqlConnection.insert(this, note);
         } catch (SQLException e) {
             Log.e(TAG, "SQLException inserting note", e);
         }
@@ -100,11 +100,11 @@ public class NotesModel implements SqlMapper<Note> {
     }
 
     public boolean update(Note note) {
-        return modelProvider.getSqlConnection().update(this, note);
+        return sqlConnection.update(this, note);
     }
 
     public boolean delete(Note note) {
-        return modelProvider.getSqlConnection().delete(this, note);
+        return sqlConnection.delete(this, note);
     }
 
     @Override

@@ -61,11 +61,11 @@ public class EBayModel {
 
     private static final long TIMEOUT_SECS = 30;
 
-    private final AuctionModelProvider modelProvider;
+    private final AuctionModelProvider.NetworkRequest networkRequest;
     private final String eBayApiKey;
 
-    public EBayModel(String eBayApiKey, AuctionModelProvider modelProvider) {
-        this.modelProvider = modelProvider;
+    public EBayModel(String eBayApiKey, AuctionModelProvider.NetworkRequest networkRequest) {
+        this.networkRequest = networkRequest;
         this.eBayApiKey = eBayApiKey;
     }
 
@@ -98,7 +98,7 @@ public class EBayModel {
 
                 RequestFuture<JSONObject> future = RequestFuture.newFuture();
                 JsonObjectRequest request = new JsonObjectRequest(url, future, future);
-                modelProvider.addRequest(request);
+                networkRequest.addRequest(request);
 
                 JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
                 response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
