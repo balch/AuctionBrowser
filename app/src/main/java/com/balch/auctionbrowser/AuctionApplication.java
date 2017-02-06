@@ -52,7 +52,7 @@ public class AuctionApplication extends Application implements AuctionModelProvi
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
 
-    private NetworkRequest networkRequest;
+    private VolleyNetworkRequest networkRequest;
 
     private Settings settings;
 
@@ -91,21 +91,7 @@ public class AuctionApplication extends Application implements AuctionModelProvi
             }
         });
 
-        this.networkRequest = new NetworkRequest() {
-            @Override
-            public <T> Request<T> addRequest(Request<T> request) {
-                return addRequest(request, false);
-            }
-
-            @Override
-            public <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy) {
-                if (!customRetryPolicy) {
-                    request.setRetryPolicy(DEFAULT_RETRY_POlICY);
-                }
-
-                return requestQueue.add(request);
-            }
-        };
+        this.networkRequest = new VolleyNetworkRequest(this.requestQueue);
 
     }
 
@@ -120,13 +106,36 @@ public class AuctionApplication extends Application implements AuctionModelProvi
     }
 
     @Override
-    public NetworkRequest getNetworkRequest() {
+    public NetworkRequestProvider getNetworkRequest() {
         return this.networkRequest;
     }
 
     @Override
     public ImageLoader getImageLoader() {
         return this.imageLoader;
+    }
+
+    static class VolleyNetworkRequest implements NetworkRequestProvider {
+
+        private final RequestQueue requestQueue;
+
+        VolleyNetworkRequest(RequestQueue requestQueue) {
+            this.requestQueue = requestQueue;
+        }
+
+        @Override
+        public <T> Request<T> addRequest(Request<T> request) {
+            return addRequest(request, false);
+        }
+
+        @Override
+        public <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy) {
+            if (!customRetryPolicy) {
+                request.setRetryPolicy(DEFAULT_RETRY_POlICY);
+            }
+
+            return requestQueue.add(request);
+        }
     }
 
 }

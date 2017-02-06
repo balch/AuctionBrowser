@@ -30,7 +30,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.balch.android.app.framework.types.ISO8601DateTime;
 import com.balch.android.app.framework.types.Money;
-import com.balch.auctionbrowser.AuctionModelProvider;
+import com.balch.auctionbrowser.NetworkRequestProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,10 +61,10 @@ public class EBayModel {
 
     private static final long TIMEOUT_SECS = 30;
 
-    private final AuctionModelProvider.NetworkRequest networkRequest;
+    private final NetworkRequestProvider networkRequest;
     private final String eBayApiKey;
 
-    public EBayModel(String eBayApiKey, AuctionModelProvider.NetworkRequest networkRequest) {
+    public EBayModel(String eBayApiKey, NetworkRequestProvider networkRequest) {
         this.networkRequest = networkRequest;
         this.eBayApiKey = eBayApiKey;
     }
