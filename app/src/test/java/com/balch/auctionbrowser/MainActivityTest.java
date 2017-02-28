@@ -27,7 +27,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MainActivityTest {
 
-    @Mock AuctionView view;
+    @Mock AuctionView mockView;
     @Mock SqlConnection sqlConnection;
     @Mock LoaderManager loaderManager;
 
@@ -48,8 +48,8 @@ public class MainActivityTest {
         activity = spy(new MainActivity() {
             @Override
             public AuctionView createView() {
-                auctionView = view;
-                return auctionView;
+                view = mockView;
+                return mockView;
             }
         });
 
@@ -64,9 +64,9 @@ public class MainActivityTest {
     public void testOnCreateBase() throws Exception {
         activity.onCreateBase(null);
 
-        verify(view).setAuctionViewListener(eq(activity));
-        verify(view).setSortStrings(eq(R.array.auction_sort_col));
-        verify(view).showBusy();
+        verify(mockView).setAuctionViewListener(eq(activity));
+        verify(mockView).setSortStrings(eq(R.array.auction_sort_col));
+        verify(mockView).showBusy();
         verify(loaderManager).initLoader(anyInt(), isNull(Bundle.class), eq(activity));
     }
 
@@ -78,7 +78,7 @@ public class MainActivityTest {
 
         assertTrue(activity.onLoadMore(2));
 
-        verify(view).showBusy();
+        verify(mockView).showBusy();
         verify(activity).updateView();
     }
 
@@ -90,7 +90,7 @@ public class MainActivityTest {
 
         assertFalse(activity.onLoadMore(5));
 
-        verify(view, never()).showBusy();
+        verify(mockView, never()).showBusy();
         verify(activity, never()).updateView();
     }
 

@@ -48,7 +48,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     private final String[] sortColumns =
             new String[]{"BestMatch", "EndTimeSoonest", "PricePlusShippingLowest"};
 
-    protected AuctionView auctionView;
     private AuctionLoader auctionLoader;
 
     @VisibleForTesting EBayModel auctionModel;
@@ -62,6 +61,11 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @VisibleForTesting long totalPages = -1;
 
     @Override
+    public AuctionView createView() {
+        return new AuctionView(this);
+    }
+
+    @Override
     protected void createModel(AuctionModelProvider modelProvider) {
         auctionModel = new EBayModel(getString(R.string.ebay_app_id),
                 modelProvider.getNetworkRequest());
@@ -70,24 +74,18 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     public void onCreateBase(Bundle bundle) {
-        this.auctionView.setAuctionViewListener(this);
+        this.view.setAuctionViewListener(this);
 
-        this.auctionView.setSortStrings(R.array.auction_sort_col);
-        this.auctionView.showBusy();
+        this.view.setSortStrings(R.array.auction_sort_col);
+        this.view.showBusy();
         this.auctionLoader = (AuctionLoader) this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
-    }
-
-    @Override
-    public AuctionView createView() {
-        auctionView = new AuctionView(this);
-        return auctionView;
     }
 
     @Override
     public boolean onLoadMore(int currentPage) {
         boolean hasMore = ((totalPages == -1) || (currentPage < totalPages));
         if (isLoadFinished && hasMore) {
-            auctionView.showBusy();
+            view.showBusy();
             MainActivity.this.currentPage = currentPage;
             updateView();
         }
@@ -101,8 +99,8 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             currentPage = 1;
             totalPages = -1;
 
-            auctionView.showBusy();
-            auctionView.clearAuctions();
+            view.showBusy();
+            view.clearAuctions();
             updateView();
         }
     }
@@ -124,8 +122,8 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             currentPage = 1;
             totalPages = -1;
 
-            auctionView.showBusy();
-            auctionView.clearAuctions();
+            view.showBusy();
+            view.clearAuctions();
             updateView();
         }
     }
@@ -134,7 +132,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         AuctionDetailDialog dialog = new AuctionDetailDialog();
         Bundle args = new Bundle();
 
-        final Note note = auctionView.getNote(auction);
+        final Note note = view.getNote(auction);
         if (note != null) {
             args.putString(AuctionDetailDialog.ARG_NOTE, note.getNote());
         }
@@ -161,7 +159,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             note1.setNote(text);
             note1.setItemId(auction.getItemId());
             notesModel.insert(note1);
-            auctionView.addNote(auction, note1);
+            view.addNote(auction, note1);
         } else {
             note.setNote(text);
             notesModel.update(note);
@@ -171,7 +169,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     private void clearNote(Auction auction, Note note) {
         if (note != null) {
             notesModel.delete(note);
-            auctionView.clearNote(auction);
+            view.clearNote(auction);
         }
     }
 
@@ -182,20 +180,20 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     public void onLoadFinished(Loader<AuctionData> loader, AuctionData data) {
-        auctionView.hideBusy();
+        view.hideBusy();
 
         if (data.getAuctions() != null) {
             if (totalPages == -1) {
                 totalPages = data.getTotalPages();
             }
-            auctionView.addAuctions(data.getAuctions(), data.getNotes());
+            view.addAuctions(data.getAuctions(), data.getNotes());
         } else {
             if (!TextUtils.isEmpty(searchString)) {
                 Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
             }
         }
 
-        auctionView.doneLoading();
+        view.doneLoading();
         isLoadFinished = true;
     }
 
