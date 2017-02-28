@@ -64,7 +64,7 @@ public class MainActivityTest {
     public void testOnCreateBase() throws Exception {
         activity.onCreateBase(null);
 
-        verify(view).setMainViewListener(eq(activity));
+        verify(view).setAuctionViewListener(eq(activity));
         verify(view).setSortStrings(eq(R.array.auction_sort_col));
         verify(view).showBusy();
         verify(loaderManager).initLoader(anyInt(), isNull(Bundle.class), eq(activity));

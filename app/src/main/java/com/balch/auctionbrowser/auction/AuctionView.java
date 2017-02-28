@@ -57,7 +57,7 @@ public class AuctionView extends LinearLayout
     private EditText searchEditText;
 
 
-    public interface MainViewListener {
+    public interface AuctionViewListener {
         boolean onLoadMore(int currentPage);
         void onChangeSort(int position);
         void onClickNoteButton(Auction auction);
@@ -65,7 +65,7 @@ public class AuctionView extends LinearLayout
         void onClickSearch(String keyword);
     }
 
-    protected MainViewListener mainViewListener;
+    protected AuctionViewListener auctionViewListener;
 
     public AuctionView(Context context) {
         super(context);
@@ -142,8 +142,8 @@ public class AuctionView extends LinearLayout
         findViewById(R.id.auction_view_search_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mainViewListener != null) {
-                    mainViewListener.onClickSearch(searchEditText.getText().toString());
+                if (auctionViewListener != null) {
+                    auctionViewListener.onClickSearch(searchEditText.getText().toString());
                 }
                 inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
             }
@@ -155,8 +155,8 @@ public class AuctionView extends LinearLayout
                 new RecyclerOnScrollListener.LoadMoreListener() {
                     @Override
                     public boolean onLoadMore(int currentPage) {
-                        return (mainViewListener == null) ||
-                            mainViewListener.onLoadMore(currentPage);
+                        return (auctionViewListener == null) ||
+                            auctionViewListener.onLoadMore(currentPage);
                     }
                 });
 
@@ -167,15 +167,15 @@ public class AuctionView extends LinearLayout
                 new AuctionAdapter.MembersAdapterListener() {
                     @Override
                     public void onClickNoteButton(Auction auction) {
-                        if (mainViewListener != null) {
-                            mainViewListener.onClickNoteButton(auction);
+                        if (auctionViewListener != null) {
+                            auctionViewListener.onClickNoteButton(auction);
                         }
                     }
 
                     @Override
                     public void onClickMember(Auction auction) {
-                        if (mainViewListener != null) {
-                            mainViewListener.onClickAuction(auction);
+                        if (auctionViewListener != null) {
+                            auctionViewListener.onClickAuction(auction);
                         }
                     }
                 });
@@ -188,14 +188,14 @@ public class AuctionView extends LinearLayout
         this.sortSpinner = (Spinner)toolbar.findViewById(R.id.view_auction_toolbar_spinner_sort_col);
     }
 
-    public void setMainViewListener(MainViewListener mainViewListener) {
-        this.mainViewListener = mainViewListener;
+    public void setAuctionViewListener(AuctionViewListener auctionViewListener) {
+        this.auctionViewListener = auctionViewListener;
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (this.mainViewListener != null) {
-            this.mainViewListener.onChangeSort(position);
+        if (this.auctionViewListener != null) {
+            this.auctionViewListener.onChangeSort(position);
         }
     }
 

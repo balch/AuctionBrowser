@@ -39,7 +39,7 @@ import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
 public class MainActivity extends PresenterActivity<AuctionView, AuctionModelProvider>
-        implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.MainViewListener {
+        implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.AuctionViewListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     protected static final int AUCTION_LOADER_ID = 0;
@@ -62,12 +62,25 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @VisibleForTesting long totalPages = -1;
 
     @Override
+    protected void createModel(AuctionModelProvider modelProvider) {
+        auctionModel = new EBayModel(getString(R.string.ebay_app_id),
+                modelProvider.getNetworkRequest());
+        notesModel = new NotesModel(modelProvider.getSqlConnection());
+    }
+
+    @Override
     public void onCreateBase(Bundle bundle) {
-        this.auctionView.setMainViewListener(this);
+        this.auctionView.setAuctionViewListener(this);
 
         this.auctionView.setSortStrings(R.array.auction_sort_col);
         this.auctionView.showBusy();
         this.auctionLoader = (AuctionLoader) this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
+    }
+
+    @Override
+    public AuctionView createView() {
+        auctionView = new AuctionView(this);
+        return auctionView;
     }
 
     @Override
@@ -115,19 +128,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             auctionView.clearAuctions();
             updateView();
         }
-    }
-
-    @Override
-    public AuctionView createView() {
-        auctionView = new AuctionView(this);
-        return auctionView;
-    }
-
-    @Override
-    protected void createModel(AuctionModelProvider modelProvider) {
-        auctionModel = new EBayModel(getString(R.string.ebay_app_id),
-                modelProvider.getNetworkRequest());
-        notesModel = new NotesModel(modelProvider.getSqlConnection());
     }
 
     private void showDetail(final Auction auction) {
