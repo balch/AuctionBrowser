@@ -69,14 +69,17 @@ public class AuctionView extends LinearLayout
 
     public AuctionView(Context context) {
         super(context);
+        initializeLayout();
     }
 
     public AuctionView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initializeLayout();
     }
 
     public AuctionView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        initializeLayout();
     }
 
     public void showBusy() {
@@ -126,8 +129,7 @@ public class AuctionView extends LinearLayout
         this.searchEditText.setText(searchString);
     }
 
-    @Override
-    public void initializeLayout() {
+    private void initializeLayout() {
         setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         setOrientation(VERTICAL);
         inflate(getContext(), R.layout.auction_view, this);
@@ -213,19 +215,19 @@ public class AuctionView extends LinearLayout
         private final LinearLayoutManager linearLayoutManager;
         private final LoadMoreListener loadMoreListener;
 
-        public RecyclerOnScrollListener(LinearLayoutManager linearLayoutManager,
+        RecyclerOnScrollListener(LinearLayoutManager linearLayoutManager,
                                         LoadMoreListener loadMoreListener) {
             this.linearLayoutManager = linearLayoutManager;
             this.loadMoreListener = loadMoreListener;
         }
 
-        protected void reset() {
+        void reset() {
             currentPage = 1;
             hasMore = true;
             loading = false;
         }
 
-        protected void doneLoading() {
+        void doneLoading() {
             loading = false;
         }
 
@@ -244,7 +246,7 @@ public class AuctionView extends LinearLayout
             }
         }
 
-        public interface LoadMoreListener {
+        interface LoadMoreListener {
             boolean onLoadMore(int currentPage);
         }
     }
