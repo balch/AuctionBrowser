@@ -79,7 +79,7 @@ public class AuctionApplication extends Application implements AuctionModelProvi
         this.sqlConnection = new SqlConnection(this, DATABASE_NAME, DATABASE_VERSION,
                 DATABASE_CREATES_SCRIPT, DATABASE_UPDATE_SCRIPT_FORMAT);
 
-        this.requestQueue = Volley.newRequestQueue(this, 10);
+        this.requestQueue = Volley.newRequestQueue(this);
         this.imageLoader = new ImageLoader(this.requestQueue,
                 new ImageLoader.ImageCache() {
             private final LruCache<String, Bitmap> cache = new LruCache<>(20);

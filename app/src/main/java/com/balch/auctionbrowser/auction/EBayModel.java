@@ -97,7 +97,7 @@ public class EBayModel {
                 Log.d(TAG, "ebay request: " + url.replace(eBayApiKey, "{secured}"));
 
                 RequestFuture<JSONObject> future = RequestFuture.newFuture();
-                JsonObjectRequest request = new JsonObjectRequest(url, future, future);
+                JsonObjectRequest request = new JsonObjectRequest(url, null, future, future);
                 networkRequest.addRequest(request);
 
                 JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
