@@ -90,14 +90,16 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
                     public void onChanged(@Nullable AuctionData data) {
                         view.hideBusy();
 
-                        if (data.getAuctions() != null) {
-                            if (totalPages == -1) {
-                                totalPages = data.getTotalPages();
-                            }
-                            view.addAuctions(data.getAuctions(), data.getNotes());
-                        } else {
-                            if (!TextUtils.isEmpty(searchString)) {
-                                Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+                        if (data != null) {
+                            if (data.getAuctions() != null) {
+                                if (totalPages == -1) {
+                                    totalPages = data.getTotalPages();
+                                }
+                                view.addAuctions(data.getAuctions(), data.getNotes());
+                            } else {
+                                if (!TextUtils.isEmpty(searchString)) {
+                                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
 

@@ -23,8 +23,6 @@
 
 package com.balch.auctionbrowser.auction;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -81,10 +79,12 @@ public class EBayModel {
         }
     }
 
-    public LiveData<AuctionInfo> getAuctions(String keyword, long start, final int count,
-                                             String sortOrder) {
+    public interface AuctionListener {
+        void onAuctionInfo(AuctionInfo info);
+    }
 
-        final MutableLiveData<AuctionInfo> auctionInfoLive = new MutableLiveData<>();
+    public void getAuctions(String keyword, long start, final int count,
+                            String sortOrder, final AuctionListener listener) {
 
         if (!TextUtils.isEmpty(keyword)) {
             try {
@@ -113,15 +113,15 @@ public class EBayModel {
 
                                         Log.d(TAG, "ebay request total pages: " + totalPages);
 
-                                        auctionInfoLive.setValue(new AuctionInfo(auctions, totalPages));
+                                        listener.onAuctionInfo(new AuctionInfo(auctions, totalPages));
 
                                     } else {
-                                        handleError(auctionInfoLive);
+                                        handleError(listener);
                                     }
 
                                 } catch (Exception e) {
                                     Log.e(TAG, "Exception on " + url, e);
-                                    handleError(auctionInfoLive);
+                                    handleError(listener);
                                 }
 
                             }
@@ -129,22 +129,21 @@ public class EBayModel {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                handleError(auctionInfoLive);
+                                handleError(listener);
                             }
                         });
                 networkRequest.addRequest(request);
 
             } catch (Exception ex) {
                 Log.e(TAG, "Parse Error", ex);
-                handleError(auctionInfoLive);
+                handleError(listener);
             }
         }
 
-        return auctionInfoLive;
     }
 
-    private void handleError(MutableLiveData<AuctionInfo> auctionInfoLive) {
-        auctionInfoLive.setValue(new AuctionInfo(null, -1));
+    private void handleError(AuctionListener listener) {
+        listener.onAuctionInfo(new AuctionInfo(null, -1));
     }
 
     private boolean validateResponse(JSONObject json) throws JSONException {

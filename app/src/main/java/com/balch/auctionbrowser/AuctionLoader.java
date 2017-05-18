@@ -4,9 +4,7 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -41,14 +39,10 @@ public class AuctionLoader extends ViewModel implements LifecycleRegistryOwner {
     private void loadInBackground() {
         try {
             if (!TextUtils.isEmpty(searchText)) {
-                auctionModel.getAuctions(
-                        searchText,
-                        currentPage,
-                        AUCTION_FETCH_COUNT,
-                        sortOrder).observe(this,
-                        new Observer<EBayModel.AuctionInfo>() {
+                auctionModel.getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortOrder,
+                        new EBayModel.AuctionListener() {
                             @Override
-                            public void onChanged(@Nullable EBayModel.AuctionInfo info) {
+                            public void onAuctionInfo(EBayModel.AuctionInfo info) {
                                 AuctionData auctionData = new AuctionData();
                                 auctionData.setTotalPages(info.totalPages);
                                 auctionData.setAuctions(info.auctions);
@@ -59,7 +53,8 @@ public class AuctionLoader extends ViewModel implements LifecycleRegistryOwner {
                                 auctionDataLive.setValue(auctionData);
                             }
                         });
-
+            } else {
+                auctionDataLive.setValue(null);
             }
         } catch (Exception ex) {
             Log.e(TAG, "error getting auctions", ex);
