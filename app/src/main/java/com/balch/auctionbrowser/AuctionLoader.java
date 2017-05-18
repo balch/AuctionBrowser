@@ -1,7 +1,5 @@
 package com.balch.auctionbrowser;
 
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -11,7 +9,7 @@ import android.util.Log;
 import com.balch.auctionbrowser.auction.EBayModel;
 import com.balch.auctionbrowser.note.NotesModel;
 
-public class AuctionLoader extends ViewModel implements LifecycleRegistryOwner {
+public class AuctionLoader extends ViewModel {
 
     private static final String TAG = AuctionLoader.class.getSimpleName();
 
@@ -25,8 +23,6 @@ public class AuctionLoader extends ViewModel implements LifecycleRegistryOwner {
     private String sortOrder;
 
     private final MutableLiveData<AuctionData> auctionDataLive = new MutableLiveData<>();
-
-    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     public void setAuctionModel(EBayModel auctionModel) {
         this.auctionModel = auctionModel;
@@ -70,10 +66,6 @@ public class AuctionLoader extends ViewModel implements LifecycleRegistryOwner {
         this.searchText = searchText;
         this.sortOrder = sortOrder;
         loadInBackground();
-    }
-    @Override
-    public LifecycleRegistry getLifecycle() {
-        return lifecycleRegistry;
     }
 }
 
