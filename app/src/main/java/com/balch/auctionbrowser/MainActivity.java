@@ -76,14 +76,10 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     public void onCreateBase(Bundle bundle) {
-        this.view.setAuctionViewListener(this);
+        view.setAuctionViewListener(this);
+        view.setSortStrings(R.array.auction_sort_col);
 
-        this.view.setSortStrings(R.array.auction_sort_col);
-
-        auctionViewModel = ViewModelProviders.of(this).get(AuctionLoader.class);
-        auctionViewModel.setAuctionModel(auctionModel);
-        auctionViewModel.setNotesModel(notesModel);
-        auctionViewModel.getAuctionData().observe(this, auctionDataObserver);
+        setupAuctionViewModel();
     }
 
     @Override
@@ -134,7 +130,13 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         updateView();
     }
 
-    private void showDetail(final Auction auction) {
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
+    }
+
+    @VisibleForTesting
+    void showDetail(final Auction auction) {
         AuctionDetailDialog dialog = new AuctionDetailDialog();
         Bundle args = new Bundle();
 
@@ -172,11 +174,20 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         }
     }
 
-    private void clearNote(Auction auction, Note note) {
+    @VisibleForTesting
+    void clearNote(Auction auction, Note note) {
         if (note != null) {
             notesModel.delete(note);
             view.clearNote(auction);
         }
+    }
+
+    @VisibleForTesting
+    void setupAuctionViewModel() {
+        auctionViewModel = ViewModelProviders.of(this).get(AuctionLoader.class);
+        auctionViewModel.setAuctionModel(auctionModel);
+        auctionViewModel.setNotesModel(notesModel);
+        auctionViewModel.getAuctionData().observe(this, auctionDataObserver);
     }
 
     @VisibleForTesting
@@ -205,10 +216,5 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @VisibleForTesting
     void updateView() {
         this.auctionViewModel.update(this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
-    }
-
-    @Override
-    public LifecycleRegistry getLifecycle() {
-        return lifecycleRegistry;
     }
 }

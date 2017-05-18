@@ -55,11 +55,13 @@ public class MainActivityTest {
 
     @Test
     public void testOnCreateBase() throws Exception {
+        doNothing().when(activity).setupAuctionViewModel();
+
         activity.onCreateBase(null);
 
+        verify(activity).setupAuctionViewModel();
         verify(mockView).setAuctionViewListener(eq(activity));
         verify(mockView).setSortStrings(eq(R.array.auction_sort_col));
-        verify(mockView).showBusy();
     }
 
     @Test
