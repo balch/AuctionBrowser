@@ -46,8 +46,7 @@ import com.balch.auctionbrowser.note.Note;
 import java.util.List;
 import java.util.Map;
 
-public class AuctionView extends LinearLayout
-        implements BaseView, AdapterView.OnItemSelectedListener {
+public class AuctionView extends LinearLayout implements BaseView {
     private static final String TAG = EditView.class.getName();
 
     private ProgressBar progressBar;
@@ -124,7 +123,19 @@ public class AuctionView extends LinearLayout
                 textArrayResId, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         this.sortSpinner.setAdapter(adapter);
-        this.sortSpinner.setOnItemSelectedListener(this);
+        this.sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (auctionViewListener != null) {
+                    auctionViewListener.onChangeSort(position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     public void setSearchString(String searchString) {
@@ -194,18 +205,6 @@ public class AuctionView extends LinearLayout
 
     public void setAuctionViewListener(AuctionViewListener auctionViewListener) {
         this.auctionViewListener = auctionViewListener;
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (this.auctionViewListener != null) {
-            this.auctionViewListener.onChangeSort(position);
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
     public static class RecyclerOnScrollListener extends RecyclerView.OnScrollListener {
