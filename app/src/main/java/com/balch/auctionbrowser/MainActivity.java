@@ -161,27 +161,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     @VisibleForTesting
-    void displayAuctions(AuctionData data) {
-        view.hideBusy();
-
-        if (data != null) {
-            if (data.getAuctions() != null) {
-                if (totalPages == -1) {
-                    totalPages = data.getTotalPages();
-                }
-                view.addAuctions(data.getAuctions(), data.getNotes());
-            } else {
-                if (!TextUtils.isEmpty(searchString)) {
-                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
-        view.doneLoading();
-
-    }
-
-    @VisibleForTesting
     void saveNote(Auction auction, Note note, String text) {
         if (note == null) {
             Note note1 = new Note();
@@ -200,6 +179,26 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             notesModel.delete(note);
             view.clearNote(auction);
         }
+    }
+
+    @VisibleForTesting
+    void displayAuctions(AuctionData data) {
+        view.hideBusy();
+
+        if (data != null) {
+            if (data.getAuctions() != null) {
+                if (totalPages == -1) {
+                    totalPages = data.getTotalPages();
+                }
+                view.addAuctions(data.getAuctions(), data.getNotes());
+            } else {
+                if (!TextUtils.isEmpty(searchString)) {
+                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        view.doneLoading();
     }
 
     @VisibleForTesting
