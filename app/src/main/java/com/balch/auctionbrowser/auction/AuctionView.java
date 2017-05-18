@@ -84,10 +84,12 @@ public class AuctionView extends LinearLayout
 
     public void showBusy() {
         this.progressBar.setVisibility(View.VISIBLE);
+        this.sortSpinner.setVisibility(View.GONE);
     }
 
     public void hideBusy() {
-        this.progressBar.setVisibility(View.INVISIBLE);
+        this.progressBar.setVisibility(View.GONE);
+        this.sortSpinner.setVisibility(View.VISIBLE);
     }
 
     public void addAuctions(List<Auction> auctions, Map<Long, Note> notes) {

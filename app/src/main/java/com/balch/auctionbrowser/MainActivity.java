@@ -79,18 +79,16 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         this.view.setAuctionViewListener(this);
 
         this.view.setSortStrings(R.array.auction_sort_col);
-        this.view.showBusy();
 
         auctionViewModel = ViewModelProviders.of(this).get(AuctionLoader.class);
         auctionViewModel.setAuctionModel(auctionModel);
         auctionViewModel.setNotesModel(notesModel);
-        auctionViewModel.getAuctionData().observe(this,
-                new Observer<AuctionData>() {
-                    @Override
-                    public void onChanged(@Nullable AuctionData data) {
-                        displayAuctions(data);
-                    }
-                });
+        auctionViewModel.getAuctionData().observe(this, auctionDataObserver);
+    }
+
+    @Override
+    public void onDestroyBase() {
+        auctionViewModel.getAuctionData().removeObserver(auctionDataObserver);
     }
 
     @Override
@@ -182,24 +180,27 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     @VisibleForTesting
-    void displayAuctions(AuctionData data) {
-        view.hideBusy();
+    Observer<AuctionData> auctionDataObserver = new Observer<AuctionData>() {
+        @Override
+        public void onChanged(@Nullable AuctionData data) {
+            view.hideBusy();
 
-        if (data != null) {
-            if (data.getAuctions() != null) {
-                if (totalPages == -1) {
-                    totalPages = data.getTotalPages();
-                }
-                view.addAuctions(data.getAuctions(), data.getNotes());
-            } else {
-                if (!TextUtils.isEmpty(searchString)) {
-                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+            if (data != null) {
+                if (data.getAuctions() != null) {
+                    if (totalPages == -1) {
+                        totalPages = data.getTotalPages();
+                    }
+                    view.addAuctions(data.getAuctions(), data.getNotes());
+                } else {
+                    if (!TextUtils.isEmpty(searchString)) {
+                        Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
-        }
 
-        view.doneLoading();
-    }
+            view.doneLoading();
+        }
+    };
 
     @VisibleForTesting
     void updateView() {
