@@ -88,23 +88,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
                 new Observer<AuctionData>() {
                     @Override
                     public void onChanged(@Nullable AuctionData data) {
-                        view.hideBusy();
-
-                        if (data != null) {
-                            if (data.getAuctions() != null) {
-                                if (totalPages == -1) {
-                                    totalPages = data.getTotalPages();
-                                }
-                                view.addAuctions(data.getAuctions(), data.getNotes());
-                            } else {
-                                if (!TextUtils.isEmpty(searchString)) {
-                                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
-
-                        view.doneLoading();
-
+                        displayAuctions(data);
                     }
                 });
     }
@@ -174,6 +158,27 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             }
         });
         dialog.show(getSupportFragmentManager(), "AuctionDetailDialog");
+    }
+
+    @VisibleForTesting
+    void displayAuctions(AuctionData data) {
+        view.hideBusy();
+
+        if (data != null) {
+            if (data.getAuctions() != null) {
+                if (totalPages == -1) {
+                    totalPages = data.getTotalPages();
+                }
+                view.addAuctions(data.getAuctions(), data.getNotes());
+            } else {
+                if (!TextUtils.isEmpty(searchString)) {
+                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        view.doneLoading();
+
     }
 
     @VisibleForTesting
