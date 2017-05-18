@@ -3,7 +3,6 @@ package com.balch.auctionbrowser;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,12 +32,7 @@ public class AuctionLoader extends ViewModel {
         this.notesModel = notesModel;
     }
 
-    public LiveData<AuctionData> getAuctionData() {
-        return auctionDataLive;
-    }
-
-    @VisibleForTesting
-    void loadInBackground() {
+    private void loadInBackground() {
         try {
             if (!TextUtils.isEmpty(searchText)) {
                 auctionModel.getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortOrder,
@@ -61,6 +55,10 @@ public class AuctionLoader extends ViewModel {
         } catch (Exception ex) {
             Log.e(TAG, "error getting auctions", ex);
         }
+    }
+
+    public LiveData<AuctionData> getAuctionData() {
+        return auctionDataLive;
     }
 
     public void update(int currentPage, String searchText, String sortOrder) {
