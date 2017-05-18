@@ -23,10 +23,13 @@
 
 package com.balch.auctionbrowser;
 
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -39,20 +42,19 @@ import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
 public class MainActivity extends PresenterActivity<AuctionView, AuctionModelProvider>
-        implements LoaderManager.LoaderCallbacks<AuctionData>, AuctionView.AuctionViewListener {
+        implements AuctionView.AuctionViewListener, LifecycleRegistryOwner {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    protected static final int AUCTION_LOADER_ID = 0;
+    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     // keep in sync with auction_sort_col string array
     private final String[] sortColumns =
             new String[]{"BestMatch", "EndTimeSoonest", "PricePlusShippingLowest"};
 
-    private AuctionLoader auctionLoader;
+    private AuctionLoader auctionViewModel;
 
     @VisibleForTesting EBayModel auctionModel;
     @VisibleForTesting NotesModel notesModel;
-    @VisibleForTesting boolean isLoadFinished = false;
 
     // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
@@ -78,13 +80,37 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
         this.view.setSortStrings(R.array.auction_sort_col);
         this.view.showBusy();
-        this.auctionLoader = (AuctionLoader) this.getSupportLoaderManager().initLoader(AUCTION_LOADER_ID, null, this);
+
+        auctionViewModel = ViewModelProviders.of(this).get(AuctionLoader.class);
+        auctionViewModel.setAuctionModel(auctionModel);
+        auctionViewModel.setNotesModel(notesModel);
+        auctionViewModel.getAuctionData().observe(this,
+                new Observer<AuctionData>() {
+                    @Override
+                    public void onChanged(@Nullable AuctionData data) {
+                        view.hideBusy();
+
+                        if (data.getAuctions() != null) {
+                            if (totalPages == -1) {
+                                totalPages = data.getTotalPages();
+                            }
+                            view.addAuctions(data.getAuctions(), data.getNotes());
+                        } else {
+                            if (!TextUtils.isEmpty(searchString)) {
+                                Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        view.doneLoading();
+
+                    }
+                });
     }
 
     @Override
     public boolean onLoadMore(int currentPage) {
         boolean hasMore = ((totalPages == -1) || (currentPage < totalPages));
-        if (isLoadFinished && hasMore) {
+        if (hasMore) {
             view.showBusy();
             MainActivity.this.currentPage = currentPage;
             updateView();
@@ -94,15 +120,13 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     public void onChangeSort(int position) {
-        if (isLoadFinished) {
-            sortPosition = position;
-            currentPage = 1;
-            totalPages = -1;
+        sortPosition = position;
+        currentPage = 1;
+        totalPages = -1;
 
-            view.showBusy();
-            view.clearAuctions();
-            updateView();
-        }
+        view.showBusy();
+        view.clearAuctions();
+        updateView();
     }
 
     @Override
@@ -117,15 +141,13 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     public void onClickSearch(String keyword) {
-        if (isLoadFinished) {
-            searchString = keyword;
-            currentPage = 1;
-            totalPages = -1;
+        searchString = keyword;
+        currentPage = 1;
+        totalPages = -1;
 
-            view.showBusy();
-            view.clearAuctions();
-            updateView();
-        }
+        view.showBusy();
+        view.clearAuctions();
+        updateView();
     }
 
     private void showDetail(final Auction auction) {
@@ -173,38 +195,13 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         }
     }
 
-    @Override
-    public Loader<AuctionData> onCreateLoader(int id, Bundle args) {
-        return new AuctionLoader(this, this.auctionModel, this.notesModel);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<AuctionData> loader, AuctionData data) {
-        view.hideBusy();
-
-        if (data.getAuctions() != null) {
-            if (totalPages == -1) {
-                totalPages = data.getTotalPages();
-            }
-            view.addAuctions(data.getAuctions(), data.getNotes());
-        } else {
-            if (!TextUtils.isEmpty(searchString)) {
-                Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
-            }
-        }
-
-        view.doneLoading();
-        isLoadFinished = true;
-    }
-
-    @Override
-    public void onLoaderReset(Loader<AuctionData> loader) {
-
-    }
-
     @VisibleForTesting
     void updateView() {
-        this.auctionLoader.update(this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
+        this.auctionViewModel.update(this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
     }
 
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
+    }
 }

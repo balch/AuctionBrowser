@@ -23,11 +23,14 @@
 
 package com.balch.auctionbrowser.auction;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
 import com.balch.android.app.framework.types.ISO8601DateTime;
 import com.balch.android.app.framework.types.Money;
 import com.balch.auctionbrowser.NetworkRequestProvider;
@@ -40,7 +43,6 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class EBayModel {
     private static final String TAG = EBayModel.class.getSimpleName();
@@ -79,15 +81,14 @@ public class EBayModel {
         }
     }
 
-    public AuctionInfo getAuctions(String keyword, long start, int count, String sortOrder) {
-        List<Auction> auctions = new ArrayList<>(count);
-        int totalPages = -1;
+    public LiveData<AuctionInfo> getAuctions(String keyword, long start, final int count,
+                                             String sortOrder) {
+
+        final MutableLiveData<AuctionInfo> auctionInfoLive = new MutableLiveData<>();
 
         if (!TextUtils.isEmpty(keyword)) {
-            String url = "";
             try {
-
-                url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
+                final String url = EBAY_URL_BASE + EBAY_FINDING_SERVICE_PATH +
                         String.format(EBAY_SERVICE_PARAMS, start + 1, count,
                                 eBayApiKey,
                                 "findItemsByKeywords",
@@ -96,32 +97,54 @@ public class EBayModel {
 
                 Log.d(TAG, "ebay request: " + url.replace(eBayApiKey, "{secured}"));
 
-                RequestFuture<JSONObject> future = RequestFuture.newFuture();
-                JsonObjectRequest request = new JsonObjectRequest(url, null, future, future);
+                JsonObjectRequest request = new JsonObjectRequest(url, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    JSONObject items = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
+                                    boolean success = validateResponse(items);
+
+                                    Log.d(TAG, "ebay request success status: " + success);
+
+                                    if (success) {
+                                        int totalPages = getTotalPages(items);
+                                        List<Auction> auctions = parseAuctions(items);
+
+                                        Log.d(TAG, "ebay request total pages: " + totalPages);
+
+                                        auctionInfoLive.setValue(new AuctionInfo(auctions, totalPages));
+
+                                    } else {
+                                        handleError(auctionInfoLive);
+                                    }
+
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Exception on " + url, e);
+                                    handleError(auctionInfoLive);
+                                }
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                handleError(auctionInfoLive);
+                            }
+                        });
                 networkRequest.addRequest(request);
 
-                JSONObject response = future.get(TIMEOUT_SECS, TimeUnit.SECONDS);
-                response = response.getJSONArray("findItemsByKeywordsResponse").getJSONObject(0);
-
-                boolean success = validateResponse(response);
-
-                Log.d(TAG, "ebay request success status: " + success);
-
-                if (success) {
-                    totalPages = getTotalPages(response);
-                    auctions = parseAuctions(response);
-
-                    Log.d(TAG, "ebay request total pages: " + totalPages);
-
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Exception on " + url, e);
-                auctions = null;
+            } catch (Exception ex) {
+                Log.e(TAG, "Parse Error", ex);
+                handleError(auctionInfoLive);
             }
         }
 
-        return new AuctionInfo(auctions, totalPages);
+        return auctionInfoLive;
+    }
+
+    private void handleError(MutableLiveData<AuctionInfo> auctionInfoLive) {
+        auctionInfoLive.setValue(new AuctionInfo(null, -1));
     }
 
     private boolean validateResponse(JSONObject json) throws JSONException {
