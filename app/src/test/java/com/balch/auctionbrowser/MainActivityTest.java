@@ -1,8 +1,5 @@
 package com.balch.auctionbrowser;
 
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-
 import com.balch.android.app.framework.sql.SqlConnection;
 import com.balch.auctionbrowser.auction.Auction;
 import com.balch.auctionbrowser.auction.AuctionView;
@@ -14,9 +11,7 @@ import org.mockito.Mock;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -29,7 +24,6 @@ public class MainActivityTest {
 
     @Mock AuctionView mockView;
     @Mock SqlConnection sqlConnection;
-    @Mock LoaderManager loaderManager;
 
     private MainActivity activity;
     private AuctionModelProvider modelProvider;
@@ -54,7 +48,6 @@ public class MainActivityTest {
         });
 
         doReturn("").when(activity).getString(eq(R.string.ebay_app_id));
-        doReturn(loaderManager).when(activity).getSupportLoaderManager();
 
         activity.createView();
         activity.createModel(modelProvider);
@@ -62,18 +55,18 @@ public class MainActivityTest {
 
     @Test
     public void testOnCreateBase() throws Exception {
+        doNothing().when(activity).setupAuctionViewModel();
+
         activity.onCreateBase(null);
 
+        verify(activity).setupAuctionViewModel();
         verify(mockView).setAuctionViewListener(eq(activity));
         verify(mockView).setSortStrings(eq(R.array.auction_sort_col));
-        verify(mockView).showBusy();
-        verify(loaderManager).initLoader(anyInt(), isNull(Bundle.class), eq(activity));
     }
 
     @Test
     public void testOnLoadMore() throws Exception {
         activity.totalPages = 5;
-        activity.isLoadFinished = true;
         doNothing().when(activity).updateView();
 
         assertTrue(activity.onLoadMore(2));
@@ -85,7 +78,6 @@ public class MainActivityTest {
     @Test
     public void testOnLoadMoreNoMore() throws Exception {
         activity.totalPages = 5;
-        activity.isLoadFinished = true;
         doNothing().when(activity).updateView();
 
         assertFalse(activity.onLoadMore(5));
