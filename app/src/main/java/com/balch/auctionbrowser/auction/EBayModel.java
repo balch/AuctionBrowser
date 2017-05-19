@@ -64,6 +64,18 @@ public class EBayModel {
     private final NetworkRequestProvider networkRequest;
     private final String eBayApiKey;
 
+    public enum SortColumn {
+        BEST_MATCH("BestMatch"),
+        ENDING_SOONEST("EndTimeSoonest"),
+        LOWEST_PRICE("PricePlusShippingLowest");
+
+        private final String sortTerm;
+
+        SortColumn(String sortTerm) {
+            this.sortTerm = sortTerm;
+        }
+    }
+
     public EBayModel(String eBayApiKey, NetworkRequestProvider networkRequest) {
         this.networkRequest = networkRequest;
         this.eBayApiKey = eBayApiKey;
@@ -84,7 +96,7 @@ public class EBayModel {
     }
 
     public void getAuctions(String keyword, long start, final int count,
-                            String sortOrder, final AuctionListener listener) {
+                            SortColumn sortColumn, final AuctionListener listener) {
 
         if (!TextUtils.isEmpty(keyword)) {
             try {
@@ -92,7 +104,7 @@ public class EBayModel {
                         String.format(EBAY_SERVICE_PARAMS, start + 1, count,
                                 eBayApiKey,
                                 "findItemsByKeywords",
-                                URLEncoder.encode(keyword, "UTF-8"), sortOrder);
+                                URLEncoder.encode(keyword, "UTF-8"), sortColumn.sortTerm);
 
 
                 Log.d(TAG, "ebay request: " + url.replace(eBayApiKey, "{secured}"));

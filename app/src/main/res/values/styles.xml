@@ -24,13 +24,11 @@
 <resources>
 
     <style name="AppTheme" parent="AppTheme.Base" />
-    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="colorPrimary">#fffe3c00</item>
-        <item name="colorPrimaryDark">#ff26201e</item>
-        <item name="colorAccent">#ff0033FF</item>
-        <item name="colorButtonNormal">#2196f3</item>
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
+        <item name="colorPrimary">#FF800080</item>
+        <item name="colorPrimaryDark">#FF26201E</item>
+        <item name="colorAccent">#FFBBBBBB</item>
+        <item name="colorButtonNormal">#FF2196F3</item>
     </style>
 
     <style name="CardValue">

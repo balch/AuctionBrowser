@@ -1,16 +1,13 @@
 <resources>
-    <string name="app_name">Balch\'s Auction Browser</string>
+    <string name="app_name">AuctionBrowser</string>
     <string name="app_title">Auctions</string>
 
     <string name="error_auction_get">Error getting Auctions :-(</string>
 
-    <string-array name="auction_sort_col">
-        <item>Best Match</item>
-        <item>Ending Soonest</item>
-        <item>Lowest Price</item>
-    </string-array>
 
-    <string name="edit_hint_search_keyword">search for ..</string>
+    <string name="auction_sort_col_best_match">Best Match</string>
+    <string name="auction_sort_col_ending_soonest">Ending Soonest</string>
+    <string name="auction_sort_col_lowest_price">Lowest Price</string>
 
     <string name="label_title">Title:</string>
     <string name="label_end_time">Ending:</string>
@@ -26,5 +23,9 @@
 
     <string name="button_note_save">Save</string>
     <string name="button_note_clear">Clear</string>
+
+    <string name="search_hint">Search Ebay…</string>
+    <string name="search_title">Search Ebay</string>
+
 
 </resources>

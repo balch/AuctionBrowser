@@ -23,14 +23,21 @@
 
 package com.balch.auctionbrowser;
 
+import android.app.SearchManager;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.balch.android.app.framework.PresenterActivity;
@@ -47,10 +54,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-    // keep in sync with auction_sort_col string array
-    private final String[] sortColumns =
-            new String[]{"BestMatch", "EndTimeSoonest", "PricePlusShippingLowest"};
-
     private AuctionLoader auctionViewModel;
 
     @VisibleForTesting EBayModel auctionModel;
@@ -58,7 +61,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
-    protected int sortPosition = 0;
+    protected EBayModel.SortColumn sortColumn = EBayModel.SortColumn.BEST_MATCH;
     protected String searchString = "";
     @VisibleForTesting long totalPages = -1;
 
@@ -77,9 +80,23 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @Override
     public void onCreateBase(Bundle bundle) {
         view.setAuctionViewListener(this);
-        view.setSortStrings(R.array.auction_sort_col);
 
         setupAuctionViewModel();
+
+        // Get the intent, verify the action and get the query
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            doSearch(query);
+        }
     }
 
     @Override
@@ -98,9 +115,8 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         return hasMore;
     }
 
-    @Override
-    public void onChangeSort(int position) {
-        sortPosition = position;
+    void doSort(EBayModel.SortColumn sortColumn) {
+        this.sortColumn = sortColumn;
         currentPage = 1;
         totalPages = -1;
 
@@ -120,7 +136,44 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     @Override
-    public void onClickSearch(String keyword) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the options menu from XML
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false);
+
+        MenuItem bestMatchItem = menu.findItem(R.id.menu_sort_best_match);
+        bestMatchItem.setChecked(true);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_sort_best_match:
+                doSort(EBayModel.SortColumn.BEST_MATCH);
+                item.setChecked(true);
+                return true;
+            case R.id.menu_sort_ending_soonest:
+                doSort(EBayModel.SortColumn.ENDING_SOONEST);
+                item.setChecked(true);
+                return true;
+            case R.id.menu_sort_lowest_price:
+                doSort(EBayModel.SortColumn.LOWEST_PRICE);
+                item.setChecked(true);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void doSearch(String keyword) {
         searchString = keyword;
         currentPage = 1;
         totalPages = -1;
@@ -215,6 +268,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @VisibleForTesting
     void updateView() {
-        this.auctionViewModel.update(this.currentPage, this.searchString, this.sortColumns[this.sortPosition]);
+        auctionViewModel.update(currentPage, searchString, sortColumn);
     }
 }

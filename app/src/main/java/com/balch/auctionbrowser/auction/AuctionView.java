@@ -25,20 +25,12 @@ package com.balch.auctionbrowser.auction;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 
 import com.balch.android.app.framework.BaseView;
-import com.balch.android.app.framework.domain.EditView;
 import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.Note;
@@ -46,22 +38,17 @@ import com.balch.auctionbrowser.note.Note;
 import java.util.List;
 import java.util.Map;
 
-public class AuctionView extends LinearLayout implements BaseView {
-    private static final String TAG = EditView.class.getName();
+public class AuctionView extends FrameLayout implements BaseView {
+    private static final String TAG = AuctionView.class.getName();
 
     private ProgressBar progressBar;
-    private Spinner sortSpinner;
     private AuctionAdapter auctionAdapter;
     private RecyclerOnScrollListener recyclerOnScrollListener;
-    private EditText searchEditText;
-
 
     public interface AuctionViewListener {
         boolean onLoadMore(int currentPage);
-        void onChangeSort(int position);
         void onClickNoteButton(Auction auction);
         void onClickAuction(Auction auction);
-        void onClickSearch(String keyword);
     }
 
     protected AuctionViewListener auctionViewListener;
@@ -83,12 +70,10 @@ public class AuctionView extends LinearLayout implements BaseView {
 
     public void showBusy() {
         this.progressBar.setVisibility(View.VISIBLE);
-        this.sortSpinner.setVisibility(View.GONE);
     }
 
     public void hideBusy() {
         this.progressBar.setVisibility(View.GONE);
-        this.sortSpinner.setVisibility(View.VISIBLE);
     }
 
     public void addAuctions(List<Auction> auctions, Map<Long, Note> notes) {
@@ -118,52 +103,12 @@ public class AuctionView extends LinearLayout implements BaseView {
         this.auctionAdapter.notifyDataSetChanged();
     }
 
-    public void setSortStrings(int textArrayResId) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                textArrayResId, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        this.sortSpinner.setAdapter(adapter);
-        this.sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (auctionViewListener != null) {
-                    auctionViewListener.onChangeSort(position);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-    public void setSearchString(String searchString) {
-        this.searchEditText.setText(searchString);
-    }
-
     private void initializeLayout() {
-        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        setOrientation(VERTICAL);
         inflate(getContext(), R.layout.auction_view, this);
-        setupToolbar();
 
-        this.searchEditText = (EditText)findViewById(R.id.auction_view_search_text);
+        progressBar = (ProgressBar) findViewById(R.id.auction_view_progress_bar);
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
-        recyclerView.setHasFixedSize(true);
-
-        final InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        findViewById(R.id.auction_view_search_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (auctionViewListener != null) {
-                    auctionViewListener.onClickSearch(searchEditText.getText().toString());
-                }
-                inputMethodManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-            }
-        });
-
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
@@ -195,12 +140,6 @@ public class AuctionView extends LinearLayout implements BaseView {
                     }
                 });
         recyclerView.setAdapter(this.auctionAdapter);
-    }
-
-    private void setupToolbar() {
-        Toolbar toolbar = (Toolbar)findViewById(R.id.auction_view_toolbar);
-        this.progressBar = (ProgressBar)toolbar.findViewById(R.id.view_auction_toolbar_progress_bar);
-        this.sortSpinner = (Spinner)toolbar.findViewById(R.id.view_auction_toolbar_spinner_sort_col);
     }
 
     public void setAuctionViewListener(AuctionViewListener auctionViewListener) {

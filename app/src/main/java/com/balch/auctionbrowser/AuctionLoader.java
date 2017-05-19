@@ -20,7 +20,7 @@ public class AuctionLoader extends ViewModel {
 
     private int currentPage;
     private String searchText;
-    private String sortOrder;
+    private EBayModel.SortColumn sortColumn;
 
     private final MutableLiveData<AuctionData> auctionDataLive = new MutableLiveData<>();
 
@@ -35,7 +35,7 @@ public class AuctionLoader extends ViewModel {
     private void loadInBackground() {
         try {
             if (!TextUtils.isEmpty(searchText)) {
-                auctionModel.getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortOrder,
+                auctionModel.getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortColumn,
                         new EBayModel.AuctionListener() {
                             @Override
                             public void onAuctionInfo(EBayModel.AuctionInfo info) {
@@ -61,10 +61,10 @@ public class AuctionLoader extends ViewModel {
         return auctionDataLive;
     }
 
-    public void update(int currentPage, String searchText, String sortOrder) {
+    public void update(int currentPage, String searchText, EBayModel.SortColumn sortColumn) {
         this.currentPage = currentPage;
         this.searchText = searchText;
-        this.sortOrder = sortOrder;
+        this.sortColumn = sortColumn;
         loadInBackground();
     }
 }
