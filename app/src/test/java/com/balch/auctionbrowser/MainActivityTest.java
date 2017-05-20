@@ -1,8 +1,8 @@
 package com.balch.auctionbrowser;
 
 import com.balch.android.app.framework.sql.SqlConnection;
-import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.auction.AuctionView;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.note.Note;
 
 import org.junit.Before;
@@ -24,6 +24,8 @@ public class MainActivityTest {
 
     @Mock AuctionView mockView;
     @Mock SqlConnection sqlConnection;
+
+    private AuctionViewModel auctionViewModel = spy(new AuctionViewModel());
 
     private MainActivity activity;
     private AuctionModelProvider modelProvider;
@@ -48,6 +50,8 @@ public class MainActivityTest {
         });
 
         doReturn("").when(activity).getString(eq(R.string.ebay_app_id));
+        doReturn(auctionViewModel).when(activity).getAuctionViewModel();
+        doReturn(false).when(activity).handleIntent();
 
         activity.createView();
         activity.createModel(modelProvider);
@@ -55,13 +59,12 @@ public class MainActivityTest {
 
     @Test
     public void testOnCreateBase() throws Exception {
-        doNothing().when(activity).setupAuctionViewModel();
 
         activity.onCreateBase(null);
 
-        verify(activity).setupAuctionViewModel();
+        verify(activity).handleIntent();
         verify(mockView).setAuctionViewListener(eq(activity));
-        verify(mockView).setSortStrings(eq(R.array.auction_sort_col));
+        verify(auctionViewModel).getAuctionData();
     }
 
     @Test
@@ -95,7 +98,7 @@ public class MainActivityTest {
         activity.saveNote(auction, note, text);
 
         verify(note).setNote(eq(text));
-        verify(sqlConnection).update(eq(activity.notesModel), eq(note));
+        verify(sqlConnection).update(eq(activity.auctionViewModel.getNotesModel()), eq(note));
     }
 
 }

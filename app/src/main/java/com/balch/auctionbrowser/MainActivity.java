@@ -41,9 +41,9 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.balch.android.app.framework.PresenterActivity;
-import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.auction.AuctionDetailDialog;
 import com.balch.auctionbrowser.auction.AuctionView;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.auction.model.EBayModel;
 import com.balch.auctionbrowser.auction.model.EbayApi;
 import com.balch.auctionbrowser.note.Note;
@@ -51,20 +51,17 @@ import com.balch.auctionbrowser.note.NotesModel;
 
 public class MainActivity extends PresenterActivity<AuctionView, AuctionModelProvider>
         implements AuctionView.AuctionViewListener, LifecycleRegistryOwner {
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-    private AuctionLoader auctionViewModel;
+    @VisibleForTesting AuctionViewModel auctionViewModel;
 
-    @VisibleForTesting EBayModel auctionModel;
-    @VisibleForTesting NotesModel notesModel;
-
-    // TODO: Serialize this so we can recover on Activity reload
     protected int currentPage = 1;
     protected EBayModel.SortColumn sortColumn = EBayModel.SortColumn.BEST_MATCH;
     protected String searchString = "";
     @VisibleForTesting long totalPages = -1;
+
+    SearchView searchView;
 
     @Override
     public AuctionView createView() {
@@ -73,19 +70,25 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @Override
     protected void createModel(AuctionModelProvider modelProvider) {
-        auctionModel = new EBayModel(getString(R.string.ebay_app_id),
-                modelProvider.getModelApiFactory().getModelApi(EbayApi.class));
-        notesModel = new NotesModel(modelProvider.getSqlConnection());
+
+        auctionViewModel = getAuctionViewModel();
+        if (!auctionViewModel.isInitialized()) {
+            EBayModel auctionModel = new EBayModel(getString(R.string.ebay_app_id),
+                    modelProvider.getModelApiFactory().getModelApi(EbayApi.class));
+            NotesModel notesModel = new NotesModel(modelProvider.getSqlConnection());
+
+            auctionViewModel.setAuctionModel(auctionModel);
+            auctionViewModel.setNotesModel(notesModel);
+        }
     }
 
     @Override
     public void onCreateBase(Bundle bundle) {
         view.setAuctionViewListener(this);
-
-        setupAuctionViewModel();
+        auctionViewModel.getAuctionData().observe(this, auctionDataObserver);
 
         // Get the intent, verify the action and get the query
-        handleIntent(getIntent());
+        handleIntent();
     }
 
     @Override
@@ -93,11 +96,21 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         handleIntent(intent);
     }
 
-    private void handleIntent(Intent intent) {
+    @VisibleForTesting
+    boolean handleIntent() {
+        return handleIntent(getIntent());
+    }
+
+    private boolean handleIntent(Intent intent) {
+        boolean handled = false;
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             doSearch(query);
+
+            handled = true;
         }
+
+        return handled;
     }
 
     @Override
@@ -116,7 +129,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         return hasMore;
     }
 
-    void doSort(EBayModel.SortColumn sortColumn) {
+    void sortAuctions(EBayModel.SortColumn sortColumn) {
         this.sortColumn = sortColumn;
         currentPage = 1;
         totalPages = -1;
@@ -144,7 +157,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem searchItem = menu.findItem(R.id.menu_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
 
@@ -158,15 +171,15 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_sort_best_match:
-                doSort(EBayModel.SortColumn.BEST_MATCH);
+                sortAuctions(EBayModel.SortColumn.BEST_MATCH);
                 item.setChecked(true);
                 return true;
             case R.id.menu_sort_ending_soonest:
-                doSort(EBayModel.SortColumn.ENDING_SOONEST);
+                sortAuctions(EBayModel.SortColumn.ENDING_SOONEST);
                 item.setChecked(true);
                 return true;
             case R.id.menu_sort_lowest_price:
-                doSort(EBayModel.SortColumn.LOWEST_PRICE);
+                sortAuctions(EBayModel.SortColumn.LOWEST_PRICE);
                 item.setChecked(true);
                 return true;
             default:
@@ -178,6 +191,8 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         searchString = keyword;
         currentPage = 1;
         totalPages = -1;
+
+        searchView.clearFocus();
 
         view.showBusy();
         view.clearAuctions();
@@ -220,28 +235,20 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             Note note1 = new Note();
             note1.setNote(text);
             note1.setItemId(auction.getItemId());
-            notesModel.insert(note1);
+            auctionViewModel.insertNote(note1);
             view.addNote(auction, note1);
         } else {
             note.setNote(text);
-            notesModel.update(note);
+            auctionViewModel.updateNote(note);
         }
     }
 
     @VisibleForTesting
     void clearNote(Auction auction, Note note) {
         if (note != null) {
-            notesModel.delete(note);
+            auctionViewModel.deleteNote(note);
             view.clearNote(auction);
         }
-    }
-
-    @VisibleForTesting
-    void setupAuctionViewModel() {
-        auctionViewModel = ViewModelProviders.of(this).get(AuctionLoader.class);
-        auctionViewModel.setAuctionModel(auctionModel);
-        auctionViewModel.setNotesModel(notesModel);
-        auctionViewModel.getAuctionData().observe(this, auctionDataObserver);
     }
 
     @VisibleForTesting
@@ -269,6 +276,12 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @VisibleForTesting
     void updateView() {
-        auctionViewModel.update(currentPage, searchString, sortColumn);
+        auctionViewModel.loadAuctions(currentPage, searchString, sortColumn);
     }
+
+    @VisibleForTesting
+    AuctionViewModel getAuctionViewModel() {
+        return ViewModelProviders.of(this).get(AuctionViewModel.class);
+    }
+
 }

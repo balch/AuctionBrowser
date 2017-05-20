@@ -3,8 +3,10 @@ package com.balch.auctionbrowser;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.VisibleForTesting;
 
 import com.balch.auctionbrowser.auction.model.EBayModel;
+import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -14,9 +16,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class AuctionLoader extends ViewModel {
-
-    private static final String TAG = AuctionLoader.class.getSimpleName();
+public class AuctionViewModel extends ViewModel {
 
     private static final int AUCTION_FETCH_COUNT = 30;
 
@@ -31,15 +31,42 @@ public class AuctionLoader extends ViewModel {
 
     private final MutableLiveData<AuctionData> auctionDataLive = new MutableLiveData<>();
 
-    public void setAuctionModel(EBayModel auctionModel) {
+    boolean isInitialized() {
+        return ((auctionModel != null) && (notesModel != null));
+    }
+
+    void setAuctionModel(EBayModel auctionModel) {
         this.auctionModel = auctionModel;
     }
 
-    public void setNotesModel(NotesModel notesModel) {
+    void setNotesModel(NotesModel notesModel) {
         this.notesModel = notesModel;
     }
 
-    private void loadInBackground() {
+    LiveData<AuctionData> getAuctionData() {
+        return auctionDataLive;
+    }
+
+    void loadAuctions(int currentPage, String searchText, EBayModel.SortColumn sortColumn) {
+        this.currentPage = currentPage;
+        this.searchText = searchText;
+        this.sortColumn = sortColumn;
+        getAuctionsAsync();
+    }
+
+    void insertNote(Note note) {
+        notesModel.insert(note);
+    }
+
+    void updateNote(Note note) {
+        notesModel.update(note);
+    }
+
+    void deleteNote(Note note) {
+        notesModel.delete(note);
+    }
+
+    private void getAuctionsAsync() {
         disposeGetAuctionDisposable();
         disposableGetAuction = auctionModel
                 .getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortColumn)
@@ -69,17 +96,6 @@ public class AuctionLoader extends ViewModel {
                             });
     }
 
-    public LiveData<AuctionData> getAuctionData() {
-        return auctionDataLive;
-    }
-
-    public void update(int currentPage, String searchText, EBayModel.SortColumn sortColumn) {
-        this.currentPage = currentPage;
-        this.searchText = searchText;
-        this.sortColumn = sortColumn;
-        loadInBackground();
-    }
-
     void disposeGetAuctionDisposable() {
         if (disposableGetAuction != null) {
             disposableGetAuction.dispose();
@@ -92,6 +108,10 @@ public class AuctionLoader extends ViewModel {
         disposeGetAuctionDisposable();
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public NotesModel getNotesModel() {
+        return notesModel;
+    }
 }
 
 
