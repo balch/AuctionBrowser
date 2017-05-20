@@ -31,7 +31,6 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.balch.android.app.framework.BaseView;
-import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.note.Note;
@@ -43,13 +42,12 @@ public class AuctionView extends FrameLayout implements BaseView {
     private static final String TAG = AuctionView.class.getName();
 
     private ProgressBar progressBar;
+    private RecyclerView recyclerView;
     private AuctionAdapter auctionAdapter;
     private RecyclerOnScrollListener recyclerOnScrollListener;
 
     public interface AuctionViewListener {
-        boolean onLoadMore(int currentPage);
-        void onClickNoteButton(Auction auction);
-        void onClickAuction(Auction auction);
+        boolean onLoadMore(int page);
     }
 
     protected AuctionViewListener auctionViewListener;
@@ -109,37 +107,24 @@ public class AuctionView extends FrameLayout implements BaseView {
 
         progressBar = (ProgressBar) findViewById(R.id.auction_view_progress_bar);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
                 new RecyclerOnScrollListener.LoadMoreListener() {
                     @Override
-                    public boolean onLoadMore(int currentPage) {
+                    public boolean onLoadMore(int page) {
                         return (auctionViewListener == null) ||
-                            auctionViewListener.onLoadMore(currentPage);
+                            auctionViewListener.onLoadMore(page);
                     }
                 });
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
+    }
 
-        this.auctionAdapter = new AuctionAdapter((AuctionModelProvider) getContext().getApplicationContext(),
-                new AuctionAdapter.MembersAdapterListener() {
-                    @Override
-                    public void onClickNoteButton(Auction auction) {
-                        if (auctionViewListener != null) {
-                            auctionViewListener.onClickNoteButton(auction);
-                        }
-                    }
-
-                    @Override
-                    public void onClickMember(Auction auction) {
-                        if (auctionViewListener != null) {
-                            auctionViewListener.onClickAuction(auction);
-                        }
-                    }
-                });
+    public void setAuctionAdapter(AuctionAdapter auctionAdapter) {
+        this.auctionAdapter = auctionAdapter;
         recyclerView.setAdapter(this.auctionAdapter);
     }
 
@@ -188,7 +173,7 @@ public class AuctionView extends FrameLayout implements BaseView {
         }
 
         interface LoadMoreListener {
-            boolean onLoadMore(int currentPage);
+            boolean onLoadMore(int page);
         }
     }
 }

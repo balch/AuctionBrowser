@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.VisibleForTesting;
 
+import com.balch.auctionbrowser.auction.AuctionAdapter;
 import com.balch.auctionbrowser.auction.model.EBayModel;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
@@ -23,6 +24,9 @@ public class AuctionViewModel extends ViewModel {
     private EBayModel auctionModel;
     private NotesModel notesModel;
 
+    private AuctionAdapter auctionAdapter;
+
+    private long totalPages;
     private int currentPage;
     private String searchText;
     private EBayModel.SortColumn sortColumn;
@@ -33,6 +37,14 @@ public class AuctionViewModel extends ViewModel {
 
     boolean isInitialized() {
         return ((auctionModel != null) && (notesModel != null));
+    }
+
+    public void setAuctionAdapter(AuctionAdapter auctionAdapter) {
+        this.auctionAdapter = auctionAdapter;
+    }
+
+    public AuctionAdapter getAuctionAdapter() {
+        return auctionAdapter;
     }
 
     void setAuctionModel(EBayModel auctionModel) {
@@ -47,11 +59,25 @@ public class AuctionViewModel extends ViewModel {
         return auctionDataLive;
     }
 
-    void loadAuctions(int currentPage, String searchText, EBayModel.SortColumn sortColumn) {
-        this.currentPage = currentPage;
+    void loadAuctions(EBayModel.SortColumn sortColumn) {
+        loadAuctions(searchText, sortColumn);
+    }
+
+    void loadAuctions(String searchText, EBayModel.SortColumn sortColumn) {
+        this.totalPages = -1;
+        this.currentPage = 1;
         this.searchText = searchText;
         this.sortColumn = sortColumn;
         getAuctionsAsync();
+    }
+
+    void loadAuctionsNextPage() {
+        this.currentPage++;
+        getAuctionsAsync();
+    }
+
+    boolean hasMoreAuctionPages(long page) {
+        return ((totalPages == -1) || (page < totalPages));
     }
 
     void insertNote(Note note) {
@@ -78,6 +104,7 @@ public class AuctionViewModel extends ViewModel {
                         if (auctionData.getAuctions() != null) {
                             auctionData.setNotes(notesModel.getNotes(auctionData.getAuctions()));
                         }
+                        totalPages = auctionData.getTotalPages();
 
                         return auctionData;
                     }

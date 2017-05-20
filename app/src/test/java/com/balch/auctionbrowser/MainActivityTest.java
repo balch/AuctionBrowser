@@ -11,6 +11,7 @@ import org.mockito.Mock;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -69,24 +70,27 @@ public class MainActivityTest {
 
     @Test
     public void testOnLoadMore() throws Exception {
-        activity.totalPages = 5;
-        doNothing().when(activity).updateView();
+        int page = 4;
+        doReturn(true).when(auctionViewModel).hasMoreAuctionPages(anyInt());
+        doNothing().when(auctionViewModel).loadAuctionsNextPage();
 
-        assertTrue(activity.onLoadMore(2));
+        assertTrue(activity.onLoadMore(page));
 
         verify(mockView).showBusy();
-        verify(activity).updateView();
+        verify(auctionViewModel).hasMoreAuctionPages(page);
+        verify(auctionViewModel).loadAuctionsNextPage();
     }
 
     @Test
     public void testOnLoadMoreNoMore() throws Exception {
-        activity.totalPages = 5;
-        doNothing().when(activity).updateView();
+        int page = 4;
+        doReturn(false).when(auctionViewModel).hasMoreAuctionPages(anyInt());
 
-        assertFalse(activity.onLoadMore(5));
+        assertFalse(activity.onLoadMore(page));
 
         verify(mockView, never()).showBusy();
-        verify(activity, never()).updateView();
+        verify(auctionViewModel).hasMoreAuctionPages(page);
+        verify(auctionViewModel, never()).loadAuctionsNextPage();
     }
 
     @Test

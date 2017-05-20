@@ -33,7 +33,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +40,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.balch.android.app.framework.PresenterActivity;
+import com.balch.auctionbrowser.auction.AuctionAdapter;
 import com.balch.auctionbrowser.auction.AuctionDetailDialog;
 import com.balch.auctionbrowser.auction.AuctionView;
 import com.balch.auctionbrowser.auction.model.Auction;
@@ -56,10 +56,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
     @VisibleForTesting AuctionViewModel auctionViewModel;
 
-    protected int currentPage = 1;
     protected EBayModel.SortColumn sortColumn = EBayModel.SortColumn.BEST_MATCH;
-    protected String searchString = "";
-    @VisibleForTesting long totalPages = -1;
 
     SearchView searchView;
 
@@ -79,7 +76,20 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
             auctionViewModel.setAuctionModel(auctionModel);
             auctionViewModel.setNotesModel(notesModel);
+            auctionViewModel.setAuctionAdapter(new AuctionAdapter(modelProvider,
+                    new AuctionAdapter.MembersAdapterListener() {
+                        @Override
+                        public void onClickNoteButton(Auction auction) {
+                            showDetail(auction);
+                        }
+
+                        @Override
+                        public void onClickMember(Auction auction) {
+                            showDetail(auction);
+                        }
+                    }));
         }
+        view.setAuctionAdapter(auctionViewModel.getAuctionAdapter());
     }
 
     @Override
@@ -119,34 +129,19 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     @Override
-    public boolean onLoadMore(int currentPage) {
-        boolean hasMore = ((totalPages == -1) || (currentPage < totalPages));
+    public boolean onLoadMore(int page) {
+        boolean hasMore = auctionViewModel.hasMoreAuctionPages(page);
         if (hasMore) {
             view.showBusy();
-            MainActivity.this.currentPage = currentPage;
-            updateView();
+            auctionViewModel.loadAuctionsNextPage();
         }
         return hasMore;
     }
 
     void sortAuctions(EBayModel.SortColumn sortColumn) {
-        this.sortColumn = sortColumn;
-        currentPage = 1;
-        totalPages = -1;
-
         view.showBusy();
         view.clearAuctions();
-        updateView();
-    }
-
-    @Override
-    public void onClickNoteButton(Auction auction) {
-        showDetail(auction);
-    }
-
-    @Override
-    public void onClickAuction(Auction auction) {
-        showDetail(auction);
+        auctionViewModel.loadAuctions(sortColumn);
     }
 
     @Override
@@ -188,15 +183,11 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     public void doSearch(String keyword) {
-        searchString = keyword;
-        currentPage = 1;
-        totalPages = -1;
-
         searchView.clearFocus();
 
         view.showBusy();
         view.clearAuctions();
-        updateView();
+        auctionViewModel.loadAuctions(keyword, sortColumn);
     }
 
     @Override
@@ -259,12 +250,9 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
             if (data != null) {
                 if (data.getAuctions() != null) {
-                    if (totalPages == -1) {
-                        totalPages = data.getTotalPages();
-                    }
                     view.addAuctions(data.getAuctions(), data.getNotes());
                 } else {
-                    if (!TextUtils.isEmpty(searchString)) {
+                    if (searchView.getQuery().length() > 0) {
                         Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
                     }
                 }
@@ -273,11 +261,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
             view.doneLoading();
         }
     };
-
-    @VisibleForTesting
-    void updateView() {
-        auctionViewModel.loadAuctions(currentPage, searchString, sortColumn);
-    }
 
     @VisibleForTesting
     AuctionViewModel getAuctionViewModel() {
