@@ -1,7 +1,7 @@
 package com.balch.auctionbrowser;
 
 import com.balch.android.app.framework.sql.SqlConnection;
-import com.balch.auctionbrowser.auction.Auction;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.auction.AuctionView;
 import com.balch.auctionbrowser.note.Note;
 

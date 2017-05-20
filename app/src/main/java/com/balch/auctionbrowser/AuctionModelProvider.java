@@ -22,19 +22,13 @@
 
 package com.balch.auctionbrowser;
 
-import com.android.volley.toolbox.ImageLoader;
 import com.balch.android.app.framework.ModelProvider;
 import com.balch.android.app.framework.sql.SqlConnection;
-import com.balch.auctionbrowser.settings.Settings;
 
 public interface AuctionModelProvider extends ModelProvider {
 
-    Settings getSettings();
-
     SqlConnection getSqlConnection();
 
-    NetworkRequestProvider getNetworkRequest();
-
-    ImageLoader getImageLoader();
+    ModelApiFactory getModelApiFactory();
 
 }

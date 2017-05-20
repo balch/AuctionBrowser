@@ -1,6 +1,6 @@
 package com.balch.auctionbrowser;
 
-import com.balch.auctionbrowser.auction.Auction;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.note.Note;
 
 import java.util.List;

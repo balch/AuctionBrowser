@@ -24,24 +24,14 @@
 package com.balch.auctionbrowser;
 
 import android.app.Application;
-import android.graphics.Bitmap;
 import android.os.StrictMode;
-import android.util.LruCache;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
 import com.balch.android.app.framework.sql.SqlConnection;
-import com.balch.auctionbrowser.settings.Settings;
 
 public class AuctionApplication extends Application implements AuctionModelProvider {
     private static final String TAG = AuctionApplication.class.getSimpleName();
 
     private static final int REQUEST_TIMEOUT_SECS = 30;
-    private static final DefaultRetryPolicy DEFAULT_RETRY_POlICY = new DefaultRetryPolicy(
-            REQUEST_TIMEOUT_SECS * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
     private static final String DATABASE_NAME = "auction_browser.db";
     private static final int DATABASE_VERSION = 1;
@@ -49,12 +39,8 @@ public class AuctionApplication extends Application implements AuctionModelProvi
     private static final String DATABASE_UPDATE_SCRIPT_FORMAT = "sql/upgrade_%d.sql";
 
     private SqlConnection sqlConnection;
-    private RequestQueue requestQueue;
-    private ImageLoader imageLoader;
 
-    private VolleyNetworkRequest networkRequest;
-
-    private Settings settings;
+    private final ModelApiFactory modelApiFactory = new ModelApiFactory();
 
     @Override
     public void onCreate() {
@@ -71,33 +57,12 @@ public class AuctionApplication extends Application implements AuctionModelProvi
                     .detectLeakedSqlLiteObjects()
                     .detectLeakedClosableObjects()
                     .penaltyLog()
-                    .penaltyDeath()
                     .build());
 
         }
 
         this.sqlConnection = new SqlConnection(this, DATABASE_NAME, DATABASE_VERSION,
                 DATABASE_CREATES_SCRIPT, DATABASE_UPDATE_SCRIPT_FORMAT);
-
-        this.requestQueue = Volley.newRequestQueue(this);
-        this.imageLoader = new ImageLoader(this.requestQueue,
-                new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap> cache = new LruCache<>(20);
-            public void putBitmap(String url, Bitmap bitmap) {
-                cache.put(url, bitmap);
-            }
-            public Bitmap getBitmap(String url) {
-                return cache.get(url);
-            }
-        });
-
-        this.networkRequest = new VolleyNetworkRequest(this.requestQueue);
-
-    }
-
-    @Override
-    public Settings getSettings() {
-        return this.settings;
     }
 
     @Override
@@ -106,36 +71,9 @@ public class AuctionApplication extends Application implements AuctionModelProvi
     }
 
     @Override
-    public NetworkRequestProvider getNetworkRequest() {
-        return this.networkRequest;
+    public ModelApiFactory getModelApiFactory() {
+        return modelApiFactory;
     }
 
-    @Override
-    public ImageLoader getImageLoader() {
-        return this.imageLoader;
-    }
-
-    static class VolleyNetworkRequest implements NetworkRequestProvider {
-
-        private final RequestQueue requestQueue;
-
-        VolleyNetworkRequest(RequestQueue requestQueue) {
-            this.requestQueue = requestQueue;
-        }
-
-        @Override
-        public <T> Request<T> addRequest(Request<T> request) {
-            return addRequest(request, false);
-        }
-
-        @Override
-        public <T> Request<T> addRequest(Request<T> request, boolean customRetryPolicy) {
-            if (!customRetryPolicy) {
-                request.setRetryPolicy(DEFAULT_RETRY_POlICY);
-            }
-
-            return requestQueue.add(request);
-        }
-    }
 
 }

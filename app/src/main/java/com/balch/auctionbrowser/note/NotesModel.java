@@ -29,7 +29,7 @@ import android.util.Log;
 
 import com.balch.android.app.framework.sql.SqlConnection;
 import com.balch.android.app.framework.sql.SqlMapper;
-import com.balch.auctionbrowser.auction.Auction;
+import com.balch.auctionbrowser.auction.model.Auction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;

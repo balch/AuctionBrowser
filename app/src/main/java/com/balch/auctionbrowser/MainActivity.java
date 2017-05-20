@@ -41,10 +41,11 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.balch.android.app.framework.PresenterActivity;
-import com.balch.auctionbrowser.auction.Auction;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.auction.AuctionDetailDialog;
 import com.balch.auctionbrowser.auction.AuctionView;
-import com.balch.auctionbrowser.auction.EBayModel;
+import com.balch.auctionbrowser.auction.model.EBayModel;
+import com.balch.auctionbrowser.auction.model.EbayApi;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
@@ -73,7 +74,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @Override
     protected void createModel(AuctionModelProvider modelProvider) {
         auctionModel = new EBayModel(getString(R.string.ebay_app_id),
-                modelProvider.getNetworkRequest());
+                modelProvider.getModelApiFactory().getModelApi(EbayApi.class));
         notesModel = new NotesModel(modelProvider.getSqlConnection());
     }
 

@@ -28,12 +28,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.ui.LabelTextView;
+import com.bumptech.glide.Glide;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -61,49 +63,39 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
 
         private MembersAdapterListener membersAdapterListener;
 
-        private NetworkImageView itemImageView;
+        private ImageView itemImageView;
         private LabelTextView titleTextView;
         private LabelTextView priceTextView;
         private LabelTextView endTimeTextView;
-//        private LabelTextView locationTextView;
-//        private LabelTextView shippingCostTextView;
         private Button noteEditButton;
 
         public MemberHolder(View itemView, MembersAdapterListener membersAdapterListener) {
             super(itemView);
 
             this.membersAdapterListener = membersAdapterListener;
-            this.itemImageView = (NetworkImageView) itemView.findViewById(R.id.list_item_auction_img);
-            this.titleTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_title);
-            this.endTimeTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_end_time);
-            this.priceTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_price);
-//            this.locationTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_location);
-//            this.shippingCostTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_shipping_cost);
-            this.noteEditButton = (Button) itemView.findViewById(R.id.list_item_auction_button_note);
+            itemImageView = (ImageView) itemView.findViewById(R.id.list_item_auction_img);
+            titleTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_title);
+            endTimeTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_end_time);
+            priceTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_price);
+            noteEditButton = (Button) itemView.findViewById(R.id.list_item_auction_button_note);
         }
 
         public void bind(final Auction auction, Note note, AuctionModelProvider modelProvider) {
 
-            this.itemImageView.setImageUrl(auction.getImageUrl(), modelProvider.getImageLoader());
-            this.titleTextView.setValue(auction.getTitle());
+            Glide.with(itemView.getContext()).load(auction.getImageUrl()).into(itemImageView);
+            titleTextView.setValue(auction.getTitle());
 
-            this.priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
-            this.endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
+            priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
+            endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
 
-/*            this.locationTextView.setValue(auction.getLocation());
-            this.shippingCostTextView.setValue(
-                    (auction.getShippingCost() != null) ?
-                            auction.getShippingCost().getFormatted(2) :
-                            "???");
-*/
-            this.noteEditButton.setOnClickListener(new View.OnClickListener() {
+            noteEditButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     MemberHolder.this.membersAdapterListener.onClickNoteButton(auction);
                 }
             });
 
-            this.noteEditButton.setVisibility((note != null) ? View.VISIBLE : View.GONE);
+            noteEditButton.setVisibility((note != null) ? View.VISIBLE : View.GONE);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

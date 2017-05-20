@@ -21,7 +21,7 @@
  *
  */
 
-package com.balch.auctionbrowser.auction;
+package com.balch.auctionbrowser.auction.model;
 
 import com.balch.android.app.framework.domain.DomainObject;
 import com.balch.android.app.framework.types.Money;

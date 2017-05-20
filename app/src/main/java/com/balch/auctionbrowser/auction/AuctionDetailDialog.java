@@ -31,12 +31,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.NetworkImageView;
-import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
+import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.ui.LabelTextView;
+import com.bumptech.glide.Glide;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -95,8 +96,8 @@ public class AuctionDetailDialog extends DialogFragment {
                 TextView tv = (TextView) getDialog().findViewById(R.id.auction_detail_title);
                 tv.setText(auction.getTitle());
 
-                NetworkImageView profileImageView = (NetworkImageView) getDialog().findViewById(R.id.auction_detail_item_img);
-                profileImageView.setImageUrl(auction.getImageUrl(), ((AuctionModelProvider) getActivity().getApplication()).getImageLoader());
+                ImageView profileImageView = (ImageView) getDialog().findViewById(R.id.auction_detail_item_img);
+                Glide.with(this).load(auction.getImageUrl()).into(profileImageView);
 
                 LabelTextView ltv = (LabelTextView) getDialog().findViewById(R.id.auction_detail_end_time);
                 ltv.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
