@@ -101,7 +101,6 @@ public class AuctionViewModel extends ViewModel {
         disposableGetAuction = auctionModel
                 .getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(new Function<AuctionData, AuctionData>() {
                     @Override
                     public AuctionData apply(@NonNull AuctionData auctionData) throws Exception {
@@ -113,6 +112,7 @@ public class AuctionViewModel extends ViewModel {
                         return auctionData;
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<AuctionData>() {
                                @Override
                                public void accept(@NonNull AuctionData auctionData) throws Exception {
