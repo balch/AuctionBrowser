@@ -65,6 +65,36 @@ public class AuctionView extends FrameLayout implements BaseView {
         initializeLayout();
     }
 
+    private void initializeLayout() {
+        inflate(getContext(), R.layout.auction_view, this);
+
+        progressBar = (ProgressBar) findViewById(R.id.auction_view_progress_bar);
+
+        recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
+                new RecyclerOnScrollListener.LoadMoreListener() {
+                    @Override
+                    public boolean onLoadMore(int page) {
+                        return (auctionViewListener == null) ||
+                                auctionViewListener.onLoadMore(page);
+                    }
+                });
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
+    }
+
+    public void setAuctionAdapter(AuctionAdapter auctionAdapter) {
+        this.auctionAdapter = auctionAdapter;
+        recyclerView.setAdapter(this.auctionAdapter);
+    }
+
+    public void setAuctionViewListener(AuctionViewListener auctionViewListener) {
+        this.auctionViewListener = auctionViewListener;
+    }
+
     public void showBusy() {
         this.progressBar.setVisibility(View.VISIBLE);
     }
@@ -98,36 +128,6 @@ public class AuctionView extends FrameLayout implements BaseView {
     public void addNote(Auction auction, Note note) {
         this.auctionAdapter.getNotes().put(auction.getItemId(), note);
         this.auctionAdapter.notifyDataSetChanged();
-    }
-
-    private void initializeLayout() {
-        inflate(getContext(), R.layout.auction_view, this);
-
-        progressBar = (ProgressBar) findViewById(R.id.auction_view_progress_bar);
-
-        recyclerView = (RecyclerView) findViewById(R.id.action_view_recycler);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
-                new RecyclerOnScrollListener.LoadMoreListener() {
-                    @Override
-                    public boolean onLoadMore(int page) {
-                        return (auctionViewListener == null) ||
-                            auctionViewListener.onLoadMore(page);
-                    }
-                });
-
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
-    }
-
-    public void setAuctionAdapter(AuctionAdapter auctionAdapter) {
-        this.auctionAdapter = auctionAdapter;
-        recyclerView.setAdapter(this.auctionAdapter);
-    }
-
-    public void setAuctionViewListener(AuctionViewListener auctionViewListener) {
-        this.auctionViewListener = auctionViewListener;
     }
 
     public static class RecyclerOnScrollListener extends RecyclerView.OnScrollListener {

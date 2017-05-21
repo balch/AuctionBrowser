@@ -9,15 +9,18 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/action_view_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray"/>
 
     <ProgressBar
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:id="@+id/auction_view_progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_height="60dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="20dp"
         android:indeterminate="true"
-        android:layout_gravity="bottom"/>
+        android:indeterminateTint="?attr/colorPrimary"
+        android:visibility="gone" />
 
 </merge>
