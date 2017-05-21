@@ -71,5 +71,4 @@ public class AuctionApplication extends Application implements AuctionModelProvi
         return modelApiFactory;
     }
 
-
 }
