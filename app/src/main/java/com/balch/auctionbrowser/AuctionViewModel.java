@@ -76,6 +76,10 @@ public class AuctionViewModel extends ViewModel {
         getAuctionsAsync();
     }
 
+    String getSearchText() {
+        return searchText;
+    }
+
     boolean hasMoreAuctionPages(long page) {
         return ((totalPages == -1) || (page < totalPages));
     }

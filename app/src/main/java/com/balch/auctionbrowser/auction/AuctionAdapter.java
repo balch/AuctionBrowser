@@ -23,6 +23,7 @@
 
 package com.balch.auctionbrowser.auction;
 
+import android.annotation.SuppressLint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,76 +45,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+
 public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHolder>  {
-    public static final DateFormat DATE_TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
+    private static final DateFormat DATE_TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
 
-    public interface MembersAdapterListener {
-        void onClickNoteButton(Auction auction);
-        void onClickMember(Auction auction);
-    }
-
-    private MembersAdapterListener membersAdapterListener;
     private List<Auction> auctions = new ArrayList<>();
+    @SuppressLint("UseSparseArrays")
     private Map<Long,Note> notes = new HashMap<>();
     private AuctionModelProvider modelProvider;
 
-    public static class MemberHolder extends RecyclerView.ViewHolder {
+    private final PublishSubject<Auction> clickAuctionObservable = PublishSubject.create();
+    private final PublishSubject<Auction> clickNoteObservable = PublishSubject.create();
 
-        private MembersAdapterListener membersAdapterListener;
-
-        private ImageView itemImageView;
-        private LabelTextView titleTextView;
-        private LabelTextView priceTextView;
-        private LabelTextView endTimeTextView;
-        private Button noteEditButton;
-
-        public MemberHolder(View itemView, MembersAdapterListener membersAdapterListener) {
-            super(itemView);
-
-            this.membersAdapterListener = membersAdapterListener;
-            itemImageView = (ImageView) itemView.findViewById(R.id.list_item_auction_img);
-            titleTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_title);
-            endTimeTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_end_time);
-            priceTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_price);
-            noteEditButton = (Button) itemView.findViewById(R.id.list_item_auction_button_note);
-        }
-
-        public void bind(final Auction auction, Note note, AuctionModelProvider modelProvider) {
-
-            Glide.with(itemView.getContext()).load(auction.getImageUrl()).into(itemImageView);
-            titleTextView.setValue(auction.getTitle());
-
-            priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
-            endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
-
-            noteEditButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MemberHolder.this.membersAdapterListener.onClickNoteButton(auction);
-                }
-            });
-
-            noteEditButton.setVisibility((note != null) ? View.VISIBLE : View.GONE);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (auction.getItemId() != -1) {
-                        MemberHolder.this.membersAdapterListener.onClickMember(auction);
-                    }
-                }
-            });
-        }
-    }
-    public AuctionAdapter(AuctionModelProvider modelProvider, MembersAdapterListener membersAdapterListener) {
-        this.membersAdapterListener = membersAdapterListener;
+    public AuctionAdapter(AuctionModelProvider modelProvider) {
         this.modelProvider = modelProvider;
+    }
+
+    public Observable<Auction> getClickAuctionObservable() {
+        return clickAuctionObservable;
+    }
+
+    public Observable<Auction> getClickNoteObservable() {
+        return clickNoteObservable;
     }
 
     @Override
     public MemberHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.auction_list_item, parent, false);
-        return new MemberHolder(view, this.membersAdapterListener);
+        return new MemberHolder(view, clickAuctionObservable, clickNoteObservable);
     }
 
     @Override
@@ -127,19 +88,72 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
         return auctions.size();
     }
 
-    public void addAuctions(List<Auction> auctions, Map<Long, Note> notes) {
+    void addAuctions(List<Auction> auctions, Map<Long, Note> notes) {
         this.auctions.addAll(auctions);
         this.notes.putAll(notes);
         notifyDataSetChanged();
     }
 
-    public void clearAuctions() {
+    void clearAuctions() {
         this.auctions.clear();
         this.notes.clear();
         notifyDataSetChanged();
     }
 
-    public Map<Long, Note> getNotes() {
+    Map<Long, Note> getNotes() {
         return notes;
     }
+
+    static class MemberHolder extends RecyclerView.ViewHolder {
+
+        private ImageView itemImageView;
+        private LabelTextView titleTextView;
+        private LabelTextView priceTextView;
+        private LabelTextView endTimeTextView;
+        private Button noteEditButton;
+
+        private final PublishSubject<Auction> clickAuctionObservable;
+        private final PublishSubject<Auction> clickNoteObservable;
+
+        MemberHolder(View itemView, PublishSubject<Auction> clickAuctionObservable,
+                     PublishSubject<Auction> clickNoteObservable) {
+            super(itemView);
+
+            itemImageView = (ImageView) itemView.findViewById(R.id.list_item_auction_img);
+            titleTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_title);
+            endTimeTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_end_time);
+            priceTextView = (LabelTextView) itemView.findViewById(R.id.list_item_auction_price);
+            noteEditButton = (Button) itemView.findViewById(R.id.list_item_auction_button_note);
+
+            this.clickAuctionObservable = clickAuctionObservable;
+            this.clickNoteObservable = clickNoteObservable;
+        }
+
+        void bind(final Auction auction, Note note, AuctionModelProvider modelProvider) {
+
+            Glide.with(itemView.getContext()).load(auction.getImageUrl()).into(itemImageView);
+            titleTextView.setValue(auction.getTitle());
+
+            priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
+            endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
+
+            noteEditButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickNoteObservable.onNext(auction);
+                }
+            });
+            noteEditButton.setVisibility((note != null) ? View.VISIBLE : View.GONE);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (auction.getItemId() != -1) {
+                        clickAuctionObservable.onNext(auction);
+                    }
+                }
+            });
+        }
+    }
+
 }

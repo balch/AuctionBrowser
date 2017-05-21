@@ -49,6 +49,10 @@ import com.balch.auctionbrowser.auction.model.EbayApi;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+
 public class MainActivity extends PresenterActivity<AuctionView, AuctionModelProvider>
         implements AuctionView.AuctionViewListener, LifecycleRegistryOwner {
 
@@ -59,6 +63,9 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     protected EBayModel.SortColumn sortColumn = EBayModel.SortColumn.BEST_MATCH;
 
     SearchView searchView;
+
+    Disposable disposableClickAuction = null;
+    Disposable disposableClickNote = null;
 
     @Override
     public AuctionView createView() {
@@ -76,26 +83,33 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
             auctionViewModel.setAuctionModel(auctionModel);
             auctionViewModel.setNotesModel(notesModel);
-            auctionViewModel.setAuctionAdapter(new AuctionAdapter(modelProvider,
-                    new AuctionAdapter.MembersAdapterListener() {
-                        @Override
-                        public void onClickNoteButton(Auction auction) {
-                            showDetail(auction);
-                        }
-
-                        @Override
-                        public void onClickMember(Auction auction) {
-                            showDetail(auction);
-                        }
-                    }));
+            auctionViewModel.setAuctionAdapter(new AuctionAdapter(modelProvider));
         }
-        view.setAuctionAdapter(auctionViewModel.getAuctionAdapter());
     }
 
     @Override
     public void onCreateBase(Bundle bundle) {
         view.setAuctionViewListener(this);
         auctionViewModel.getAuctionData().observe(this, auctionDataObserver);
+
+        AuctionAdapter auctionAdapter = auctionViewModel.getAuctionAdapter();
+        view.setAuctionAdapter(auctionAdapter);
+
+        disposableClickAuction = auctionAdapter.getClickAuctionObservable()
+                .subscribe(new Consumer<Auction>() {
+                    @Override
+                    public void accept(@NonNull Auction auction) throws Exception {
+                        showDetail(auction);
+                    }
+                });
+
+        disposableClickNote = auctionAdapter.getClickNoteObservable()
+                .subscribe(new Consumer<Auction>() {
+                    @Override
+                    public void accept(@NonNull Auction auction) throws Exception {
+                        showDetail(auction);
+                    }
+                });
 
         // Get the intent, verify the action and get the query
         handleIntent();
@@ -126,6 +140,12 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @Override
     public void onDestroyBase() {
         auctionViewModel.getAuctionData().removeObserver(auctionDataObserver);
+        if (disposableClickNote != null) {
+            disposableClickNote.dispose();
+        }
+        if (disposableClickAuction != null) {
+            disposableClickAuction.dispose();
+        }
     }
 
     @Override
@@ -155,6 +175,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
+        searchView.setQuery(auctionViewModel.getSearchText(), false);
 
         MenuItem bestMatchItem = menu.findItem(R.id.menu_sort_best_match);
         bestMatchItem.setChecked(true);
