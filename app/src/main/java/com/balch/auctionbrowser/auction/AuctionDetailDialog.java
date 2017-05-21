@@ -43,8 +43,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 public class AuctionDetailDialog extends DialogFragment {
-    private static final String TAG = AuctionDetailDialog.class.getSimpleName();
-
     public static final String ARG_NOTE = "ARG_NOTE";
     public static final String ARG_AUCTION = "ARG_AUCTION";
 

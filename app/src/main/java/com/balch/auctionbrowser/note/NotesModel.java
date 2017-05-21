@@ -23,6 +23,7 @@
 
 package com.balch.auctionbrowser.note;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
@@ -52,37 +53,31 @@ public class NotesModel implements SqlMapper<Note> {
     }
 
     public Map<Long, Note> getNotes(List<Auction> auctions) {
-        Map<Long, Note> noteMap = null;
+        @SuppressLint("UseSparseArrays")
+        Map<Long, Note> noteMap = new HashMap<>();
 
-        if ((auctions == null) || (auctions.size()==0)) {
-            return new HashMap<>();
-        }
+        if ((auctions != null) && !auctions.isEmpty()) {
 
-        String where = COLUMN_ITEM_ID + " in (";
-        for (int x = 0; x < auctions.size(); x++) {
-            if (x > 0) {
-                where += ",";
+            String itemIds = "";
+            for (int x = 0; x < auctions.size(); x++) {
+                if (x > 0) {
+                    itemIds += ",";
+                }
+                itemIds += auctions.get(x).getItemId();
             }
-            where += auctions.get(x).getItemId();
-        }
-        where += ")";
 
-        try {
-            List<Note> notes = sqlConnection.query(this, Note.class, where, null, null);
-            noteMap = new HashMap<>(notes.size());
-            for (Note note :notes) {
-                noteMap.put(note.getItemId(), note);
+            String where = COLUMN_ITEM_ID + " in (" + itemIds + ")";
+
+            try {
+                List<Note> notes = sqlConnection.query(this, Note.class, where, null, null);
+                for (Note note : notes) {
+                    noteMap.put(note.getItemId(), note);
+                }
+            } catch (NoSuchMethodException | IllegalAccessException
+                    | InvocationTargetException | InstantiationException
+                    | SQLException e) {
+                Log.e(TAG, "getNotes error", e);
             }
-        } catch (NoSuchMethodException e) {
-            Log.e(TAG, "NoSuchMethodException getting notes", e);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, "IllegalAccessException getting notes", e);
-        } catch (InvocationTargetException e) {
-            Log.e(TAG, "InvocationTargetException getting notes", e);
-        } catch (InstantiationException e) {
-            Log.e(TAG, "InstantiationException getting notes", e);
-        } catch (SQLException e) {
-            Log.e(TAG, "SQLException getting notes", e);
         }
 
         return noteMap;
@@ -93,7 +88,7 @@ public class NotesModel implements SqlMapper<Note> {
         try {
             id = sqlConnection.insert(this, note);
         } catch (SQLException e) {
-            Log.e(TAG, "SQLException inserting note", e);
+            Log.e(TAG, "inserting note error", e);
         }
 
         return id;

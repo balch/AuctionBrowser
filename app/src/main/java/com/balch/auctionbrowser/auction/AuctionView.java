@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AuctionView extends FrameLayout implements BaseView {
-    private static final String TAG = AuctionView.class.getName();
-
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private AuctionAdapter auctionAdapter;

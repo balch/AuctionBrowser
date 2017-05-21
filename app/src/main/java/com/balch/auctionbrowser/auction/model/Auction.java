@@ -23,16 +23,16 @@
 
 package com.balch.auctionbrowser.auction.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.balch.android.app.framework.domain.DomainObject;
 import com.balch.android.app.framework.types.Money;
 
 import java.io.Serializable;
 import java.util.Date;
 
-// TODO: make Parcelable
-public class Auction extends DomainObject implements Serializable {
-    private static final String TAG = Auction.class.getSimpleName();
-
+public class Auction extends DomainObject implements Serializable, Parcelable {
     private long itemId;
     private String title;
     private String imageUrl;
@@ -50,23 +50,51 @@ public class Auction extends DomainObject implements Serializable {
 
     }
 
-    public Auction(long itemId, String title, String imageUrl,
-                   String listingUrl, String location, Money shippingCost,
-                   Money currentPrice, String auctionSource, Date startTime,
-                   Date endTime, boolean auction, boolean buyItNow) {
-        this.itemId = itemId;
-        this.title = title;
-        this.imageUrl = imageUrl;
-        this.listingUrl = listingUrl;
-        this.location = location;
-        this.shippingCost = shippingCost;
-        this.currentPrice = currentPrice;
-        this.auctionSource = auctionSource;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.auction = auction;
-        this.buyItNow = buyItNow;
+    protected Auction(Parcel in) {
+        super(in);
+        itemId = in.readLong();
+        title = in.readString();
+        imageUrl = in.readString();
+        listingUrl = in.readString();
+        location = in.readString();
+        shippingCost = in.readParcelable(Money.class.getClassLoader());
+        currentPrice = in.readParcelable(Money.class.getClassLoader());
+        auctionSource = in.readString();
+        auction = in.readByte() != 0;
+        buyItNow = in.readByte() != 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeLong(itemId);
+        dest.writeString(title);
+        dest.writeString(imageUrl);
+        dest.writeString(listingUrl);
+        dest.writeString(location);
+        dest.writeParcelable(shippingCost, flags);
+        dest.writeParcelable(currentPrice, flags);
+        dest.writeString(auctionSource);
+        dest.writeByte((byte) (auction ? 1 : 0));
+        dest.writeByte((byte) (buyItNow ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Auction> CREATOR = new Creator<Auction>() {
+        @Override
+        public Auction createFromParcel(Parcel in) {
+            return new Auction(in);
+        }
+
+        @Override
+        public Auction[] newArray(int size) {
+            return new Auction[size];
+        }
+    };
 
     public long getItemId() {
         return itemId;

@@ -23,29 +23,49 @@
 
 package com.balch.auctionbrowser.note;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.balch.android.app.framework.domain.DomainObject;
 
 import java.io.Serializable;
-import java.util.Date;
 
-// TODO: make Parcelable
-public class Note extends DomainObject  implements Serializable {
-    private static final String TAG = Note.class.getSimpleName();
-
+public class Note extends DomainObject implements Serializable, Parcelable {
     private long itemId;
     private String note;
 
-    public Note(long id, long itemId, String note, Date created,
-                Date updated) {
-        this.id = id;
-        this.itemId = itemId;
-        this.note = note;
-        this.createTime = created;
-        this.updateTime = updated;
-    }
-
     public Note() {
     }
+
+    protected Note(Parcel in) {
+        super(in);
+        itemId = in.readLong();
+        note = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeLong(itemId);
+        dest.writeString(note);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Note> CREATOR = new Creator<Note>() {
+        @Override
+        public Note createFromParcel(Parcel in) {
+            return new Note(in);
+        }
+
+        @Override
+        public Note[] newArray(int size) {
+            return new Note[size];
+        }
+    };
 
     public long getItemId() {
         return itemId;

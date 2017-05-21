@@ -29,9 +29,6 @@ import android.os.StrictMode;
 import com.balch.android.app.framework.sql.SqlConnection;
 
 public class AuctionApplication extends Application implements AuctionModelProvider {
-    private static final String TAG = AuctionApplication.class.getSimpleName();
-
-    private static final int REQUEST_TIMEOUT_SECS = 30;
 
     private static final String DATABASE_NAME = "auction_browser.db";
     private static final int DATABASE_VERSION = 1;
@@ -58,7 +55,6 @@ public class AuctionApplication extends Application implements AuctionModelProvi
                     .detectLeakedClosableObjects()
                     .penaltyLog()
                     .build());
-
         }
 
         this.sqlConnection = new SqlConnection(this, DATABASE_NAME, DATABASE_VERSION,

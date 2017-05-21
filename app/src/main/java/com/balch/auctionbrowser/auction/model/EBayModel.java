@@ -30,9 +30,6 @@ import com.balch.auctionbrowser.AuctionData;
 import io.reactivex.Observable;
 
 public class EBayModel {
-    private static final String TAG = EBayModel.class.getSimpleName();
-
-
     private final String eBayApiKey;
     private final EbayApi ebayApi;
 

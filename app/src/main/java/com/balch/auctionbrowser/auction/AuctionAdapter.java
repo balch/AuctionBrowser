@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHolder>  {
-    private static final String TAG = AuctionAdapter.class.getSimpleName();
-
     public static final DateFormat DATE_TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
 
     public interface MembersAdapterListener {

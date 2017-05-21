@@ -9,8 +9,6 @@ import android.widget.TextView;
 import com.balch.auctionbrowser.R;
 
 public class LabelTextView extends LinearLayout {
-    private static final String TAG = LabelTextView.class.getSimpleName();
-
     private TextView labelTextView;
     private TextView valueTextView;
 
