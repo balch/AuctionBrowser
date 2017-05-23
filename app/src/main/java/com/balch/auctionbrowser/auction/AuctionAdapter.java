@@ -38,7 +38,6 @@ import com.balch.auctionbrowser.ui.LabelTextView;
 import com.bumptech.glide.Glide;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +47,8 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
 public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHolder>  {
-    private static final DateFormat DATE_TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
+    private static final DateFormat DATE_TIME_FORMAT =
+            DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
 
     private List<Auction> auctions = new ArrayList<>();
     @SuppressLint("UseSparseArrays")
