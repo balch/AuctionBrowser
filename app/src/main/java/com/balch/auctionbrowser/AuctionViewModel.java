@@ -26,7 +26,7 @@ public class AuctionViewModel extends ViewModel {
     private long totalPages;
     private int currentPage;
     private String searchText;
-    private EBayModel.SortColumn sortColumn;
+    private EBayModel.SortColumn sortColumn = EBayModel.SortColumn.BEST_MATCH;
 
     private Disposable disposableGetAuction;
 
