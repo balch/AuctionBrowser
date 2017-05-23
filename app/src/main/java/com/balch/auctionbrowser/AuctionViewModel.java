@@ -102,13 +102,11 @@ public class AuctionViewModel extends ViewModel {
         disposableGetAuction = auctionModel
                 .getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
-                .map(auctionData -> {
+                .doOnNext(auctionData -> {
                     if (auctionData.getAuctions() != null) {
                         auctionData.setNotes(notesModel.getNotes(auctionData.getAuctions()));
                     }
                     totalPages = auctionData.getTotalPages();
-
-                    return auctionData;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(auctionDataLive::setValue,

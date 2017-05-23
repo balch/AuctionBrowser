@@ -249,12 +249,12 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     @VisibleForTesting
-    Observer<AuctionData> auctionDataObserver = data -> {
+    Observer<AuctionData> auctionDataObserver = auctionData -> {
         view.hideBusy();
 
-        if (data != null) {
-            if (data.getAuctions() != null) {
-                view.addAuctions(data.getAuctions(), data.getNotes());
+        if (auctionData != null) {
+            if (auctionData.getAuctions() != null) {
+                view.addAuctions(auctionData.getAuctions(), auctionData.getNotes());
             } else {
                 if (searchView.getQuery().length() > 0) {
                     Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
