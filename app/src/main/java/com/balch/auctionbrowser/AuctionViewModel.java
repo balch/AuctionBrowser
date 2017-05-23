@@ -60,7 +60,11 @@ public class AuctionViewModel extends ViewModel {
         loadAuctions(searchText, sortColumn);
     }
 
-    void loadAuctions(String searchText, EBayModel.SortColumn sortColumn) {
+    void loadAuctions(String searchText) {
+        loadAuctions(searchText, sortColumn);
+    }
+
+    private void loadAuctions(String searchText, EBayModel.SortColumn sortColumn) {
         this.totalPages = -1;
         this.currentPage = 1;
         this.searchText = searchText;

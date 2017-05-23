@@ -31,7 +31,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,8 +56,6 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     @VisibleForTesting AuctionViewModel auctionViewModel;
-
-    protected EBayModel.SortColumn sortColumn = EBayModel.SortColumn.BEST_MATCH;
 
     SearchView searchView;
 
@@ -196,7 +193,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
         view.showBusy();
         view.clearAuctions();
-        auctionViewModel.loadAuctions(keyword, sortColumn);
+        auctionViewModel.loadAuctions(keyword);
     }
 
     @Override
@@ -252,23 +249,20 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     }
 
     @VisibleForTesting
-    Observer<AuctionData> auctionDataObserver = new Observer<AuctionData>() {
-        @Override
-        public void onChanged(@Nullable AuctionData data) {
-            view.hideBusy();
+    Observer<AuctionData> auctionDataObserver = data -> {
+        view.hideBusy();
 
-            if (data != null) {
-                if (data.getAuctions() != null) {
-                    view.addAuctions(data.getAuctions(), data.getNotes());
-                } else {
-                    if (searchView.getQuery().length() > 0) {
-                        Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
-                    }
+        if (data != null) {
+            if (data.getAuctions() != null) {
+                view.addAuctions(data.getAuctions(), data.getNotes());
+            } else {
+                if (searchView.getQuery().length() > 0) {
+                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show();
                 }
             }
-
-            view.doneLoading();
         }
+
+        view.doneLoading();
     };
 
     @VisibleForTesting
