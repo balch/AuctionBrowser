@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.balch.auctionbrowser.AuctionModelProvider;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.note.Note;
@@ -54,13 +53,11 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
     private List<Auction> auctions = new ArrayList<>();
     @SuppressLint("UseSparseArrays")
     private Map<Long,Note> notes = new HashMap<>();
-    private AuctionModelProvider modelProvider;
 
     private final PublishSubject<Auction> clickAuctionObservable = PublishSubject.create();
     private final PublishSubject<Auction> clickNoteObservable = PublishSubject.create();
 
-    public AuctionAdapter(AuctionModelProvider modelProvider) {
-        this.modelProvider = modelProvider;
+    public AuctionAdapter() {
     }
 
     public Observable<Auction> getClickAuctionObservable() {
@@ -80,7 +77,7 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
     @Override
     public void onBindViewHolder(MemberHolder holder, int position) {
         Auction auction = auctions.get(position);
-        holder.bind(auction, this.notes.get(auction.getItemId()), this.modelProvider);
+        holder.bind(auction, this.notes.get(auction.getItemId()));
     }
 
     @Override
@@ -129,7 +126,7 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
             this.clickNoteObservable = clickNoteObservable;
         }
 
-        void bind(final Auction auction, Note note, AuctionModelProvider modelProvider) {
+        void bind(final Auction auction, Note note) {
 
             Glide.with(itemView.getContext()).load(auction.getImageUrl()).into(itemImageView);
             titleTextView.setValue(auction.getTitle());
@@ -137,20 +134,12 @@ public class AuctionAdapter extends RecyclerView.Adapter<AuctionAdapter.MemberHo
             priceTextView.setValue(auction.getCurrentPrice().getFormatted(2));
             endTimeTextView.setValue(DATE_TIME_FORMAT.format(auction.getEndTime()));
 
-            noteEditButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    clickNoteObservable.onNext(auction);
-                }
-            });
+            noteEditButton.setOnClickListener(v -> clickNoteObservable.onNext(auction));
             noteEditButton.setVisibility((note != null) ? View.VISIBLE : View.GONE);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (auction.getItemId() != -1) {
-                        clickAuctionObservable.onNext(auction);
-                    }
+            itemView.setOnClickListener(v -> {
+                if (auction.getItemId() != -1) {
+                    clickAuctionObservable.onNext(auction);
                 }
             });
         }

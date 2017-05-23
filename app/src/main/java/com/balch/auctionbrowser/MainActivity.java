@@ -49,9 +49,7 @@ import com.balch.auctionbrowser.auction.model.EbayApi;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 public class MainActivity extends PresenterActivity<AuctionView, AuctionModelProvider>
         implements AuctionView.AuctionViewListener, LifecycleRegistryOwner {
@@ -83,7 +81,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
             auctionViewModel.setAuctionModel(auctionModel);
             auctionViewModel.setNotesModel(notesModel);
-            auctionViewModel.setAuctionAdapter(new AuctionAdapter(modelProvider));
+            auctionViewModel.setAuctionAdapter(new AuctionAdapter());
         }
     }
 
@@ -96,20 +94,10 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         view.setAuctionAdapter(auctionAdapter);
 
         disposableClickAuction = auctionAdapter.getClickAuctionObservable()
-                .subscribe(new Consumer<Auction>() {
-                    @Override
-                    public void accept(@NonNull Auction auction) throws Exception {
-                        showDetail(auction);
-                    }
-                });
+                .subscribe(this::showDetail);
 
         disposableClickNote = auctionAdapter.getClickNoteObservable()
-                .subscribe(new Consumer<Auction>() {
-                    @Override
-                    public void accept(@NonNull Auction auction) throws Exception {
-                        showDetail(auction);
-                    }
-                });
+                .subscribe(this::showDetail);
 
         // Get the intent, verify the action and get the query
         handleIntent();

@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
-
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         applicationId "com.balch.auctionbrowser"
@@ -11,8 +11,8 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.1"
-
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,6 +26,11 @@ android {
         }
         secret {
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -62,5 +67,6 @@ dependencies {
     testCompile "com.android.support.test:runner:0.5"
     testCompile "com.android.support.test:rules:0.5"
     testCompile "org.mockito:mockito-all:1.9.5"
-
 }
+
+

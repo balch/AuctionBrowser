@@ -120,24 +120,18 @@ public class AuctionDetailDialog extends DialogFragment {
         Button saveButton = (Button)getDialog().findViewById(R.id.member_detail_button_save);
         Button clearButton = (Button)getDialog().findViewById(R.id.member_detail_button_clear);
         if (enableSaveButtons) {
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (noteDetailDialogListener != null) {
-                        noteDetailDialogListener.onSave(noteEditText.getText().toString());
-                    }
-                    dismiss();
+            saveButton.setOnClickListener(v -> {
+                if (noteDetailDialogListener != null) {
+                    noteDetailDialogListener.onSave(noteEditText.getText().toString());
                 }
+                dismiss();
             });
 
-            clearButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (noteDetailDialogListener != null) {
-                        noteDetailDialogListener.onClear();
-                    }
-                    dismiss();
+            clearButton.setOnClickListener(v -> {
+                if (noteDetailDialogListener != null) {
+                    noteDetailDialogListener.onClear();
                 }
+                dismiss();
             });
 
 
@@ -145,9 +139,5 @@ public class AuctionDetailDialog extends DialogFragment {
             saveButton.setVisibility(View.GONE);
             clearButton.setVisibility(View.GONE);
         }
-
-
     }
-
-
 }

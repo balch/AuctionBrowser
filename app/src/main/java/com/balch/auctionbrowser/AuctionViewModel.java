@@ -11,10 +11,7 @@ import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class AuctionViewModel extends ViewModel {
@@ -101,30 +98,17 @@ public class AuctionViewModel extends ViewModel {
         disposableGetAuction = auctionModel
                 .getAuctions(searchText, currentPage, AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
-                .map(new Function<AuctionData, AuctionData>() {
-                    @Override
-                    public AuctionData apply(@NonNull AuctionData auctionData) throws Exception {
-                        if (auctionData.getAuctions() != null) {
-                            auctionData.setNotes(notesModel.getNotes(auctionData.getAuctions()));
-                        }
-                        totalPages = auctionData.getTotalPages();
-
-                        return auctionData;
+                .map(auctionData -> {
+                    if (auctionData.getAuctions() != null) {
+                        auctionData.setNotes(notesModel.getNotes(auctionData.getAuctions()));
                     }
+                    totalPages = auctionData.getTotalPages();
+
+                    return auctionData;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<AuctionData>() {
-                               @Override
-                               public void accept(@NonNull AuctionData auctionData) throws Exception {
-                                   auctionDataLive.setValue(auctionData);
-                               }
-                           },
-                            new Consumer<Throwable>() {
-                                @Override
-                                public void accept(@NonNull Throwable throwable) throws Exception {
-                                    auctionDataLive.setValue(null);
-                                }
-                            });
+                .subscribe(auctionDataLive::setValue,
+                        throwable -> auctionDataLive.setValue(null));
     }
 
     void disposeGetAuctionDisposable() {

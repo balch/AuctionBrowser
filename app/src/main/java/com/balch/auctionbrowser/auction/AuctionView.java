@@ -74,13 +74,8 @@ public class AuctionView extends FrameLayout implements BaseView {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         this.recyclerOnScrollListener = new RecyclerOnScrollListener(layoutManager,
-                new RecyclerOnScrollListener.LoadMoreListener() {
-                    @Override
-                    public boolean onLoadMore(int page) {
-                        return (auctionViewListener == null) ||
-                                auctionViewListener.onLoadMore(page);
-                    }
-                });
+                page -> (auctionViewListener == null) ||
+                        auctionViewListener.onLoadMore(page));
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(this.recyclerOnScrollListener);
