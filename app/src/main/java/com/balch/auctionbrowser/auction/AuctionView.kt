@@ -32,6 +32,7 @@ import android.widget.ProgressBar
 
 import com.balch.android.app.framework.BaseView
 import com.balch.auctionbrowser.R
+import com.balch.auctionbrowser.auction.commons.inflate
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 
@@ -43,11 +44,12 @@ class AuctionView : FrameLayout, BaseView {
         fun onLoadMore(page: Int): Boolean
     }
 
-    lateinit private var progressBar: ProgressBar
-    lateinit private var recyclerView: RecyclerView
-    lateinit private var recyclerOnScrollListener: RecyclerOnScrollListener
+    private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
+    private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
+    lateinit private var recyclerOnScrollListener: RecyclerOnScrollListener
     private var auctionAdapter: AuctionAdapter? = null
+
     var auctionViewListener: AuctionViewListener? = null
 
     constructor(context: Context) : super(context) {
@@ -63,10 +65,7 @@ class AuctionView : FrameLayout, BaseView {
     }
 
     private fun initializeLayout() {
-        View.inflate(context, R.layout.auction_view, this)
-
-        progressBar = auction_view_progress_bar
-        recyclerView = action_view_recycler
+        inflate(R.layout.auction_view, true)
 
         val layoutManager = LinearLayoutManager(context)
         recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager,

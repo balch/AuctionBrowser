@@ -14,6 +14,7 @@ import com.google.gson.JsonPrimitive;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AuctionDataTypeAdapter implements JsonDeserializer<AuctionData> {
@@ -62,25 +63,15 @@ public class AuctionDataTypeAdapter implements JsonDeserializer<AuctionData> {
 
     private Auction parseAuction(JsonObject item) throws JsonParseException {
 
-        Auction auction = new Auction();
-        auction.setItemId(item.getAsJsonArray("itemId").get(0).getAsLong());
-        auction.setTitle(item.getAsJsonArray("title").get(0).getAsString());
-
-        JsonArray jsonArray = item.getAsJsonArray("viewItemURL");
-        auction.setListingUrl((jsonArray != null) ? jsonArray.get(0).getAsString() : "");
-
-        jsonArray = item.getAsJsonArray("galleryURL");
-        auction.setImageUrl((jsonArray != null) ? jsonArray.get(0).getAsString() : "");
-
-        jsonArray = item.getAsJsonArray("location");
-        auction.setLocation((jsonArray != null) ? jsonArray.get(0).getAsString() : "");
-
+        JsonArray jsonViewItemURL = item.getAsJsonArray("viewItemURL");
+        JsonArray jsonGalleryURL = item.getAsJsonArray("galleryURL");
+        JsonArray jsonLocaton = item.getAsJsonArray("location");
         JsonObject sellingStatus = item.getAsJsonArray("sellingStatus").get(0).getAsJsonObject();
         double convertedCurrentPrice = sellingStatus
                 .getAsJsonArray("convertedCurrentPrice").get(0).getAsJsonObject()
                 .getAsJsonPrimitive("__value__").getAsDouble();
-        auction.setCurrentPrice(new Money(convertedCurrentPrice));
 
+        Money shippingCost = new Money();
         JsonArray shippingInfo = item.getAsJsonArray("shippingInfo");
         if (shippingInfo != null) {
             JsonArray shippingServiceCost = shippingInfo.get(0).getAsJsonObject()
@@ -88,30 +79,48 @@ public class AuctionDataTypeAdapter implements JsonDeserializer<AuctionData> {
             if (shippingServiceCost != null) {
                 double cost = shippingServiceCost.get(0).getAsJsonObject()
                         .getAsJsonPrimitive("__value__").getAsDouble();
-                auction.setShippingCost(new Money(cost));
+                shippingCost = new Money(cost);
             }
         }
 
+        Boolean isAuction = false;
+        Boolean isButItNow = false;
+        Date startTime = new Date();
+        Date endTime = new Date();
         JsonArray listingInfoWrapper = item.getAsJsonArray("listingInfo");
         if (listingInfoWrapper != null) {
             JsonObject listingInfo = listingInfoWrapper.get(0).getAsJsonObject();
             String listingType = listingInfo.getAsJsonArray("listingType").get(0).getAsString();
 
             if ("Auction".equals(listingType)) {
-                auction.setAuction(true);
-                auction.setBuyItNow(listingInfo.getAsJsonArray("buyItNowAvailable").get(0).getAsBoolean());
+                isAuction = true;
+                isButItNow = listingInfo.getAsJsonArray("buyItNowAvailable").get(0).getAsBoolean();
             } else {
-                auction.setAuction(false);
-                auction.setBuyItNow(true);
+                isAuction = false;
+                isButItNow = true;
             }
 
             try {
-                auction.setStartTime(ISO8601DateTime.toDate(listingInfo.getAsJsonArray("startTime").get(0).getAsString()));
-                auction.setEndTime(ISO8601DateTime.toDate(listingInfo.getAsJsonArray("endTime").get(0).getAsString()));
+                startTime = ISO8601DateTime.toDate(listingInfo.getAsJsonArray("startTime").get(0).getAsString());
+                endTime = ISO8601DateTime.toDate(listingInfo.getAsJsonArray("endTime").get(0).getAsString());
             } catch (ParseException ex) {
                 throw new JsonParseException(ex);
             }
         }
+
+        Auction auction = new Auction(
+            item.getAsJsonArray("itemId").get(0).getAsLong(),
+            item.getAsJsonArray("title").get(0).getAsString(),
+            (jsonViewItemURL != null) ? jsonViewItemURL.get(0).getAsString() : "",
+            (jsonGalleryURL != null) ? jsonGalleryURL.get(0).getAsString() : "",
+            (jsonLocaton != null) ? jsonLocaton.get(0).getAsString() : "",
+            shippingCost,
+            new Money(convertedCurrentPrice),
+            "",
+            startTime,
+            endTime,
+            isAuction,
+            isButItNow);
 
         return auction;
     }
