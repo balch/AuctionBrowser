@@ -20,15 +20,15 @@
  * Copyright (C) 2014
  */
 
-package com.balch.auctionbrowser;
+package com.balch.auctionbrowser
 
-import com.balch.android.app.framework.ModelProvider;
-import com.balch.android.app.framework.sql.SqlConnection;
+import com.balch.android.app.framework.ModelProvider
+import com.balch.android.app.framework.sql.SqlConnection
 
-public interface AuctionModelProvider extends ModelProvider {
+interface AuctionModelProvider : ModelProvider {
 
-    SqlConnection getSqlConnection();
+    val sqlConnection: SqlConnection
 
-    ModelApiFactory getModelApiFactory();
+    val modelApiFactory: ModelApiFactory
 
 }
