@@ -36,6 +36,7 @@ import com.balch.auctionbrowser.auction.ext.inflate
 import com.balch.auctionbrowser.auction.ext.loadUrl
 import com.balch.auctionbrowser.auction.ext.toLongDateTimeString
 import com.balch.auctionbrowser.auction.model.Auction
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_detail_dialog.*
 
@@ -48,8 +49,15 @@ class AuctionDetailDialog : DialogFragment() {
 
     private val noteEditText: EditText by lazy { dialog.auction_detail_note }
 
-    val saveNoteObservable: PublishSubject<String> = PublishSubject.create();
-    val clearNoteObservable: PublishSubject<Unit> = PublishSubject.create();
+    private val saveNoteSubject: PublishSubject<String> = PublishSubject.create()
+    private val clearNoteSubject: PublishSubject<Unit> = PublishSubject.create()
+
+    val onSaveNote: Observable<String>
+        get() = saveNoteSubject
+
+    val onClearNote: Observable<Unit>
+        get() = clearNoteSubject
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
@@ -94,16 +102,14 @@ class AuctionDetailDialog : DialogFragment() {
         val clearButton = dialog.member_detail_button_clear
         if (enableSaveButtons) {
             saveButton.setOnClickListener { _ ->
-                saveNoteObservable.onNext(noteEditText.text.toString())
+                saveNoteSubject.onNext(noteEditText.text.toString())
                 dismiss()
             }
 
             clearButton.setOnClickListener { _ ->
-                clearNoteObservable.onNext(Unit)
+                clearNoteSubject.onNext(Unit)
                 dismiss()
             }
-
-
         } else {
             saveButton.visibility = View.GONE
             clearButton.visibility = View.GONE

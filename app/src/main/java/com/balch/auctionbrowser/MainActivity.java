@@ -93,10 +93,10 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         AuctionAdapter auctionAdapter = auctionViewModel.getAuctionAdapter();
         view.setAuctionAdapter(auctionAdapter);
 
-        disposableClickAuction = auctionAdapter.getClickAuctionObservable()
+        disposableClickAuction = auctionAdapter.getOnClickAuction()
                 .subscribe(this::showDetail);
 
-        disposableClickNote = auctionAdapter.getClickNoteObservable()
+        disposableClickNote = auctionAdapter.getOnClickNote()
                 .subscribe(this::showDetail);
 
         // Get the intent, verify the action and get the query
@@ -234,11 +234,11 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         dialog.setArguments(args);
 
         disposeClearNoteObserver();
-        disposableClearNote = dialog.getClearNoteObservable()
+        disposableClearNote = dialog.getOnClearNote()
                 .subscribe( uu -> clearNote(auction, note));
 
         disposeSaveNoteObserver();
-        disposableSaveNote = dialog.getSaveNoteObservable()
+        disposableSaveNote = dialog.getOnSaveNote()
                 .subscribe( text -> saveNote(auction, note, text));
 
         dialog.show(getSupportFragmentManager(), "AuctionDetailDialog");

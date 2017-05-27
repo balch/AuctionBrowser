@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.*
 
@@ -38,11 +39,17 @@ class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
     @SuppressLint("UseSparseArrays")
     val notes = HashMap<Long, Note>()
 
-    val clickAuctionObservable: PublishSubject<Auction> = PublishSubject.create<Auction>()
-    val clickNoteObservable: PublishSubject<Auction> = PublishSubject.create<Auction>()
+    private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
+    private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
+
+    val onClickAuction: Observable<Auction>
+        get() = clickAuctionSubject
+
+    val onClickNote: Observable<Auction>
+        get() = clickNoteSubject
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
-        return AuctionViewHolder(parent, clickAuctionObservable, clickNoteObservable)
+        return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
     }
 
     override fun onBindViewHolder(holder: AuctionViewHolder, position: Int) {
