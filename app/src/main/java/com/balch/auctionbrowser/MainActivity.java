@@ -62,6 +62,9 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     Disposable disposableClickAuction = null;
     Disposable disposableClickNote = null;
 
+    Disposable disposableSaveNote = null;
+    Disposable disposableClearNote = null;
+
     @Override
     public AuctionView createView() {
         return new AuctionView(this);
@@ -130,6 +133,23 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         }
         if (disposableClickAuction != null) {
             disposableClickAuction.dispose();
+        }
+
+        disposeClearNoteObserver();
+        disposeSaveNoteObserver();
+    }
+
+    private void disposeClearNoteObserver() {
+        if (disposableClearNote != null) {
+            disposableClearNote.dispose();
+            disposableClearNote = null;
+        }
+    }
+
+    private void disposeSaveNoteObserver() {
+        if (disposableSaveNote != null) {
+            disposableSaveNote.dispose();
+            disposableSaveNote = null;
         }
     }
 
@@ -208,21 +228,19 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
 
         final Note note = view.getNote(auction);
         if (note != null) {
-            args.putString(AuctionDetailDialog.ARG_NOTE, note.getNote());
+            args.putString(AuctionDetailDialog.Companion.getARG_NOTE(), note.getNote());
         }
-        args.putSerializable(AuctionDetailDialog.ARG_AUCTION, auction);
+        args.putSerializable(AuctionDetailDialog.Companion.getARG_AUCTION(), auction);
         dialog.setArguments(args);
-        dialog.setNoteDetailDialogListener(new AuctionDetailDialog.NoteDetailDialogListener() {
-            @Override
-            public void onSave(String text) {
-                saveNote(auction, note, text);
-            }
 
-            @Override
-            public void onClear() {
-                clearNote(auction, note);
-            }
-        });
+        disposeClearNoteObserver();
+        disposableClearNote = dialog.getClearNoteObservable()
+                .subscribe( uu -> clearNote(auction, note));
+
+        disposeSaveNoteObserver();
+        disposableSaveNote = dialog.getSaveNoteObservable()
+                .subscribe( text -> saveNote(auction, note, text));
+
         dialog.show(getSupportFragmentManager(), "AuctionDetailDialog");
     }
 
