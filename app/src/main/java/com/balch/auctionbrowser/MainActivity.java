@@ -247,9 +247,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
     @VisibleForTesting
     void saveNote(Auction auction, Note note, String text) {
         if (note == null) {
-            Note note1 = new Note();
-            note1.setNote(text);
-            note1.setItemId(auction.getItemId());
+            Note note1 = new Note(auction.getItemId(), text);
             auctionViewModel.insertNote(note1);
             view.addNote(auction, note1);
         } else {

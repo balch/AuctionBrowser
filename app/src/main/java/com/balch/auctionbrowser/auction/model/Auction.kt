@@ -53,18 +53,18 @@ data class Auction(val itemId: Long,
     }
 
     constructor(source: Parcel) : this(
-    source.readLong(),
-    source.readString(),
-    source.readString(),
-    source.readString(),
-    source.readString(),
-    source.readParcelable<Money>(Money::class.java.classLoader),
-    source.readParcelable<Money>(Money::class.java.classLoader),
-    source.readString(),
-    source.readSerializable() as Date,
-    source.readSerializable() as Date,
-    1 == source.readInt(),
-    1 == source.readInt()
+        source.readLong(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        source.readParcelable<Money>(Money::class.java.classLoader),
+        source.readParcelable<Money>(Money::class.java.classLoader),
+        source.readString(),
+        source.readSerializable() as Date,
+        source.readSerializable() as Date,
+        1 == source.readInt(),
+        1 == source.readInt()
     )
 
     override fun describeContents() = 0
