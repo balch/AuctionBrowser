@@ -32,7 +32,7 @@ import android.widget.ProgressBar
 
 import com.balch.android.app.framework.BaseView
 import com.balch.auctionbrowser.R
-import com.balch.auctionbrowser.auction.commons.inflate
+import com.balch.auctionbrowser.auction.ext.inflate
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 

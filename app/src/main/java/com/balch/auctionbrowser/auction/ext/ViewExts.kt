@@ -1,4 +1,4 @@
-package com.balch.auctionbrowser.auction.commons
+package com.balch.auctionbrowser.auction.ext
 
 import android.view.LayoutInflater
 import android.view.View
@@ -13,3 +13,4 @@ fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
 fun ImageView.loadUrl(url: String) {
     Glide.with(context).load(url).into(this)
 }
+
