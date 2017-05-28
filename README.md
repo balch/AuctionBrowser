@@ -6,7 +6,7 @@
 * Uses **Retrofit2**/**RxJava2**/**Gson** to query [EBay API](http://developer.ebay.com/Devzone/finding/CallRef/findItemsByKeywords.html)
 * **RecyclerView** with endless scrolling pattern
 * Local **SQLite** database for user attached note
-* Gradle Dependency on [AppFramework Library](https://github.com/balch/MockTrade#application-framework)
+* **Gradle** dependency on [AppFramework Library](https://github.com/balch/MockTrade#application-framework)
     * **MVP**
     * [Source](https://github.com/balch/MockTrade/tree/master/AppFramework)
 
