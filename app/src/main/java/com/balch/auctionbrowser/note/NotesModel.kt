@@ -50,8 +50,8 @@ class NotesModel(private val sqlConnection: SqlConnection) : SqlMapper<Note> {
         return TABLE_NAME
     }
 
+    @SuppressLint("UseSparseArrays")
     fun getNotes(auctions: List<Auction>?): Map<Long, Note> {
-        @SuppressLint("UseSparseArrays")
         var noteMap:Map<Long, Note>? = null
 
         if (auctions!!.isNotEmpty()) {
@@ -73,7 +73,6 @@ class NotesModel(private val sqlConnection: SqlConnection) : SqlMapper<Note> {
             } catch (e: SQLException) {
                 Log.e(TAG, "getNotes error", e)
             }
-
         }
 
         return noteMap ?: HashMap<Long, Note>()

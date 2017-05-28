@@ -48,9 +48,9 @@ class AuctionView : FrameLayout, BaseView {
     private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
     lateinit private var recyclerOnScrollListener: RecyclerOnScrollListener
-    private var auctionAdapter: AuctionAdapter? = null
+    lateinit private var auctionAdapter: AuctionAdapter
 
-    var auctionViewListener: AuctionViewListener? = null
+    lateinit var auctionViewListener: AuctionViewListener
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -71,7 +71,7 @@ class AuctionView : FrameLayout, BaseView {
         recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager,
                 object : RecyclerOnScrollListener.LoadMoreListener {
                     override fun onLoadMore(page: Int): Boolean {
-                        return auctionViewListener!!.onLoadMore(page)
+                        return auctionViewListener.onLoadMore(page)
                     }
                 })
 
@@ -86,38 +86,38 @@ class AuctionView : FrameLayout, BaseView {
     }
 
     fun showBusy() {
-        this.progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
     }
 
     fun hideBusy() {
-        this.progressBar.visibility = View.GONE
+        progressBar.visibility = View.GONE
     }
 
     fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
-        this.auctionAdapter!!.addAuctions(auctions, notes)
+        auctionAdapter.addAuctions(auctions, notes)
     }
 
     fun clearAuctions() {
-        this.auctionAdapter!!.clearAuctions()
-        this.recyclerOnScrollListener.reset()
+        auctionAdapter.clearAuctions()
+        recyclerOnScrollListener.reset()
     }
 
     fun doneLoading() {
-        this.recyclerOnScrollListener.doneLoading()
+        recyclerOnScrollListener.doneLoading()
     }
 
     fun getNote(auction: Auction): Note? {
-        return this.auctionAdapter!!.notes[auction.itemId]
+        return auctionAdapter.notes[auction.itemId]
     }
 
     fun clearNote(auction: Auction) {
-        this.auctionAdapter!!.notes.remove(auction.itemId)
-        this.auctionAdapter!!.notifyDataSetChanged()
+        auctionAdapter.notes.remove(auction.itemId)
+        auctionAdapter.notifyDataSetChanged()
     }
 
     fun addNote(auction: Auction, note: Note) {
-        this.auctionAdapter!!.notes.put(auction.itemId, note)
-        this.auctionAdapter!!.notifyDataSetChanged()
+        auctionAdapter.notes.put(auction.itemId, note)
+        auctionAdapter.notifyDataSetChanged()
     }
 
     class RecyclerOnScrollListener internal constructor(private val linearLayoutManager: LinearLayoutManager,

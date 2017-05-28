@@ -29,6 +29,8 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
         if (success) {
             auctionData.totalPages = getTotalPages(items)
             auctionData.auctions = parseAuctions(items)
+        } else {
+            auctionData.hasError = true
         }
 
         return auctionData
@@ -114,8 +116,8 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
                 "",
                 startTime,
                 endTime,
-                isAuction!!,
-                isButItNow!!)
+                isAuction,
+                isButItNow)
 
         return auction
     }

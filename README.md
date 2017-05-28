@@ -2,6 +2,7 @@
 
 ### Android Material Design App
 
+* 100% Kotlin
 * Uses *ViewModel* and *LiveData* from [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/index.html)
 * Gradle Dependency on [AppFramework Library](https://github.com/balch/MockTrade#application-framework)
     * MVP

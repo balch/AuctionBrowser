@@ -91,9 +91,7 @@ class AuctionViewModel : ViewModel() {
                 .getAuctions(searchText!!, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
                 .doOnNext { auctionData ->
-                    if (auctionData.auctions != null) {
-                        auctionData.notes = notesModel.getNotes(auctionData.auctions)
-                    }
+                    auctionData.notes = notesModel.getNotes(auctionData.auctions)
                     totalPages = auctionData.totalPages.toLong()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
