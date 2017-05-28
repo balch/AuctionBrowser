@@ -21,9 +21,10 @@ class AuctionViewModel : ViewModel() {
     var isInitialized = false
         private set
 
-    @get:VisibleForTesting(otherwise = VisibleForTesting.NONE)
     lateinit private var auctionModel: EBayModel
-    lateinit private var notesModel: NotesModel
+    @get:VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    lateinit var notesModel: NotesModel
+        private set
     lateinit var auctionAdapter: AuctionAdapter
         private set
 
