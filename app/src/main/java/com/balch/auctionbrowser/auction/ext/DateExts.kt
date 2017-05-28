@@ -1,15 +1,14 @@
 /*
  * Author: Balch
- * Created: 9/6/14 10:10 AM
  *
- * This file is part of MockTrade.
+ * This file is part of AuctionBrowser.
  *
- * MockTrade is free software: you can redistribute it and/or modify
+ * AuctionBrowser is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * MockTrade is distributed in the hope that it will be useful,
+ * AuctionBrowser is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -17,18 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2014
+ * Copyright (C) 2017
+ *
  */
 
-package com.balch.auctionbrowser;
+package com.balch.auctionbrowser.auction.ext
 
-import com.balch.android.app.framework.ModelProvider;
-import com.balch.android.app.framework.sql.SqlConnection;
+import java.text.DateFormat
+import java.util.*
 
-public interface AuctionModelProvider extends ModelProvider {
-
-    SqlConnection getSqlConnection();
-
-    ModelApiFactory getModelApiFactory();
-
+private val LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM)
+fun Date.toLongDateTimeString(): String {
+    return LONG_DATE_TIME_FORMAT.format(this)
 }
+
