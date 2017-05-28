@@ -79,9 +79,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
                     modelProvider.getModelApiFactory().getModelApi(EbayApi.class));
             NotesModel notesModel = new NotesModel(modelProvider.getSqlConnection());
 
-            auctionViewModel.setAuctionModel(auctionModel);
-            auctionViewModel.setNotesModel(notesModel);
-            auctionViewModel.setAuctionAdapter(new AuctionAdapter());
+            auctionViewModel.initialize(new AuctionAdapter(), auctionModel, notesModel);
         }
     }
 

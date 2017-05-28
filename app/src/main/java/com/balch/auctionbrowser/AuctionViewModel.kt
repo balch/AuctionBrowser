@@ -18,13 +18,14 @@ class AuctionViewModel : ViewModel() {
         private val AUCTION_FETCH_COUNT = 30
     }
 
-    var auctionModel: EBayModel? = null
+    var isInitialized = false
+        private set
 
     @get:VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    var notesModel: NotesModel? = null
-        set
-
-    var auctionAdapter: AuctionAdapter? = null
+    lateinit private var auctionModel: EBayModel
+    lateinit private var notesModel: NotesModel
+    lateinit var auctionAdapter: AuctionAdapter
+        private set
 
     var searchText: String? = null
         private set
@@ -36,11 +37,15 @@ class AuctionViewModel : ViewModel() {
     private var disposableGetAuction: Disposable? = null
     private val auctionDataLive = MutableLiveData<AuctionData>()
 
-    val isInitialized: Boolean
-        get() = auctionModel != null && notesModel != null
-
     val auctionData: LiveData<AuctionData>
         get() = auctionDataLive
+
+    fun initialize(adapter: AuctionAdapter, eBayModel: EBayModel, notesModel: NotesModel) {
+        isInitialized = true
+        this.auctionAdapter = adapter
+        this.auctionModel = eBayModel
+        this.notesModel = notesModel
+    }
 
     fun loadAuctions(sortColumn: EBayModel.SortColumn) {
         loadAuctions(searchText?:"", sortColumn)
@@ -68,25 +73,25 @@ class AuctionViewModel : ViewModel() {
     }
 
     fun insertNote(note: Note) {
-        notesModel!!.insert(note)
+        notesModel.insert(note)
     }
 
     fun updateNote(note: Note) {
-        notesModel!!.update(note)
+        notesModel.update(note)
     }
 
     fun deleteNote(note: Note) {
-        notesModel!!.delete(note)
+        notesModel.delete(note)
     }
 
     private fun getAuctionsAsync() {
         disposeGetAuctionDisposable()
-        disposableGetAuction = auctionModel!!
+        disposableGetAuction = auctionModel
                 .getAuctions(searchText, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
                 .doOnNext { auctionData ->
                     if (auctionData.auctions != null) {
-                        auctionData.notes = notesModel!!.getNotes(auctionData.auctions)
+                        auctionData.notes = notesModel.getNotes(auctionData.auctions)
                     }
                     totalPages = auctionData.totalPages.toLong()
                 }
