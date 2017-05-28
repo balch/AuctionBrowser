@@ -88,7 +88,7 @@ class AuctionViewModel : ViewModel() {
     private fun getAuctionsAsync() {
         disposeGetAuctionDisposable()
         disposableGetAuction = auctionModel
-                .getAuctions(searchText, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
+                .getAuctions(searchText!!, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
                 .doOnNext { auctionData ->
                     if (auctionData.auctions != null) {

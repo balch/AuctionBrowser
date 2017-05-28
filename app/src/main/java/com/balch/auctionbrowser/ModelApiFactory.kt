@@ -1,7 +1,7 @@
 package com.balch.auctionbrowser
 
 import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
-import com.balch.auctionbrowser.auction.model.EbayApi
+import com.balch.auctionbrowser.auction.model.EBayApi
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,11 +20,11 @@ class ModelApiFactory {
                 .create()
     }
 
-    private val ebayApi: EbayApi by lazy {getRetrofitService(EBAY_URL_BASE).create(EbayApi::class.java)}
+    private val ebayApi: EBayApi by lazy {getRetrofitService(EBAY_URL_BASE).create(EBayApi::class.java)}
 
     @Suppress("UNCHECKED_CAST")
     fun <T> getModelApi(api: Class<T>): T? {
-        if (api == EbayApi::class.java) {
+        if (api == EBayApi::class.java) {
             return ebayApi as T
         }
 

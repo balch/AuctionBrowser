@@ -44,7 +44,7 @@ import com.balch.auctionbrowser.auction.AuctionDetailDialog;
 import com.balch.auctionbrowser.auction.AuctionView;
 import com.balch.auctionbrowser.auction.model.Auction;
 import com.balch.auctionbrowser.auction.model.EBayModel;
-import com.balch.auctionbrowser.auction.model.EbayApi;
+import com.balch.auctionbrowser.auction.model.EBayApi;
 import com.balch.auctionbrowser.note.Note;
 import com.balch.auctionbrowser.note.NotesModel;
 
@@ -76,7 +76,7 @@ public class MainActivity extends PresenterActivity<AuctionView, AuctionModelPro
         auctionViewModel = getAuctionViewModel();
         if (!auctionViewModel.isInitialized()) {
             EBayModel auctionModel = new EBayModel(getString(R.string.ebay_app_id),
-                    modelProvider.getModelApiFactory().getModelApi(EbayApi.class));
+                    modelProvider.getModelApiFactory().getModelApi(EBayApi.class));
             NotesModel notesModel = new NotesModel(modelProvider.getSqlConnection());
 
             auctionViewModel.initialize(new AuctionAdapter(), auctionModel, notesModel);
