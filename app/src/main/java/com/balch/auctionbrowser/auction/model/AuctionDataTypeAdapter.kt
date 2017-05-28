@@ -108,8 +108,8 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
         val auction = Auction(
                 item.getAsJsonArray("itemId").get(0).asLong,
                 item.getAsJsonArray("title").get(0).asString,
-                if (jsonViewItemURL != null) jsonViewItemURL.get(0).asString else "",
                 if (jsonGalleryURL != null) jsonGalleryURL.get(0).asString else "",
+                if (jsonViewItemURL != null) jsonViewItemURL.get(0).asString else "",
                 if (jsonLocaton != null) jsonLocaton.get(0).asString else "",
                 shippingCost,
                 Money(convertedCurrentPrice),
