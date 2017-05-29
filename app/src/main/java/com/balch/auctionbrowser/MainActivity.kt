@@ -68,7 +68,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         return AuctionView(this)
     }
 
-    override fun createModel(modelProvider: AuctionModelProvider) {
+    override fun createModel(modelProvider: ModelProvider) {
 
         auctionViewModel = getAuctionViewModel()
         if (!auctionViewModel.isInitialized) {

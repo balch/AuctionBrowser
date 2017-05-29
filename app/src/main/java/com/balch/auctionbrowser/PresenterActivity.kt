@@ -52,7 +52,7 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
 
      * @param modelProvider injected ModelProvider
      */
-    protected abstract fun createModel(modelProvider: AuctionModelProvider)
+    protected abstract fun createModel(modelProvider: ModelProvider)
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
@@ -64,7 +64,7 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
         this.view = this.createView()
         this.setContentView(view)
 
-        this.createModel(application as AuctionModelProvider)
+        this.createModel(application as ModelProvider)
     }
 
     /**

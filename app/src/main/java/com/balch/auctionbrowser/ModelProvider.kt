@@ -24,7 +24,7 @@ package com.balch.auctionbrowser
 
 import com.balch.android.app.framework.sql.SqlConnection
 
-interface AuctionModelProvider {
+interface ModelProvider {
 
     val sqlConnection: SqlConnection
 

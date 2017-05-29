@@ -11,7 +11,6 @@ import org.mockito.Mock
 
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
-import org.junit.runner.RunWith
 import org.mockito.Matchers.anyInt
 import org.mockito.Matchers.eq
 import org.mockito.Mockito.doNothing
@@ -30,14 +29,14 @@ class MainActivityTest {
     private val auctionViewModel = spy(AuctionViewModel())
 
     lateinit private var activity: MainActivity
-    lateinit private var modelProvider: AuctionModelProvider
+    lateinit private var modelProvider: ModelProvider
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
         initMocks(this)
 
-        modelProvider = spy<AuctionModelProvider>(object : AuctionApplication() {
+        modelProvider = spy<ModelProvider>(object : AuctionApplication() {
             override var sqlConnection: SqlConnection = mockSqlConnection
         })
 
