@@ -22,6 +22,7 @@
 
 package com.balch.auctionbrowser
 
+import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LifecycleRegistryOwner
@@ -54,9 +55,8 @@ import io.reactivex.schedulers.Schedulers
 open class MainActivity : PresenterActivity<AuctionView>(),
         AuctionView.AuctionViewListener, LifecycleRegistryOwner {
 
-    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val lifecycleRegistry by lazy { LifecycleRegistry(this) }
 
-    @VisibleForTesting
     lateinit private var auctionViewModel: AuctionViewModel
 
     lateinit private var searchView: SearchView
@@ -71,6 +71,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         return AuctionView(this)
     }
 
+    @SuppressLint("VisibleForTests")
     override fun createModel(modelProvider: ModelProvider) {
 
         auctionViewModel = getAuctionViewModel()
@@ -83,6 +84,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         }
     }
 
+    @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)

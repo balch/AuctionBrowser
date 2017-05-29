@@ -39,6 +39,7 @@ fun Activity.inflate(layoutId: Int, root: ViewGroup? = null): View {
     return layoutInflater.inflate(layoutId, root)
 }
 
-fun ImageView.loadUrl(url: String, request: (DrawableTypeRequest<String>) -> DrawableRequestBuilder<String>) {
+inline fun ImageView.loadUrl(url: String,
+                             request: (DrawableTypeRequest<String>) -> DrawableRequestBuilder<String>) {
     request(Glide.with(context).load(url)).into(this)
 }

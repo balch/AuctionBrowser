@@ -22,11 +22,12 @@
 
 package com.balch.auctionbrowser.auction.ext
 
-import java.text.DateFormat
-import java.util.*
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
-private val LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM)
-fun Date.toLongDateTimeString(): String {
-    return LONG_DATE_TIME_FORMAT.format(this)
+private val LONG_DATE_TIME_FORMAT: DateTimeFormatter = DateTimeFormat.mediumDateTime()
+fun DateTime.toLongDateTimeString(): String {
+    return this.toString(LONG_DATE_TIME_FORMAT)
 }
 

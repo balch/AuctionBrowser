@@ -23,18 +23,12 @@
 package com.balch.auctionbrowser.auction.model
 
 import com.balch.auctionbrowser.AuctionData
-import com.balch.auctionbrowser.types.ISO8601DateTime
 import com.balch.auctionbrowser.types.Money
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
-
+import com.google.gson.*
+import org.joda.time.DateTime
 import java.lang.reflect.Type
 import java.text.ParseException
-import java.util.ArrayList
-import java.util.Date
+import java.util.*
 
 class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
     @Throws(JsonParseException::class)
@@ -101,8 +95,8 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
 
         var isAuction: Boolean = false
         var isButItNow: Boolean = false
-        var startTime = Date()
-        var endTime = Date()
+        var startTime = DateTime()
+        var endTime = DateTime()
         val listingInfoWrapper = item.getAsJsonArray("listingInfo")
         if (listingInfoWrapper != null) {
             val listingInfo = listingInfoWrapper.get(0).asJsonObject
@@ -117,8 +111,8 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
             }
 
             try {
-                startTime = ISO8601DateTime.toDate(listingInfo.getAsJsonArray("startTime").get(0).asString)
-                endTime = ISO8601DateTime.toDate(listingInfo.getAsJsonArray("endTime").get(0).asString)
+                startTime = DateTime.parse(listingInfo.getAsJsonArray("startTime").get(0).asString)
+                endTime = DateTime.parse(listingInfo.getAsJsonArray("endTime").get(0).asString)
             } catch (ex: ParseException) {
                 throw JsonParseException(ex)
             }

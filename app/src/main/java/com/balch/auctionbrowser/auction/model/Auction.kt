@@ -23,8 +23,8 @@
 package com.balch.auctionbrowser.auction.model
 
 import com.balch.auctionbrowser.types.Money
+import org.joda.time.DateTime
 import java.io.Serializable
-import java.util.*
 
 data class Auction(val itemId: Long,
                    val title: String,
@@ -34,7 +34,7 @@ data class Auction(val itemId: Long,
                    val shippingCost: Money,
                    val currentPrice: Money,
                    val auctionSource: String,
-                   val startTime: Date,
-                   val endTime: Date,
+                   val startTime: DateTime,
+                   val endTime: DateTime,
                    var isAuction: Boolean,
                    var isBuyItNow: Boolean) : Serializable
