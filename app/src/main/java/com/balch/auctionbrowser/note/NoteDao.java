@@ -20,12 +20,31 @@
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.note;
 
-interface ModelProvider {
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
-    val database: AuctionDatabase
+import java.util.List;
 
-    val modelApiFactory: ModelApiFactory
+/**
+ * Note: This clase has been left in Java b/c of errors
+ * resolving ":itemIds" when converted to kotlin
+ */
+@Dao
+public interface NoteDao {
+    @Query("SELECT * FROM note WHERE itemId IN (:itemIds)")
+    List<Note> loadAllByIds(long[] itemIds);
 
+    @Insert
+    void insert(Note... notes);
+
+    @Delete
+    void delete(Note note);
+
+    @Update
+    void update(Note... notes);
 }

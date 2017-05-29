@@ -22,16 +22,14 @@
 
 package com.balch.auctionbrowser.auction.model
 
-import com.balch.android.app.framework.types.ISO8601DateTime
-import com.balch.android.app.framework.types.Money
 import com.balch.auctionbrowser.AuctionData
-import com.google.gson.JsonArray
+import com.balch.auctionbrowser.types.ISO8601DateTime
+import com.balch.auctionbrowser.types.Money
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
-import com.google.gson.JsonPrimitive
 
 import java.lang.reflect.Type
 import java.text.ParseException

@@ -23,90 +23,34 @@
 package com.balch.auctionbrowser.note
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.database.Cursor
-import android.util.Log
-
-import com.balch.android.app.framework.sql.SqlConnection
-import com.balch.android.app.framework.sql.SqlMapper
 import com.balch.auctionbrowser.auction.model.Auction
+import java.util.*
 
-import java.lang.reflect.InvocationTargetException
-import java.sql.SQLException
-import java.util.HashMap
-
-class NotesModel(private val sqlConnection: SqlConnection) : SqlMapper<Note> {
-    private val TAG = NotesModel::class.java.simpleName
-
-    private val TABLE_NAME = "notes"
-
-    private val COLUMN_ITEM_ID = "item_id"
-    private val COLUMN_NOTE = "note"
-
-    override fun getTableName(): String {
-        return TABLE_NAME
-    }
-
+class NotesModel(private val sqlConnection: NoteDao) {
     @SuppressLint("UseSparseArrays")
-    fun getNotes(auctions: List<Auction>?): Map<Long, Note> {
+    fun getNotes(auctions: List<Auction>): Map<Long, Note> {
         var noteMap:Map<Long, Note>? = null
 
-        if (auctions!!.isNotEmpty()) {
+        if (auctions.isNotEmpty()) {
 
-            val cols = auctions.joinToString {"${it.itemId}"}
-            val where = "$COLUMN_ITEM_ID in ($cols)"
+            val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
 
-            try {
-                val notes = sqlConnection.query(this, Note::class.java, where, null, null)
-                noteMap = notes.associateBy({it.itemId})
-            } catch (e: NoSuchMethodException) {
-                Log.e(TAG, "getNotes error", e)
-            } catch (e: IllegalAccessException) {
-                Log.e(TAG, "getNotes error", e)
-            } catch (e: InvocationTargetException) {
-                Log.e(TAG, "getNotes error", e)
-            } catch (e: InstantiationException) {
-                Log.e(TAG, "getNotes error", e)
-            } catch (e: SQLException) {
-                Log.e(TAG, "getNotes error", e)
-            }
+            val notes = sqlConnection.loadAllByIds(itemIdsList.toLongArray())
+            noteMap = notes.associateBy({it.itemId})
         }
 
         return noteMap ?: HashMap<Long, Note>()
     }
 
-    fun insert(note: Note): Long {
-        var id: Long = -1
-        try {
-            id = sqlConnection.insert(this, note)
-        } catch (e: SQLException) {
-            Log.e(TAG, "inserting note error", e)
-        }
-
-        return id
+    fun insert(note: Note) {
+        sqlConnection.insert(note)
     }
 
-    fun update(note: Note): Boolean {
-        return sqlConnection.update(this, note)
+    fun update(note: Note) {
+        sqlConnection.update(note)
     }
 
-    fun delete(note: Note): Boolean {
-        return sqlConnection.delete(this, note)
+    fun delete(note: Note) {
+        sqlConnection.delete(note)
     }
-
-    override fun getContentValues(note: Note): ContentValues {
-        val values = ContentValues()
-
-        values.put(COLUMN_ITEM_ID, note.itemId)
-        values.put(COLUMN_NOTE, note.note)
-
-        return values
-    }
-
-    override fun populate(note: Note, cursor: Cursor, columnMap: Map<String, Int>) {
-        note.setId(cursor.getLong(columnMap[SqlMapper.COLUMN_ID]!!))
-        note.itemId = cursor.getLong(columnMap[COLUMN_ITEM_ID]!!)
-        note.note = cursor.getString(columnMap[COLUMN_NOTE]!!)
-    }
-
 }

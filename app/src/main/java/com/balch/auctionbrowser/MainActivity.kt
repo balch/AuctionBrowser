@@ -46,7 +46,10 @@ import com.balch.auctionbrowser.auction.model.EBayApi
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 open class MainActivity : PresenterActivity<AuctionView>(),
         AuctionView.AuctionViewListener, LifecycleRegistryOwner {
@@ -74,7 +77,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         if (!auctionViewModel.isInitialized) {
             val auctionModel = EBayModel(getString(R.string.ebay_app_id),
                     modelProvider.modelApiFactory.getModelApi(EBayApi::class.java)!!)
-            val notesModel = NotesModel(modelProvider.sqlConnection)
+            val notesModel = NotesModel(modelProvider.database.noteDao())
 
             auctionViewModel.initialize(AuctionAdapter(), auctionModel, notesModel)
         }
@@ -235,20 +238,34 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     @VisibleForTesting
     internal fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
-            val note1 = Note(auction.itemId, text)
-            auctionViewModel.insertNote(note1)
-            view.addNote(auction, note1)
+            Observable.just(Note(auction.itemId, text))
+                    .subscribeOn(Schedulers.io())
+                    .doOnNext { note1 ->  auctionViewModel.insertNote(note1) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { note1 ->
+                        if (!isFinishing) {
+                            view.addNote(auction, note1)
+                        }}
         } else {
-            note.note = text
-            auctionViewModel.updateNote(note)
+            note.noteText = text
+            Observable.just(note)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe { note1 -> auctionViewModel.updateNote(note1) }
         }
     }
 
     @VisibleForTesting
     internal fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
-            auctionViewModel.deleteNote(note)
-            view.clearNote(auction)
+            Observable.just(true)
+                    .subscribeOn(Schedulers.io())
+                    .doOnNext { _ ->  auctionViewModel.deleteNote(note) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { _ ->
+                        if (!isFinishing) {
+                            view.clearNote(auction)
+                        }
+                    }
         }
     }
 

@@ -26,6 +26,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.support.annotation.VisibleForTesting
+import android.util.Log
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
@@ -116,7 +117,10 @@ class AuctionViewModel : ViewModel() {
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({auctionData -> auctionDataLive.setValue(auctionData)},
-                            { _ -> auctionDataLive.setValue(null)})
+                            { throwable ->
+                                Log.e("AuctionViewModel", "Error", throwable)
+                                auctionDataLive.setValue(null)
+                            })
     }
 
     fun disposeGetAuctionDisposable() {

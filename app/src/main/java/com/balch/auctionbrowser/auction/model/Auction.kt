@@ -22,14 +22,9 @@
 
 package com.balch.auctionbrowser.auction.model
 
-import android.os.Parcel
-import android.os.Parcelable
-
-import com.balch.android.app.framework.domain.DomainObject
-import com.balch.android.app.framework.types.Money
-
+import com.balch.auctionbrowser.types.Money
 import java.io.Serializable
-import java.util.Date
+import java.util.*
 
 data class Auction(val itemId: Long,
                    val title: String,
@@ -42,44 +37,4 @@ data class Auction(val itemId: Long,
                    val startTime: Date,
                    val endTime: Date,
                    var isAuction: Boolean,
-                   var isBuyItNow: Boolean) : DomainObject(), Parcelable, Serializable {
-
-    companion object {
-        @JvmField val CREATOR: Parcelable.Creator<Auction> = object : Parcelable.Creator<Auction> {
-            override fun createFromParcel(source: Parcel): Auction = Auction(source)
-            override fun newArray(size: Int): Array<Auction?> = arrayOfNulls(size)
-        }
-    }
-
-    constructor(source: Parcel) : this(
-        source.readLong(),
-        source.readString(),
-        source.readString(),
-        source.readString(),
-        source.readString(),
-        source.readParcelable<Money>(Money::class.java.classLoader),
-        source.readParcelable<Money>(Money::class.java.classLoader),
-        source.readString(),
-        source.readSerializable() as Date,
-        source.readSerializable() as Date,
-        1 == source.readInt(),
-        1 == source.readInt()
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeLong(itemId)
-        dest.writeString(title)
-        dest.writeString(imageUrl)
-        dest.writeString(listingUrl)
-        dest.writeString(location)
-        dest.writeParcelable(shippingCost, flags)
-        dest.writeParcelable(currentPrice, flags)
-        dest.writeString(auctionSource)
-        dest.writeSerializable(startTime)
-        dest.writeSerializable(endTime)
-        dest.writeInt((if (isAuction) 1 else 0))
-        dest.writeInt((if (isBuyItNow) 1 else 0))
-    }
-}
+                   var isBuyItNow: Boolean) : Serializable

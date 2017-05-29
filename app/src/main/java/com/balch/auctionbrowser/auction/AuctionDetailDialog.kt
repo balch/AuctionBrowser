@@ -47,7 +47,7 @@ class AuctionDetailDialog constructor(auction: Auction, note: Note?): DialogFrag
     init {
         val args = Bundle()
         if (note != null) {
-            args.putString(ARG_NOTE, note.note)
+            args.putString(ARG_NOTE, note.noteText)
         }
         args.putSerializable(ARG_AUCTION, auction)
         arguments = args

@@ -1,8 +1,0 @@
-CREATE TABLE notes (
- _id INTEGER PRIMARY KEY AUTOINCREMENT,
- item_id INTEGER NOT NULL,
- note TEXT NOT NULL,
- create_time INTEGER NOT NULL,
- update_time INTEGER NOT NULL
-);
-

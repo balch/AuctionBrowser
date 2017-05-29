@@ -1,30 +1,24 @@
 package com.balch.auctionbrowser
 
-import com.balch.android.app.framework.sql.SqlConnection
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
-
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-
+import com.balch.auctionbrowser.note.NoteDao
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
 import org.mockito.Matchers.anyInt
 import org.mockito.Matchers.eq
-import org.mockito.Mockito.doNothing
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.never
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.verify
+import org.mockito.Mock
+import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
 
 class MainActivityTest {
 
     @Mock lateinit internal var mockView: AuctionView
-    @Mock lateinit internal var mockSqlConnection: SqlConnection
+    @Mock lateinit internal var mockAuctionDatabase: AuctionDatabase
+    @Mock lateinit internal var mockNoteDoa: NoteDao
 
     private val auctionViewModel = spy(AuctionViewModel())
 
@@ -36,8 +30,10 @@ class MainActivityTest {
     fun setUp() {
         initMocks(this)
 
+        `when`(mockAuctionDatabase.noteDao()).thenReturn(mockNoteDoa)
+
         modelProvider = spy<ModelProvider>(object : AuctionApplication() {
-            override var sqlConnection: SqlConnection = mockSqlConnection
+            override var database: AuctionDatabase = mockAuctionDatabase
         })
 
         activity = spy<MainActivity>(object : MainActivity() {
@@ -93,8 +89,8 @@ class MainActivityTest {
 
         activity.saveNote(auction, note, text)
 
-        verify(note).note = eq(text)
-        verify(mockSqlConnection).update(eq(activity.getAuctionViewModel().notesModel), eq(note))
+        verify(note).noteText = eq(text)
+        verify(mockNoteDoa).update(eq(note))
     }
 
 }

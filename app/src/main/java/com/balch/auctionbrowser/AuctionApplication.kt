@@ -23,17 +23,17 @@
 package com.balch.auctionbrowser
 
 import android.app.Application
+import android.arch.persistence.room.Room
 import android.os.StrictMode
 
-import com.balch.android.app.framework.sql.SqlConnection
+
 
 open class AuctionApplication : Application(), ModelProvider {
     private val DATABASE_NAME = "auction_browser.db"
-    private val DATABASE_VERSION = 1
-    private val DATABASE_CREATES_SCRIPT = "sql/create.sql"
-    private val DATABASE_UPDATE_SCRIPT_FORMAT = "sql/upgrade_%d.sql"
 
-    override lateinit var sqlConnection: SqlConnection
+    override val database: AuctionDatabase by lazy {
+        Room.databaseBuilder(this, AuctionDatabase::class.java, DATABASE_NAME).build()
+    }
 
     override val modelApiFactory = ModelApiFactory()
 
@@ -54,8 +54,6 @@ open class AuctionApplication : Application(), ModelProvider {
                     .build())
         }
 
-        sqlConnection = SqlConnection(this, DATABASE_NAME, DATABASE_VERSION,
-                DATABASE_CREATES_SCRIPT, DATABASE_UPDATE_SCRIPT_FORMAT)
     }
 
 }

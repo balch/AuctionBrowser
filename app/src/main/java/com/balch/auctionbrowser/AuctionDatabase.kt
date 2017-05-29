@@ -22,10 +22,13 @@
 
 package com.balch.auctionbrowser
 
-interface ModelProvider {
+import android.arch.persistence.room.Database
+import android.arch.persistence.room.RoomDatabase
+import com.balch.auctionbrowser.note.Note
+import com.balch.auctionbrowser.note.NoteDao
 
-    val database: AuctionDatabase
 
-    val modelApiFactory: ModelApiFactory
-
+@Database(entities = arrayOf(Note::class), version = 2)
+abstract class AuctionDatabase : RoomDatabase() {
+    abstract fun noteDao(): NoteDao
 }

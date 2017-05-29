@@ -22,48 +22,8 @@
 
 package com.balch.auctionbrowser.note
 
-import android.os.Parcel
-import android.os.Parcelable
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 
-import com.balch.android.app.framework.domain.DomainObject
-
-import java.io.Serializable
-
-class Note : DomainObject, Serializable, Parcelable {
-    var itemId: Long = 0
-    var note: String? = null
-
-    constructor() {}
-    constructor(itemId: Long, note:String) {
-        this.itemId = itemId
-        this.note = note
-    }
-
-    protected constructor(`in`: Parcel) : super(`in`) {
-        itemId = `in`.readLong()
-        note = `in`.readString()
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        super.writeToParcel(dest, flags)
-        dest.writeLong(itemId)
-        dest.writeString(note)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object {
-
-        val CREATOR: Parcelable.Creator<Note> = object : Parcelable.Creator<Note> {
-            override fun createFromParcel(`in`: Parcel): Note {
-                return Note(`in`)
-            }
-
-            override fun newArray(size: Int): Array<Note?> {
-                return arrayOfNulls<Note?>(size)
-            }
-        }
-    }
-}
+@Entity
+data class Note(@PrimaryKey var itemId: Long = 0, var noteText: String = "")
