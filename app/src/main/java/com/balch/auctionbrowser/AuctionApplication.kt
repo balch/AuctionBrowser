@@ -28,12 +28,10 @@ import android.os.StrictMode
 import com.balch.android.app.framework.sql.SqlConnection
 
 open class AuctionApplication : Application(), AuctionModelProvider {
-    companion object {
-        private val DATABASE_NAME = "auction_browser.db"
-        private val DATABASE_VERSION = 1
-        private val DATABASE_CREATES_SCRIPT = "sql/create.sql"
-        private val DATABASE_UPDATE_SCRIPT_FORMAT = "sql/upgrade_%d.sql"
-    }
+    private val DATABASE_NAME = "auction_browser.db"
+    private val DATABASE_VERSION = 1
+    private val DATABASE_CREATES_SCRIPT = "sql/create.sql"
+    private val DATABASE_UPDATE_SCRIPT_FORMAT = "sql/upgrade_%d.sql"
 
     override lateinit var sqlConnection: SqlConnection
 

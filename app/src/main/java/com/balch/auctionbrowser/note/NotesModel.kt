@@ -36,14 +36,12 @@ import java.sql.SQLException
 import java.util.HashMap
 
 class NotesModel(private val sqlConnection: SqlConnection) : SqlMapper<Note> {
-    companion object {
-        private val TAG = NotesModel::class.java.simpleName
+    private val TAG = NotesModel::class.java.simpleName
 
-        val TABLE_NAME = "notes"
+    private val TABLE_NAME = "notes"
 
-        val COLUMN_ITEM_ID = "item_id"
-        val COLUMN_NOTE = "note"
-    }
+    private val COLUMN_ITEM_ID = "item_id"
+    private val COLUMN_NOTE = "note"
 
     override fun getTableName(): String {
         return TABLE_NAME

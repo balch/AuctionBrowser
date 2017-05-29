@@ -35,15 +35,22 @@ import com.balch.auctionbrowser.auction.ext.inflate
 import com.balch.auctionbrowser.auction.ext.loadUrl
 import com.balch.auctionbrowser.auction.ext.toLongDateTimeString
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_detail_dialog.*
 
-class AuctionDetailDialog : DialogFragment() {
+class AuctionDetailDialog constructor(auction: Auction, note: Note?): DialogFragment() {
+    private val ARG_NOTE = "ARG_NOTE"
+    private val ARG_AUCTION = "ARG_AUCTION"
 
-    companion object {
-        val ARG_NOTE = "ARG_NOTE"
-        val ARG_AUCTION = "ARG_AUCTION"
+    init {
+        val args = Bundle()
+        if (note != null) {
+            args.putString(ARG_NOTE, note.note)
+        }
+        args.putSerializable(ARG_AUCTION, auction)
+        arguments = args
     }
 
     private val noteEditText: EditText by lazy { dialog.auction_detail_note }
@@ -56,7 +63,6 @@ class AuctionDetailDialog : DialogFragment() {
 
     val onClearNote: Observable<Unit>
         get() = clearNoteSubject
-
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)

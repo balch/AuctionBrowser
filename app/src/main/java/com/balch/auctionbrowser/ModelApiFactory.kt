@@ -33,16 +33,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ModelApiFactory {
 
-    companion object {
+    private val EBAY_URL_BASE = "http://svcs.ebay.com/"
+    private val ebayApi: EBayApi by lazy { getRetrofitService(EBAY_URL_BASE).create(EBayApi::class.java) }
 
-        private val EBAY_URL_BASE = "http://svcs.ebay.com/"
-
-        private val gson = GsonBuilder()
+    private val gson by lazy {
+        GsonBuilder()
                 .registerTypeAdapter(AuctionData::class.java, AuctionDataTypeAdapter())
                 .create()
     }
-
-    private val ebayApi: EBayApi by lazy {getRetrofitService(EBAY_URL_BASE).create(EBayApi::class.java)}
 
     @Suppress("UNCHECKED_CAST")
     fun <T> getModelApi(api: Class<T>): T? {
@@ -68,4 +66,5 @@ class ModelApiFactory {
                 .client(client)
                 .build()
     }
+
 }

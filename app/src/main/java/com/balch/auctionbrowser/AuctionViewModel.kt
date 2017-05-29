@@ -36,9 +36,7 @@ import io.reactivex.schedulers.Schedulers
 
 class AuctionViewModel : ViewModel() {
 
-    companion object {
-        private val AUCTION_FETCH_COUNT = 30
-    }
+    private val AUCTION_FETCH_COUNT = 30
 
     var isInitialized = false
         private set

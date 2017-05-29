@@ -206,15 +206,8 @@ open class MainActivity : PresenterActivity<AuctionView, AuctionModelProvider>()
 
     @VisibleForTesting
     internal fun showDetail(auction: Auction) {
-        val dialog = AuctionDetailDialog()
-        val args = Bundle()
-
         val note = view.getNote(auction)
-        if (note != null) {
-            args.putString(AuctionDetailDialog.ARG_NOTE, note.note)
-        }
-        args.putSerializable(AuctionDetailDialog.ARG_AUCTION, auction)
-        dialog.arguments = args
+        val dialog = AuctionDetailDialog(auction, note)
 
         disposeClearNoteObserver()
         disposableClearNote = dialog.onClearNote
