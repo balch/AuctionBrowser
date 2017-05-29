@@ -30,6 +30,9 @@ import java.lang.reflect.Type
 import java.text.ParseException
 import java.util.*
 
+/**
+ * Retrofit parser for the EBayApi.
+ */
 class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): AuctionData {

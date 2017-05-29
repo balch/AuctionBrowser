@@ -74,13 +74,14 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     @SuppressLint("VisibleForTests")
     override fun createModel(modelProvider: ModelProvider) {
 
+        // Note: the ViewModel survives a ConfigChange event and may already be initialized
         auctionViewModel = getAuctionViewModel()
         if (!auctionViewModel.isInitialized) {
             val auctionModel = EBayModel(getString(R.string.ebay_app_id),
                     modelProvider.modelApiFactory.getModelApi(EBayApi::class.java)!!)
             val notesModel = NotesModel(modelProvider.database.noteDao())
 
-            auctionViewModel.initialize(AuctionAdapter(), auctionModel, notesModel)
+            auctionViewModel.inject(AuctionAdapter(), auctionModel, notesModel)
         }
     }
 
@@ -163,7 +164,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     internal fun sortAuctions(sortColumn: EBayModel.SortColumn) {
         view.showBusy()
         view.clearAuctions()
-        auctionViewModel.loadAuctions(sortColumn)
+        auctionViewModel.loadAuctions(sortColumn = sortColumn)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

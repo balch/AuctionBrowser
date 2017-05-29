@@ -27,6 +27,9 @@ import com.balch.auctionbrowser.auction.ext.logTiming
 import com.balch.auctionbrowser.auction.model.Auction
 import java.util.*
 
+/**
+ * Model API for retrieving/persisting data to the NotesDao repository (Sqlite db)
+ */
 class NotesModel(private val sqlConnection: NoteDao) {
     @SuppressLint("UseSparseArrays")
     fun getNotes(auctions: List<Auction>): Map<Long, Note> {

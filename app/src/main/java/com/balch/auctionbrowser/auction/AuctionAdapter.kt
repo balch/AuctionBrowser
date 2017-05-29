@@ -33,19 +33,22 @@ import java.util.*
 
 class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
 
-    private val auctions = ArrayList<Auction>()
-
+    // public properties
     @SuppressLint("UseSparseArrays")
     val notes = HashMap<Long, Note>()
-
-    private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
-    private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
 
     val onClickAuction: Observable<Auction>
         get() = clickAuctionSubject
 
     val onClickNote: Observable<Auction>
         get() = clickNoteSubject
+
+    // adapter auction data
+    private val auctions = ArrayList<Auction>()
+
+    // backing for exposing user initiated events to Activity
+    private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
+    private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
         return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)

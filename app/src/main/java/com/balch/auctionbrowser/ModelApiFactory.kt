@@ -31,6 +31,11 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * Factory used to dependency inject retrofit Api's into the ModelApi classes.
+ * Provides a common location to build the the Retrofit Service objects.
+ * Easy to override in UnitTests
+ */
 class ModelApiFactory {
 
     private val EBAY_URL_BASE = "http://svcs.ebay.com/"

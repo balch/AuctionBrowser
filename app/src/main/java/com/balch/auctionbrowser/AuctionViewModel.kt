@@ -35,13 +35,32 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * This ViewModel exposes a LiveData object which emits AuctionData objects from the
+ * EBay API. An AuctionData object contains the current page of found Auctions.
+ *
+ * The ViewModel also stores state data that should survive a ConfigChange operation. This
+ * includes the AuctionAdapter that contains the entire Auction list and the info necessary
+ * to retrieve the next page of Auctions.
+ *
+ * The class implements simple dependency injection using the `inject()` method to setter-inject
+ * the Adapter and ModelApis.
+ */
 class AuctionViewModel : ViewModel() {
 
     private val AUCTION_FETCH_COUNT = 30
 
+    // public properties
     var isInitialized = false
         private set
 
+    val auctionData: LiveData<AuctionData>
+        get() = auctionDataLive
+
+    var searchText: String? = null
+        private set
+
+    // injected models
     lateinit private var auctionModel: EBayModel
     @get:VisibleForTesting(otherwise = VisibleForTesting.NONE)
     lateinit var notesModel: NotesModel
@@ -49,39 +68,29 @@ class AuctionViewModel : ViewModel() {
     lateinit var auctionAdapter: AuctionAdapter
         private set
 
-    var searchText: String? = null
-        private set
-
+    // paging vars
     private var totalPages: Long = 0
     private var currentPage: Int = 0
-
     private var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
-    private var disposableGetAuction: Disposable? = null
+
+    // LiveData<AuctionData>
     private val auctionDataLive = MutableLiveData<AuctionData>()
 
-    val auctionData: LiveData<AuctionData>
-        get() = auctionDataLive
+    // disposables
+    private var disposableGetAuction: Disposable? = null
 
-    fun initialize(adapter: AuctionAdapter, eBayModel: EBayModel, notesModel: NotesModel) {
+    fun inject(adapter: AuctionAdapter, eBayModel: EBayModel, notesModel: NotesModel) {
         isInitialized = true
         this.auctionAdapter = adapter
         this.auctionModel = eBayModel
         this.notesModel = notesModel
     }
 
-    fun loadAuctions(sortColumn: EBayModel.SortColumn) {
-        loadAuctions(searchText?:"", sortColumn)
-    }
-
-    fun loadAuctions(searchText: String) {
-        loadAuctions(searchText, sortColumn)
-    }
-
-    private fun loadAuctions(searchText: String, sortColumn: EBayModel.SortColumn) {
+    fun loadAuctions(searchText: String? = null, sortColumn: EBayModel.SortColumn? = null) {
         this.totalPages = -1
         this.currentPage = 1
-        this.searchText = searchText
-        this.sortColumn = sortColumn
+        this.searchText = searchText ?: this.searchText ?: ""
+        this.sortColumn = sortColumn ?: this.sortColumn
         getAuctionsAsync()
     }
 

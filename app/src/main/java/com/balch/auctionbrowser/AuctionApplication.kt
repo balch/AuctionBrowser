@@ -31,6 +31,7 @@ import net.danlew.android.joda.JodaTimeAndroid
 open class AuctionApplication : Application(), ModelProvider {
     private val DATABASE_NAME = "auction_browser.db"
 
+    // ModelProvider Overrides
     override val database: AuctionDatabase by lazy {
         Room.databaseBuilder(this, AuctionDatabase::class.java, DATABASE_NAME).build()
     }
@@ -55,7 +56,6 @@ open class AuctionApplication : Application(), ModelProvider {
         }
 
         JodaTimeAndroid.init(this)
-
     }
 
 }

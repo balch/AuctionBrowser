@@ -67,7 +67,7 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     }
 
     /**
-     * Function used to add timing logging and exception handling around the passed in body
+     * add timing logging and exception handling around the passed in body
      */
     protected fun wrap(tag: String, body: () -> Unit) {
 

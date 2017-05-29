@@ -25,6 +25,9 @@ package com.balch.auctionbrowser.auction.model
 import com.balch.auctionbrowser.AuctionData
 import io.reactivex.Observable
 
+/**
+ * ModelApi for getting data from the EBayApi repository (EBay Rest Service)
+ */
 class EBayModel(private val eBayApiKey: String, private val ebayApi: EBayApi) {
 
     enum class SortColumn private constructor(internal val sortTerm: String) {
