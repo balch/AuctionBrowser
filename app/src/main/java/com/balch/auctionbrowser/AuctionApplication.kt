@@ -25,7 +25,7 @@ package com.balch.auctionbrowser
 import android.app.Application
 import android.arch.persistence.room.Room
 import android.os.StrictMode
-
+import net.danlew.android.joda.JodaTimeAndroid
 
 
 open class AuctionApplication : Application(), ModelProvider {
@@ -53,6 +53,8 @@ open class AuctionApplication : Application(), ModelProvider {
                     .penaltyLog()
                     .build())
         }
+
+        JodaTimeAndroid.init(this)
 
     }
 

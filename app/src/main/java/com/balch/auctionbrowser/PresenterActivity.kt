@@ -27,7 +27,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import com.balch.auctionbrowser.util.StopWatch
+import com.balch.auctionbrowser.auction.ext.logTiming
 
 /**
  * This class enhances the Activity functionality by providing View/Model creation abstraction
@@ -36,7 +36,6 @@ import com.balch.auctionbrowser.util.StopWatch
  * @param <V> Type of View to create
 </V> */
 abstract class PresenterActivity<V: View> : AppCompatActivity()  {
-    private val className: String by lazy { this.javaClass.simpleName }
     lateinit protected var view: V
 
     /**
@@ -70,23 +69,19 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     /**
      * Function used to add timing logging and exception handling around the passed in body
      */
-    protected fun trace(tag: String, body: () -> Unit) {
-        val sw: StopWatch? = if (BuildConfig.DEBUG) StopWatch() else null
+    protected fun wrap(tag: String, body: () -> Unit) {
 
-        Log.d(className, " $tag - Begin")
         try {
-            body()
+            logTiming(tag) { body() }
         } catch (ex: Exception) {
             if (!handleException("$tag ", ex)) {
                 throw ex
             }
-        } finally {
-            Log.d(className, " $tag - End (ms):" + sw?.stop())
         }
     }
 
     private fun handleException(logMsg: String, ex: Exception): Boolean {
-        Log.e(className, logMsg, ex)
+        Log.e(javaClass.simpleName, logMsg, ex)
         return onHandleException(logMsg, ex)
     }
 

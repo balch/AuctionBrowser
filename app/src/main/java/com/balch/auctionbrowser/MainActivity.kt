@@ -88,7 +88,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        trace("onCreate") {
+        wrap("onCreate") {
             view.auctionViewListener = this
             auctionViewModel.auctionData.observe(this, auctionDataObserver)
 
@@ -107,7 +107,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     }
 
     override fun onNewIntent(intent: Intent) {
-        trace("OnNewIntent") {
+        wrap("OnNewIntent") {
             handleIntent(intent)
         }
     }
@@ -130,7 +130,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     }
 
     override fun onDestroy() {
-        trace("OnNewIntent") {
+        wrap("OnNewIntent") {
             auctionViewModel.auctionData.removeObserver(auctionDataObserver)
             disposableClickNote?.dispose()
             disposableClickAuction?.dispose()
@@ -168,7 +168,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
-        trace("onCreateOptionsMenu") {
+        wrap("onCreateOptionsMenu") {
             // Inflate the options menu from XML
             menuInflater.inflate(options_menu, menu)
 
@@ -185,7 +185,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var handled = false
-        trace("onOptionsItemSelected") {
+        wrap("onOptionsItemSelected") {
             // Handle item selection
             when (item.itemId) {
                 menu_sort_best_match -> {

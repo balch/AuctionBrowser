@@ -23,6 +23,7 @@
 package com.balch.auctionbrowser.note
 
 import android.annotation.SuppressLint
+import com.balch.auctionbrowser.auction.ext.logTiming
 import com.balch.auctionbrowser.auction.model.Auction
 import java.util.*
 
@@ -31,26 +32,34 @@ class NotesModel(private val sqlConnection: NoteDao) {
     fun getNotes(auctions: List<Auction>): Map<Long, Note> {
         var noteMap:Map<Long, Note>? = null
 
-        if (auctions.isNotEmpty()) {
+        logTiming("getNotes") {
+            if (auctions.isNotEmpty()) {
 
-            val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
+                val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
 
-            val notes = sqlConnection.loadAllByIds(itemIdsList.toLongArray())
-            noteMap = notes.associateBy({it.itemId})
+                val notes = sqlConnection.loadAllByIds(itemIdsList.toLongArray())
+                noteMap = notes.associateBy({ it.itemId })
+            }
         }
 
         return noteMap ?: HashMap<Long, Note>()
     }
 
     fun insert(note: Note) {
-        sqlConnection.insert(note)
+        logTiming("insert itemId=${note.itemId}") {
+            sqlConnection.insert(note)
+        }
     }
 
     fun update(note: Note) {
-        sqlConnection.update(note)
+        logTiming("update itemId=${note.itemId}") {
+            sqlConnection.update(note)
+        }
     }
 
     fun delete(note: Note) {
-        sqlConnection.delete(note)
+        logTiming("delete itemId=${note.itemId}") {
+            sqlConnection.delete(note)
+        }
     }
 }

@@ -23,37 +23,30 @@
 package com.balch.auctionbrowser.types
 
 import android.graphics.Color
-import android.os.Parcel
-import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import java.text.DecimalFormat
 import java.util.*
 
-class Money : Parcelable {
+// $1 = 10000mc
+// TODO - port Unit Tests from AppFramework
+data class Money(var microCents: Long = 0,
+                 var currency: Currency = Currency.getInstance("USD")) {
     private val DOLLAR_TO_MICRO_CENT = 10000
 
-    // $1 = 10000mc
-    var microCents: Long = 0
-    var currency: Currency = Currency.getInstance("USD")
-
-    @JvmOverloads constructor(microCents: Long = 0L) {
-        this.microCents = microCents
-    }
-
-    constructor(dollars: Double) {
+    constructor(dollars: Double) : this() {
         this.dollars = dollars
     }
 
-    constructor(dollars: String) {
+    constructor(dollars: String) : this() {
         this.setDollars(dollars)
     }
 
     var dollars: Double
         get() = microCents / DOLLAR_TO_MICRO_CENT.toDouble()
         set(dollars) {
-            this.microCents = (dollars * DOLLAR_TO_MICRO_CENT).toLong()
+            microCents = (dollars * DOLLAR_TO_MICRO_CENT).toLong()
         }
 
     fun setDollars(input: String) {
@@ -137,52 +130,4 @@ class Money : Parcelable {
     operator fun minusAssign(money: Money) {
         this.microCents -= money.microCents
     }
-
-    override fun toString(): String {
-        return "Money{ microCents= $microCents , currency=$formatted }"
-    }
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-
-        val money = o as Money?
-
-        if (microCents != money!!.microCents) return false
-        return currency != money.currency
-    }
-
-    override fun hashCode(): Int {
-        var result = (microCents xor microCents.ushr(32)).toInt()
-        result = 31 * result + currency.hashCode()
-        return result
-    }
-
-    private constructor(parcel: Parcel) : super() {
-        microCents = parcel.readLong()
-        currency = Currency.getInstance(parcel.readString())
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeLong(microCents)
-        dest.writeString(currency.currencyCode)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object {
-
-        val CREATOR: Parcelable.Creator<Money> = object : Parcelable.Creator<Money> {
-            override fun createFromParcel(parcel: Parcel): Money {
-                return Money(parcel)
-            }
-
-            override fun newArray(size: Int): Array<Money?> {
-                return arrayOfNulls<Money?>(size)
-            }
-        }
-    }
-
 }
