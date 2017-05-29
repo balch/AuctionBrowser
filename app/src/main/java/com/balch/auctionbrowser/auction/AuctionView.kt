@@ -67,6 +67,8 @@ class AuctionView : FrameLayout, BaseView {
     private fun initializeLayout() {
         inflate(R.layout.auction_view, true)
 
+        id = View.generateViewId()
+
         val layoutManager = LinearLayoutManager(context)
         recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager,
                 object : RecyclerOnScrollListener.LoadMoreListener {

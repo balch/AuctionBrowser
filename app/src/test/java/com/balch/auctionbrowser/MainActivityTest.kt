@@ -60,17 +60,6 @@ class MainActivityTest {
 
     @Test
     @Throws(Exception::class)
-    fun testOnCreateBase() {
-
-        activity.onCreateBase(null)
-
-        verify<MainActivity>(activity).handleIntent()
-        verify<AuctionView>(mockView).auctionViewListener = eq<MainActivity>(activity)
-        verify(auctionViewModel).auctionData
-    }
-
-    @Test
-    @Throws(Exception::class)
     fun testOnLoadMore() {
         val page = 4
         doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyInt().toLong())

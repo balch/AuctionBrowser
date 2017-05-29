@@ -32,26 +32,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.SearchView
 import android.widget.Toast
-
-import com.balch.android.app.framework.PresenterActivity
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.auction.model.EBayApi
+import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
-
 import io.reactivex.disposables.Disposable
 
-open class MainActivity : PresenterActivity<AuctionView, AuctionModelProvider>(), AuctionView.AuctionViewListener, LifecycleRegistryOwner {
+open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
+        AuctionView.AuctionViewListener, LifecycleRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
@@ -82,25 +79,31 @@ open class MainActivity : PresenterActivity<AuctionView, AuctionModelProvider>()
         }
     }
 
-    override fun onCreateBase(bundle: Bundle?) {
-        view.auctionViewListener = this
-        auctionViewModel.auctionData.observe(this, auctionDataObserver)
+    override fun onCreate(bundle: Bundle?) {
 
-        val auctionAdapter = auctionViewModel.auctionAdapter
-        view.setAuctionAdapter(auctionAdapter)
+        super.onCreate(bundle)
+        trace("onCreate") {
+            view.auctionViewListener = this
+            auctionViewModel.auctionData.observe(this, auctionDataObserver)
 
-        disposableClickAuction = auctionAdapter.onClickAuction
-                .subscribe({ auction -> showDetail(auction)})
+            val auctionAdapter = auctionViewModel.auctionAdapter
+            view.setAuctionAdapter(auctionAdapter)
 
-        disposableClickNote = auctionAdapter.onClickNote
-                .subscribe({ auction -> showDetail(auction)})
+            disposableClickAuction = auctionAdapter.onClickAuction
+                    .subscribe({ auction -> showDetail(auction) })
 
-        // Get the intent, verify the action and get the query
-        handleIntent()
+            disposableClickNote = auctionAdapter.onClickNote
+                    .subscribe({ auction -> showDetail(auction) })
+
+            // Get the intent, verify the action and get the query
+            handleIntent()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
-        handleIntent(intent)
+        trace("OnNewIntent") {
+            handleIntent(intent)
+        }
     }
 
     @VisibleForTesting
@@ -120,13 +123,16 @@ open class MainActivity : PresenterActivity<AuctionView, AuctionModelProvider>()
         return handled
     }
 
-    override fun onDestroyBase() {
-        auctionViewModel.auctionData.removeObserver(auctionDataObserver)
-        disposableClickNote?.dispose()
-        disposableClickAuction?.dispose()
+    override fun onDestroy() {
+        trace("OnNewIntent") {
+            auctionViewModel.auctionData.removeObserver(auctionDataObserver)
+            disposableClickNote?.dispose()
+            disposableClickAuction?.dispose()
 
-        disposeClearNoteObserver()
-        disposeSaveNoteObserver()
+            disposeClearNoteObserver()
+            disposeSaveNoteObserver()
+        }
+        super.onDestroy()
     }
 
     private fun disposeClearNoteObserver() {
@@ -155,41 +161,47 @@ open class MainActivity : PresenterActivity<AuctionView, AuctionModelProvider>()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the options menu from XML
-        val inflater = getMenuInflater()
-        inflater.inflate(options_menu, menu)
 
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView = menu.findItem(menu_search).actionView as SearchView
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()))
-        searchView.setIconifiedByDefault(false)
-        searchView.setQuery(auctionViewModel.searchText, false)
+        trace("onCreateOptionsMenu") {
+            // Inflate the options menu from XML
+            val inflater = getMenuInflater()
+            inflater.inflate(options_menu, menu)
 
-        menu.findItem(menu_sort_best_match).isChecked = true
+            val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+            searchView = menu.findItem(menu_search).actionView as SearchView
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()))
+            searchView.setIconifiedByDefault(false)
+            searchView.setQuery(auctionViewModel.searchText, false)
 
+            menu.findItem(menu_sort_best_match).isChecked = true
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        when (item.itemId) {
-            menu_sort_best_match -> {
-                sortAuctions(EBayModel.SortColumn.BEST_MATCH)
-                item.isChecked = true
-                return true
+        var handled = false
+        trace("onOptionsItemSelected") {
+            // Handle item selection
+            when (item.itemId) {
+                menu_sort_best_match -> {
+                    sortAuctions(EBayModel.SortColumn.BEST_MATCH)
+                    item.isChecked = true
+                    handled =true
+                }
+                menu_sort_ending_soonest -> {
+                    sortAuctions(EBayModel.SortColumn.ENDING_SOONEST)
+                    item.isChecked = true
+                    handled =true
+                }
+                menu_sort_lowest_price -> {
+                    sortAuctions(EBayModel.SortColumn.LOWEST_PRICE)
+                    item.isChecked = true
+                    handled =true
+                }
             }
-            menu_sort_ending_soonest -> {
-                sortAuctions(EBayModel.SortColumn.ENDING_SOONEST)
-                item.isChecked = true
-                return true
-            }
-            menu_sort_lowest_price -> {
-                sortAuctions(EBayModel.SortColumn.LOWEST_PRICE)
-                item.isChecked = true
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
         }
+
+        return handled || super.onOptionsItemSelected(item)
     }
 
     fun doSearch(keyword: String) {
