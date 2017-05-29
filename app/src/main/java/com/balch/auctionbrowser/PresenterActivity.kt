@@ -22,21 +22,22 @@
 
 package com.balch.auctionbrowser
 
+import android.app.Activity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 
-import com.balch.android.app.framework.ModelProvider
 import com.balch.android.app.framework.StopWatch
 
 /**
- * This class enhances the AppCompatActivity functionality by providing View creation abstraction,
+ * This class enhances the Activity functionality by providing View/Model creation abstraction
  * and error handling.
 
- * @param <V> Type of BaseView to create
+ * @param <V> Type of View to create
 </V> */
-abstract class BaseActivity<V: View, in M: ModelProvider> : AppCompatActivity()  {
+abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     private val className: String by lazy { this.javaClass.simpleName }
     lateinit protected var view: V
 
@@ -48,16 +49,32 @@ abstract class BaseActivity<V: View, in M: ModelProvider> : AppCompatActivity() 
     protected abstract fun createView(): V
 
     /**
-     * Override abstract method to create any models needed by the Presenter. A class of type
-     * M is injected into this method to take advantage the Dependency Injection pattern.
-     * This mechanism is implemented by requiring the Application instance be of type M.
+     * Override abstract method to create any models needed by the Presenter. AuctionModelProvider
+     * is injected into this method to take advantage the Dependency Injection pattern.
 
      * @param modelProvider injected ModelProvider
      */
-    protected abstract fun createModel(modelProvider: M)
+    protected abstract fun createModel(modelProvider: AuctionModelProvider)
 
+    open fun onHandleException(logMsg: String, ex: Exception): Boolean {
+        return false
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.view = this.createView()
+        this.setContentView(view)
+
+        this.createModel(application as AuctionModelProvider)
+    }
+
+    /**
+     * Function used to add timing logging and exception handling around the passed in body
+     */
     protected fun trace(tag: String, body: () -> Unit) {
-        val sw = StopWatch.newInstance()
+        val sw: StopWatch? = if (BuildConfig.DEBUG) StopWatch.newInstance() else null
+
         Log.d(className, " $tag - Begin")
         try {
             body()
@@ -65,13 +82,9 @@ abstract class BaseActivity<V: View, in M: ModelProvider> : AppCompatActivity() 
             if (!handleException("$tag ", ex)) {
                 throw ex
             }
+        } finally {
+            Log.d(className, " $tag - End (ms):" + sw?.stop())
         }
-
-        Log.i(className, " $tag - End (ms):" + sw.stop())
-    }
-
-    open fun onHandleException(logMsg: String, ex: Exception): Boolean {
-        return false
     }
 
     private fun handleException(logMsg: String, ex: Exception): Boolean {
@@ -79,14 +92,7 @@ abstract class BaseActivity<V: View, in M: ModelProvider> : AppCompatActivity() 
         return onHandleException(logMsg, ex)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        this.view = this.createView()
-
-        this.setContentView(view)
-
-        val application = application as? ModelProvider ?:
-                throw IllegalStateException("Application must be derived from ModelProvider")
-        this.createModel(application as M)
+    fun getSnackbar(parent: View, msg: String, length: Int): Snackbar {
+        return Snackbar.make(parent, msg, length)
     }
 }

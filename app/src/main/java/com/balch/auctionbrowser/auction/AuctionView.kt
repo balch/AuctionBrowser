@@ -29,16 +29,13 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-
-import com.balch.android.app.framework.BaseView
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.ext.inflate
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
-
 import kotlinx.android.synthetic.main.auction_view.view.*
 
-class AuctionView : FrameLayout, BaseView {
+class AuctionView : FrameLayout {
 
     interface AuctionViewListener {
         fun onLoadMore(page: Int): Boolean

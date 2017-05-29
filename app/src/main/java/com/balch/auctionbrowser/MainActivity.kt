@@ -31,12 +31,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
+import android.support.design.widget.Snackbar
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
-import android.widget.Toast
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
+import com.balch.auctionbrowser.R.string.error_auction_get
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
@@ -47,7 +48,7 @@ import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.disposables.Disposable
 
-open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
+open class MainActivity : PresenterActivity<AuctionView>(),
         AuctionView.AuctionViewListener, LifecycleRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -79,9 +80,9 @@ open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
         }
     }
 
-    override fun onCreate(bundle: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 
-        super.onCreate(bundle)
+        super.onCreate(savedInstanceState)
         trace("onCreate") {
             view.auctionViewListener = this
             auctionViewModel.auctionData.observe(this, auctionDataObserver)
@@ -108,7 +109,7 @@ open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
 
     @VisibleForTesting
     internal fun handleIntent(): Boolean {
-        return handleIntent(getIntent())
+        return handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent): Boolean {
@@ -164,12 +165,11 @@ open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
 
         trace("onCreateOptionsMenu") {
             // Inflate the options menu from XML
-            val inflater = getMenuInflater()
-            inflater.inflate(options_menu, menu)
+            menuInflater.inflate(options_menu, menu)
 
             val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
             searchView = menu.findItem(menu_search).actionView as SearchView
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()))
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
             searchView.setIconifiedByDefault(false)
             searchView.setQuery(auctionViewModel.searchText, false)
 
@@ -204,7 +204,7 @@ open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
         return handled || super.onOptionsItemSelected(item)
     }
 
-    fun doSearch(keyword: String) {
+    private fun doSearch(keyword: String) {
         searchView.clearFocus()
 
         view.showBusy()
@@ -229,7 +229,7 @@ open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
         disposableSaveNote = dialog.onSaveNote
                 .subscribe { text -> saveNote(auction, note, text) }
 
-        dialog.show(getSupportFragmentManager(), "AuctionDetailDialog")
+        dialog.show(supportFragmentManager, "AuctionDetailDialog")
     }
 
     @VisibleForTesting
@@ -261,7 +261,7 @@ open class MainActivity : BaseActivity<AuctionView, AuctionModelProvider>(),
                 view.addAuctions(auctionData.auctions, auctionData.notes)
             } else {
                 if (searchView.query.isNotEmpty()) {
-                    Toast.makeText(getApplication(), R.string.error_auction_get, Toast.LENGTH_LONG).show()
+                    getSnackbar(view, getString(error_auction_get), Snackbar.LENGTH_LONG).show()
                 }
             }
 
