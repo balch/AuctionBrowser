@@ -22,14 +22,12 @@
 
 package com.balch.auctionbrowser
 
-import android.app.Activity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-
-import com.balch.android.app.framework.StopWatch
+import com.balch.auctionbrowser.util.StopWatch
 
 /**
  * This class enhances the Activity functionality by providing View/Model creation abstraction
@@ -73,7 +71,7 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
      * Function used to add timing logging and exception handling around the passed in body
      */
     protected fun trace(tag: String, body: () -> Unit) {
-        val sw: StopWatch? = if (BuildConfig.DEBUG) StopWatch.newInstance() else null
+        val sw: StopWatch? = if (BuildConfig.DEBUG) StopWatch() else null
 
         Log.d(className, " $tag - Begin")
         try {
