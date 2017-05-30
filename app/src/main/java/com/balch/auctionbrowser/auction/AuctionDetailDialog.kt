@@ -73,32 +73,31 @@ class AuctionDetailDialog constructor(auction: Auction, note: Note?): DialogFrag
     override fun onStart() {
         super.onStart()
 
-        (dialog as AlertDialog).getButton(BUTTON_NEGATIVE).isEnabled = false
-        (dialog as AlertDialog).getButton(BUTTON_POSITIVE).isEnabled = false
+        with (dialog as AlertDialog) {
+            getButton(BUTTON_NEGATIVE).isEnabled = false
+            getButton(BUTTON_POSITIVE).isEnabled = false
+        }
 
         var enableSaveButtons = false
 
-        val args = arguments
+        val args: Bundle? = arguments
+        if (args?.containsKey(ARG_NOTE) == true) {
+            noteEditText.setText(args.getString(ARG_NOTE))
+        }
 
-        if (args != null) {
-            if (args.containsKey(ARG_NOTE)) {
-                noteEditText.setText(args.getString(ARG_NOTE))
-            }
+        if (args?.containsKey(ARG_AUCTION) == true) {
+            val auction = args.getSerializable(ARG_AUCTION) as Auction
 
-            if (args.containsKey(ARG_AUCTION)) {
-                val auction = args.getSerializable(ARG_AUCTION) as Auction
+            enableSaveButtons = auction.itemId != -1L
 
-                enableSaveButtons = auction.itemId != -1L
-
-                with (auction) {
-                    dialog.auction_detail_title.text = title
-                    dialog.auction_detail_item_img.loadUrl(imageUrl) {request -> request}
-                    dialog.auction_detail_end_time.value = endTime.toLongDateTimeString()
-                    dialog.auction_detail_price.value = currentPrice.getFormatted(2)
-                    dialog.auction_detail_location.value = location
-                    dialog.auction_detail_shipping_cost.value = shippingCost.getFormatted(2)
-                    dialog.auction_detail_buy_it_now.value = if (isBuyItNow) "\u2714" else "\u2718"
-                }
+            with (auction) {
+                dialog.auction_detail_title.text = title
+                dialog.auction_detail_item_img.loadUrl(imageUrl) {request -> request}
+                dialog.auction_detail_end_time.value = endTime.toLongDateTimeString()
+                dialog.auction_detail_price.value = currentPrice.getFormatted(2)
+                dialog.auction_detail_location.value = location
+                dialog.auction_detail_shipping_cost.value = shippingCost.getFormatted(2)
+                dialog.auction_detail_buy_it_now.value = if (isBuyItNow) "\u2714" else "\u2718"
             }
         }
 
