@@ -39,9 +39,7 @@ inline fun <T> Any.logTiming(tag: String, body: () -> T): T {
             Log.d(className, " $tag - Begin")
             return body()
         } finally {
-            if (BuildConfig.DEBUG) {
-                Log.d(className, " $tag - End ${sw.stop()}ms")
-            }
+            Log.d(className, " $tag - End ${sw.stop()}ms")
         }
     } else {
         return body()
