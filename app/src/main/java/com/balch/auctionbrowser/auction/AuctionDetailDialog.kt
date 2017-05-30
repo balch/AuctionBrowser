@@ -31,10 +31,10 @@ import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.EditText
 import com.balch.auctionbrowser.R.layout.auction_detail_dialog
+import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.ext.loadUrl
 import com.balch.auctionbrowser.ext.toLongDateTimeString
-import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -65,10 +65,9 @@ class AuctionDetailDialog constructor(auction: Auction, note: Note?): DialogFrag
         get() = clearNoteSubject
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(activity)
-
-        builder.setView(activity.inflate(auction_detail_dialog))
-        return builder.create()
+        return AlertDialog.Builder(activity)
+                .setView(inflate(auction_detail_dialog))
+                .create()
     }
 
     override fun onStart() {
