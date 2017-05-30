@@ -20,31 +20,21 @@
  *
  */
 
-package com.balch.auctionbrowser.note;
+package com.balch.auctionbrowser.note
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
+import android.arch.persistence.room.*
 
-import java.util.List;
-
-/**
- * Note: This clase has been left in Java b/c of errors
- * resolving ":itemIds" when converted to kotlin
- */
 @Dao
-public interface NoteDao {
-    @Query("SELECT * FROM note WHERE itemId IN (:itemIds)")
-    List<Note> loadAllByIds(long[] itemIds);
+interface NoteDao {
+    @Query("SELECT * FROM note WHERE itemId IN (:arg0)")
+    fun loadAllByIds(itemIds: LongArray): List<Note>
 
     @Insert
-    void insert(Note... notes);
+    fun insert(vararg notes: Note)
 
     @Delete
-    void delete(Note note);
+    fun delete(note: Note)
 
     @Update
-    void update(Note... notes);
+    fun update(vararg notes: Note)
 }
