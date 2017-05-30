@@ -20,21 +20,14 @@
  *
  */
 
-package com.balch.auctionbrowser.auction.ext
+package com.balch.auctionbrowser.ext
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import com.bumptech.glide.DrawableRequestBuilder
-import com.bumptech.glide.DrawableTypeRequest
-import com.bumptech.glide.Glide
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
-fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
-    return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
+private val LONG_DATE_TIME_FORMAT: DateTimeFormatter = DateTimeFormat.mediumDateTime()
+fun DateTime.toLongDateTimeString(): String {
+    return this.toString(LONG_DATE_TIME_FORMAT)
 }
 
-inline fun ImageView.loadUrl(url: String,
-                             request: (DrawableTypeRequest<String>) -> DrawableRequestBuilder<String>) {
-    request(Glide.with(context).load(url)).into(this)
-}

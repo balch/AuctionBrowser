@@ -20,14 +20,13 @@
  *
  */
 
-package com.balch.auctionbrowser.auction.ext
+package com.balch.auctionbrowser.ext
 
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
+import android.app.Activity
+import android.view.View
+import android.view.ViewGroup
 
-private val LONG_DATE_TIME_FORMAT: DateTimeFormatter = DateTimeFormat.mediumDateTime()
-fun DateTime.toLongDateTimeString(): String {
-    return this.toString(LONG_DATE_TIME_FORMAT)
+fun Activity.inflate(layoutId: Int, root: ViewGroup? = null): View {
+    return layoutInflater.inflate(layoutId, root)
 }
 

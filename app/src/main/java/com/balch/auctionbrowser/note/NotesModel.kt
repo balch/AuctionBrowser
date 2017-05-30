@@ -23,7 +23,7 @@
 package com.balch.auctionbrowser.note
 
 import android.annotation.SuppressLint
-import com.balch.auctionbrowser.auction.ext.logTiming
+import com.balch.auctionbrowser.ext.logTiming
 import com.balch.auctionbrowser.auction.model.Auction
 import java.util.*
 

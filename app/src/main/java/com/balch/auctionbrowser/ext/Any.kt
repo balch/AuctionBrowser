@@ -20,13 +20,30 @@
  *
  */
 
-package com.balch.auctionbrowser.auction.ext
+package com.balch.auctionbrowser.ext
 
-import android.app.Activity
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import com.balch.auctionbrowser.BuildConfig
+import com.balch.auctionbrowser.util.StopWatch
 
-fun Activity.inflate(layoutId: Int, root: ViewGroup? = null): View {
-    return layoutInflater.inflate(layoutId, root)
+/**
+ * Function used to add timing logging around the passed in body
+ */
+inline fun <T> Any.logTiming(tag: String, body: () -> T): T {
+
+    if (BuildConfig.DEBUG) {
+        val className: String = javaClass.simpleName
+        val sw: StopWatch = StopWatch()
+
+        try {
+            Log.d(className, " $tag - Begin")
+            return body()
+        } finally {
+            if (BuildConfig.DEBUG) {
+                Log.d(className, " $tag - End ${sw.stop()}ms")
+            }
+        }
+    } else {
+        return body()
+    }
 }
-
