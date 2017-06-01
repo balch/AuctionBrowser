@@ -49,6 +49,64 @@ class MoneyTest {
     fun testTimes() {
         assert((Money("$12.05") * 4) == Money("$48.20"))
         assert((Money("$12.05") * 0) == Money("$0"))
+        assert((Money("$12.05") * -1) == Money("$-12.05"))
+    }
+
+    @Test
+    fun testPlus() {
+        assert((Money("$12.05") + Money("$24.10")) == Money("$36.15"))
+        assert((Money("$12.05") + Money("$-12.05")) == Money("$0"))
+        assert((Money("$12.05") + Money("$-24.10")) == Money("$-12.05"))
+        assert((Money("$12.05") + Money("0")) == Money("$12.05"))
+    }
+
+    @Test
+    fun testMinus() {
+        assert((Money("$12.05") - Money("$24.10")) == Money("$-12.05"))
+        assert((Money("$12.05") - Money("$-12.05")) == Money("$0"))
+        assert((Money("$12.05") - Money("$-24.10")) == Money("$36.15"))
+        assert((Money("$12.05") - Money("0")) == Money("$12.05"))
+    }
+
+    @Test
+    fun testTimesAssign() {
+        assert(runTimesAssign("$12.05", 4, "$48.20"))
+        assert(runTimesAssign("$12.05", 0, "$0"))
+        assert(runTimesAssign("$12.05", -1, "$-12.05"))
+    }
+
+    private fun runTimesAssign(amount: String, mult: Long, expected: String): Boolean {
+        val money = Money(amount)
+        money *= mult
+        return money == Money(expected)
+    }
+
+    @Test
+    fun testPlusAssign() {
+        assert(runPlusAssign("$12.05", "$24.10", "$48.20"))
+        assert(runPlusAssign("$12.05", "$-12.05", "$0"))
+        assert(runPlusAssign("$12.05", "$-24.10", "$-12.05"))
+        assert(runPlusAssign("$12.05", "0", "$12.05"))
+    }
+
+    private fun runPlusAssign(amount: String, add: String, expected: String): Boolean {
+        val money = Money(amount)
+        money += Money(add)
+        return money == Money(expected)
+    }
+
+    @Test
+    fun testMinusAssign() {
+        assert(runMinusAssign("$12.05", "$24.10", "$-12.05"))
+        assert(runMinusAssign("$12.05", "$-12.05", "$0"))
+        assert(runMinusAssign("$12.05", "$-24.10", "$36.15"))
+        assert(runMinusAssign("$12.05", "0", "$12.05"))
+    }
+
+    private fun runMinusAssign(amount: String, add: String, expected: String): Boolean {
+        val money = Money(amount)
+        money -= Money(add)
+        return money == Money(expected)
     }
 
 }
