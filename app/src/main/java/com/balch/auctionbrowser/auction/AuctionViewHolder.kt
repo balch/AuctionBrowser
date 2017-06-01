@@ -28,10 +28,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import com.balch.auctionbrowser.R
+import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.ext.loadUrl
 import com.balch.auctionbrowser.ext.toLongDateTimeString
-import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.LabelTextView
 import io.reactivex.subjects.PublishSubject
