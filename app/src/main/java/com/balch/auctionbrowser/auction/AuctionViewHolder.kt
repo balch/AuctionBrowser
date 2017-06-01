@@ -49,18 +49,20 @@ class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: P
 
     fun bind(auction: Auction, note: Note?) {
 
-        itemImageView.loadUrl(auction.imageUrl) {request -> request}
-        titleTextView.value = auction.title
+        with (auction) {
+            itemImageView.loadUrl(imageUrl)
+            titleTextView.value = title
 
-        priceTextView.value = auction.currentPrice.getFormatted(2)
-        endTimeTextView.value = auction.endTime.toLongDateTimeString()
+            priceTextView.value = currentPrice.getFormatted(2)
+            endTimeTextView.value = endTime.toLongDateTimeString()
 
-        noteEditButton.setOnClickListener { clickNoteObservable.onNext(auction) }
-        noteEditButton.visibility = if (note != null) View.VISIBLE else View.GONE
+            noteEditButton.setOnClickListener { clickNoteObservable.onNext(auction) }
+            noteEditButton.visibility = if (note != null) View.VISIBLE else View.GONE
 
-        itemView.setOnClickListener {
-            if (auction.itemId != -1L) {
-                clickAuctionObservable.onNext(auction)
+            itemView.setOnClickListener {
+                if (itemId != -1L) {
+                    clickAuctionObservable.onNext(auction)
+                }
             }
         }
     }

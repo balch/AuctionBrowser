@@ -30,9 +30,8 @@ import java.text.DecimalFormat
 import java.util.*
 
 // $1 = 10000mc
-// TODO - port Unit Tests from AppFramework
-data class Money(var microCents: Long = 0,
-                 var currency: Currency = Currency.getInstance("USD")) {
+data class Money(private var microCents: Long = 0,
+                 private var currency: Currency = Currency.getInstance("USD")) {
     private val DOLLAR_TO_MICRO_CENT = 10000
 
     constructor(dollars: Double) : this() {

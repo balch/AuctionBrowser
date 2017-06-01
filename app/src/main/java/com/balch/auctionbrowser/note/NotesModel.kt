@@ -23,14 +23,14 @@
 package com.balch.auctionbrowser.note
 
 import android.annotation.SuppressLint
-import com.balch.auctionbrowser.ext.logTiming
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.ext.logTiming
 import java.util.*
 
 /**
  * Model API for retrieving/persisting data to the NotesDao repository (Sqlite db)
  */
-class NotesModel(private val sqlConnection: NoteDao) {
+class NotesModel(private val noteDao: NoteDao) {
     @SuppressLint("UseSparseArrays")
     fun getNotes(auctions: List<Auction>): Map<Long, Note> {
         var noteMap:Map<Long, Note>? = null
@@ -40,7 +40,7 @@ class NotesModel(private val sqlConnection: NoteDao) {
 
                 val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
 
-                val notes = sqlConnection.loadAllByIds(itemIdsList.toLongArray())
+                val notes = noteDao.loadAllByIds(itemIdsList.toLongArray())
                 noteMap = notes.associateBy({ it.itemId })
             }
         }
@@ -50,19 +50,19 @@ class NotesModel(private val sqlConnection: NoteDao) {
 
     fun insert(note: Note) {
         logTiming("insert itemId=${note.itemId}") {
-            sqlConnection.insert(note)
+            noteDao.insert(note)
         }
     }
 
     fun update(note: Note) {
         logTiming("update itemId=${note.itemId}") {
-            sqlConnection.update(note)
+            noteDao.update(note)
         }
     }
 
     fun delete(note: Note) {
         logTiming("delete itemId=${note.itemId}") {
-            sqlConnection.delete(note)
+            noteDao.delete(note)
         }
     }
 }
