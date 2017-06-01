@@ -16,6 +16,7 @@
         resValue "string", "ebay_app_id", "your ID here"
         ```
 
+### Screenshots
 ![Screen Shot 1](./AuctionBrowser_ss1.png)
 
 ![Screen Shot 3](./AuctionBrowser_ss3.png)
