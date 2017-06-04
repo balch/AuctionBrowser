@@ -30,19 +30,16 @@ import io.reactivex.Observable
  */
 class EBayModel(private val eBayApiKey: String, private val ebayApi: EBayApi) {
 
-    enum class SortColumn private constructor(internal val sortTerm: String) {
+    enum class SortColumn constructor(internal val sortTerm: String) {
         BEST_MATCH("BestMatch"),
         ENDING_SOONEST("EndTimeSoonest"),
         LOWEST_PRICE("PricePlusShippingLowest")
     }
 
-    fun getAuctions(keyword: String, start: Long, count: Int, sortColumn: SortColumn): Observable<AuctionData> {
-
-        if (keyword.isNotEmpty()) {
-            return ebayApi.findItemsByKeywords(keyword, start + 1, count, sortColumn.sortTerm, eBayApiKey)
-        } else {
-            return Observable.just(AuctionData())
-        }
+    fun getAuctions(keyword: String, start: Long,
+                    count: Int, sortColumn: SortColumn): Observable<AuctionData> {
+        return if (keyword.isNotEmpty())
+            ebayApi.findItemsByKeywords(keyword, start + 1, count, sortColumn.sortTerm, eBayApiKey)
+            else Observable.just(AuctionData())
     }
-
 }
