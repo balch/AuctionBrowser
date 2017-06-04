@@ -37,8 +37,5 @@ interface EBayApi {
                             @Query("paginationInput.pageNumber") pageNumber: Long,
                             @Query("paginationInput.entriesPerPage") entriesPerPage: Int,
                             @Query("sortOrder") sortOrder: String,
-                            @Query("SECURITY-APPNAME") appName: String):
-
-            Observable<AuctionData>
-
+                            @Query("SECURITY-APPNAME") appName: String): Observable<AuctionData>
 }
