@@ -43,7 +43,6 @@ import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.EBayApi
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
@@ -78,7 +77,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         auctionViewModel = getAuctionViewModel()
         if (!auctionViewModel.isInitialized) {
             val auctionModel = EBayModel(getString(R.string.ebay_app_id),
-                    modelProvider.modelApiFactory.getModelApi(EBayApi::class.java)!!)
+                    modelProvider.modelApiFactory.ebayApi)
             val notesModel = NotesModel(modelProvider.database.noteDao())
 
             auctionViewModel.inject(AuctionAdapter(), auctionModel, notesModel)

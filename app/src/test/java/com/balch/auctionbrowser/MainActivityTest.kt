@@ -3,9 +3,8 @@ package com.balch.auctionbrowser
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
-import com.balch.auctionbrowser.note.NoteDao
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -15,24 +14,16 @@ import org.mockito.MockitoAnnotations.initMocks
 class MainActivityTest {
 
     @Mock lateinit internal var mockView: AuctionView
-    @Mock lateinit internal var mockAuctionDatabase: AuctionDatabase
-    @Mock lateinit internal var mockNoteDoa: NoteDao
 
     private val auctionViewModel = spy(AuctionViewModel())
+    private val modelProvider = TestModelProvider()
 
     lateinit private var activity: MainActivity
-    lateinit private var modelProvider: ModelProvider
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
         initMocks(this)
-
-        `when`(mockAuctionDatabase.noteDao()).thenReturn(mockNoteDoa)
-
-        modelProvider = spy<ModelProvider>(object : AuctionApplication() {
-            override var database: AuctionDatabase = mockAuctionDatabase
-        })
 
         activity = spy<MainActivity>(object : MainActivity() {
             override fun createView(): AuctionView {
@@ -86,7 +77,7 @@ class MainActivityTest {
         activity.saveNote(auction, note, text)
 
         verify(note).noteText = text
-        verify(mockNoteDoa).update(note)
+        verify(modelProvider.mockNotesDao).update(note)
     }
 
 }
