@@ -46,7 +46,7 @@ import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -240,9 +240,9 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     @VisibleForTesting
     internal fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
-            Observable.just(Note(auction.itemId, text))
+            Single.just(Note(auction.itemId, text))
                     .subscribeOn(Schedulers.io())
-                    .doOnNext { note1 ->  auctionViewModel.insertNote(note1) }
+                    .doOnSuccess { note1 ->  auctionViewModel.insertNote(note1) }
                     .observeOn(modelProvider.mainThread)
                     .subscribe { note1 ->
                         if (!isFinishing) {
@@ -250,7 +250,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
                         }}
         } else {
             note.noteText = text
-            Observable.just(note)
+            Single.just(note)
                     .subscribeOn(Schedulers.io())
                     .subscribe { note1 -> auctionViewModel.updateNote(note1) }
         }
@@ -259,9 +259,9 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     @VisibleForTesting
     internal fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
-            Observable.just(true)
+            Single.just(true)
                     .subscribeOn(Schedulers.io())
-                    .doOnNext { _ ->  auctionViewModel.deleteNote(note) }
+                    .doOnSuccess { _ ->  auctionViewModel.deleteNote(note) }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { _ ->
                         if (!isFinishing) {

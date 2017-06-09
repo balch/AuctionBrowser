@@ -53,16 +53,16 @@ class AuctionDetailDialog constructor(auction: Auction, note: Note?): DialogFrag
         arguments = args
     }
 
-    private val noteEditText: EditText by lazy { dialog.auction_detail_note }
-
-    private val saveNoteSubject: PublishSubject<String> = PublishSubject.create()
-    private val clearNoteSubject: PublishSubject<Unit> = PublishSubject.create()
-
     val onSaveNote: Observable<String>
         get() = saveNoteSubject
 
     val onClearNote: Observable<Unit>
         get() = clearNoteSubject
+
+    private val noteEditText: EditText by lazy { dialog.auction_detail_note }
+
+    private val saveNoteSubject: PublishSubject<String> = PublishSubject.create()
+    private val clearNoteSubject: PublishSubject<Unit> = PublishSubject.create()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(activity)

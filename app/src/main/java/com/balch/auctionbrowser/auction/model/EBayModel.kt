@@ -23,7 +23,7 @@
 package com.balch.auctionbrowser.auction.model
 
 import com.balch.auctionbrowser.AuctionData
-import io.reactivex.Observable
+import io.reactivex.Single
 
 /**
  * ModelApi for getting data from the EBayApi repository (EBay Rest Service)
@@ -37,9 +37,9 @@ class EBayModel(private val eBayApiKey: String, private val ebayApi: EBayApi) {
     }
 
     fun getAuctions(keyword: String, start: Long,
-                    count: Int, sortColumn: SortColumn): Observable<AuctionData> {
+                    count: Int, sortColumn: SortColumn): Single<AuctionData> {
         return if (keyword.isNotEmpty())
             ebayApi.findItemsByKeywords(keyword, start + 1, count, sortColumn.sortTerm, eBayApiKey)
-            else Observable.just(AuctionData())
+            else Single.just(AuctionData())
     }
 }

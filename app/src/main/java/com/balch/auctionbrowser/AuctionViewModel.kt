@@ -122,7 +122,7 @@ class AuctionViewModel : ViewModel() {
         disposableGetAuction = auctionModel
                 .getAuctions(searchText!!, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
                 .subscribeOn(Schedulers.io())
-                .doOnNext { auctionData ->
+                .doOnSuccess { auctionData ->
                     auctionData.notes = notesModel.getNotes(auctionData.auctions)
                     totalPages = auctionData.totalPages.toLong()
                 }

@@ -23,8 +23,7 @@
 package com.balch.auctionbrowser.auction.model
 
 import com.balch.auctionbrowser.AuctionData
-
-import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -38,5 +37,5 @@ interface EBayApi {
                             @Query("paginationInput.pageNumber") pageNumber: Long,
                             @Query("paginationInput.entriesPerPage") entriesPerPage: Int,
                             @Query("sortOrder") sortOrder: String,
-                            @Query("SECURITY-APPNAME") appName: String): Observable<AuctionData>
+                            @Query("SECURITY-APPNAME") appName: String): Single<AuctionData>
 }
