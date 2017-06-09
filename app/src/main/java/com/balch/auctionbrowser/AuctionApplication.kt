@@ -26,7 +26,8 @@ import android.app.Application
 import android.arch.persistence.room.Room
 import android.os.StrictMode
 import net.danlew.android.joda.JodaTimeAndroid
-
+import timber.log.Timber
+import timber.log.Timber.DebugTree
 
 open class AuctionApplication : Application(), ModelProvider {
     private val DATABASE_NAME = "auction_browser.db"
@@ -40,6 +41,8 @@ open class AuctionApplication : Application(), ModelProvider {
 
     override fun onCreate() {
         super.onCreate()
+
+        Timber.plant(DebugTree())
 
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()

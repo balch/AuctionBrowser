@@ -26,7 +26,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.support.annotation.VisibleForTesting
-import android.util.Log
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
@@ -34,6 +33,7 @@ import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * This ViewModel exposes a LiveData object which emits AuctionData objects from the
@@ -127,7 +127,7 @@ class AuctionViewModel : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({auctionData -> auctionDataLive.setValue(auctionData)},
                             { throwable ->
-                                Log.e("AuctionViewModel", "Error", throwable)
+                                Timber.e(throwable, "Error in .getAuctions()")
                                 auctionDataLive.setValue(null)
                             })
     }

@@ -22,9 +22,9 @@
 
 package com.balch.auctionbrowser.ext
 
-import android.util.Log
 import com.balch.auctionbrowser.BuildConfig
 import com.balch.auctionbrowser.util.StopWatch
+import timber.log.Timber
 
 /**
  * Function used to add timing logging around the passed in body
@@ -32,14 +32,13 @@ import com.balch.auctionbrowser.util.StopWatch
 inline fun <T> Any.logTiming(tag: String, body: () -> T): T {
 
     if (BuildConfig.DEBUG) {
-        val className: String = javaClass.simpleName
         val sw: StopWatch = StopWatch()
 
         try {
-            Log.d(className, " $tag - Begin")
+            Timber.d("$tag - Begin")
             return body()
         } finally {
-            Log.d(className, " $tag - End ${sw.stop()}ms")
+            Timber.d("$tag - End ${sw.stop()}ms")
         }
     } else {
         return body()

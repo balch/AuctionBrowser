@@ -23,11 +23,12 @@
 package com.balch.auctionbrowser
 
 import android.os.Bundle
+import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import com.balch.auctionbrowser.ext.logTiming
+import timber.log.Timber
 
 /**
  * This class enhances the Activity functionality by providing View/Model creation abstraction
@@ -43,7 +44,8 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
      * The view id will be managed by this class if not specified
      * @return View containing view logic in the MVP pattern
      */
-    protected abstract fun createView(): V
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun createView(): V
 
     /**
      * Override abstract method to create any models needed by the Presenter. AuctionModelProvider
@@ -51,7 +53,8 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
 
      * @param modelProvider injected ModelProvider
      */
-    protected abstract fun createModel(modelProvider: ModelProvider)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun createModel(modelProvider: ModelProvider)
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
@@ -81,7 +84,7 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     }
 
     private fun handleException(logMsg: String, ex: Exception): Boolean {
-        Log.e(javaClass.simpleName, logMsg, ex)
+        Timber.e(ex, logMsg)
         return onHandleException(logMsg, ex)
     }
 

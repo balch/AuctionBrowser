@@ -4,12 +4,10 @@ import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NoteDao
-import junit.framework.Assert.assertFalse
-import junit.framework.Assert.assertTrue
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Matchers.anyInt
-import org.mockito.Matchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
@@ -37,11 +35,6 @@ class MainActivityTest {
         })
 
         activity = spy<MainActivity>(object : MainActivity() {
-            init {
-                createView()
-                createModel(modelProvider)
-            }
-
             override fun createView(): AuctionView {
                 view = mockView
                 return mockView
@@ -51,13 +44,16 @@ class MainActivityTest {
         doReturn("").`when`<MainActivity>(activity).getString(eq(R.string.ebay_app_id))
         doReturn(auctionViewModel).`when`<MainActivity>(activity).getAuctionViewModel()
         doReturn(false).`when`<MainActivity>(activity).handleIntent()
+
+        activity.createView()
+        activity.createModel(modelProvider)
     }
 
     @Test
     @Throws(Exception::class)
     fun testOnLoadMore() {
         val page = 4
-        doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyInt().toLong())
+        doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
         doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
 
         assertTrue(activity.onLoadMore(page))
@@ -71,7 +67,7 @@ class MainActivityTest {
     @Throws(Exception::class)
     fun testOnLoadMoreNoMore() {
         val page = 4
-        doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyInt().toLong())
+        doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
 
         assertFalse(activity.onLoadMore(page))
 
@@ -89,8 +85,8 @@ class MainActivityTest {
 
         activity.saveNote(auction, note, text)
 
-        verify(note).noteText = eq(text)
-        verify(mockNoteDoa).update(eq(note))
+        verify(note).noteText = text
+        verify(mockNoteDoa).update(note)
     }
 
 }

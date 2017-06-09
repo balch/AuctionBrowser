@@ -72,6 +72,8 @@ dependencies {
 
     implementation "net.danlew:android.joda:$joda"
 
+    implementation "com.jakewharton.timber:timber:$timber"
+
     // Force usage of support annotations in the test app, since it is internally used by the runner module.
     testImplementation "com.android.support:support-annotations:$support"
     testImplementation "junit:junit:$junit"

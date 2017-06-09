@@ -22,57 +22,64 @@
 
 package com.balch.auctionbrowser.types
 
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MoneyTest {
 
     @Test
+    @Throws(Exception::class)
     fun testSetDollars() {
-        assert(Money().dollars == 0.0)
-        assert(Money("").dollars == 0.0)
-        assert(Money("$12.05").dollars == 12.05)
-        assert(Money("12.05").dollars == 12.05)
-        assert(Money(12.05).dollars == 12.05)
+        assertTrue(Money().dollars == 0.0)
+        assertTrue(Money("").dollars == 0.0)
+        assertTrue(Money("$12.05").dollars == 12.05)
+        assertTrue(Money("12.05").dollars == 12.05)
+        assertTrue(Money(12.05).dollars == 12.05)
     }
 
     @Test
+    @Throws(Exception::class)
     fun testFormatted() {
-        assert(Money().formatted == "$0.00")
-        assert(Money("$12.05").formatted == "$12.05")
-        assert(Money(12.05).formatted == "$12.05")
-        assert(Money().getFormatted(0) == "$0")
-        assert(Money("$12.05").getFormatted(0) == "$12")
-        assert(Money(12.05).getFormatted(0) == "$12")
+        assertTrue(Money().formatted == "$0.00")
+        assertTrue(Money("$12.05").formatted == "$12.05")
+        assertTrue(Money(12.05).formatted == "$12.05")
+        assertTrue(Money().getFormatted(0) == "$0")
+        assertTrue(Money("$12.05").getFormatted(0) == "$12")
+        assertTrue(Money(12.05).getFormatted(0) == "$12")
     }
 
     @Test
+    @Throws(Exception::class)
     fun testTimes() {
-        assert((Money("$12.05") * 4) == Money("$48.20"))
-        assert((Money("$12.05") * 0) == Money("$0"))
-        assert((Money("$12.05") * -1) == Money("$-12.05"))
+        assertTrue((Money("$12.05") * 4) == Money("$48.20"))
+        assertTrue((Money("$12.05") * 0) == Money("$0"))
+        assertTrue((Money("$12.05") * -1) == Money("$-12.05"))
     }
 
     @Test
+    @Throws(Exception::class)
     fun testPlus() {
-        assert((Money("$12.05") + Money("$24.10")) == Money("$36.15"))
-        assert((Money("$12.05") + Money("$-12.05")) == Money("$0"))
-        assert((Money("$12.05") + Money("$-24.10")) == Money("$-12.05"))
-        assert((Money("$12.05") + Money("0")) == Money("$12.05"))
+        assertTrue((Money("$12.05") + Money("$24.10")) == Money("$36.15"))
+        assertTrue((Money("$12.05") + Money("$-12.05")) == Money("$0"))
+        assertTrue((Money("$12.05") + Money("$-24.10")) == Money("$-12.05"))
+        assertTrue((Money("$12.05") + Money("0")) == Money("$12.05"))
     }
 
     @Test
+    @Throws(Exception::class)
     fun testMinus() {
-        assert((Money("$12.05") - Money("$24.10")) == Money("$-12.05"))
-        assert((Money("$12.05") - Money("$-12.05")) == Money("$0"))
-        assert((Money("$12.05") - Money("$-24.10")) == Money("$36.15"))
-        assert((Money("$12.05") - Money("0")) == Money("$12.05"))
+        assertTrue((Money("$12.05") - Money("$24.10")) == Money("$-12.05"))
+        assertTrue((Money("$12.05") - Money("$12.05")) == Money("$0"))
+        assertTrue((Money("$12.05") - Money("$-24.10")) == Money("$36.15"))
+        assertTrue((Money("$12.05") - Money("0")) == Money("$12.05"))
     }
 
     @Test
+    @Throws(Exception::class)
     fun testTimesAssign() {
-        assert(runTimesAssign("$12.05", 4, "$48.20"))
-        assert(runTimesAssign("$12.05", 0, "$0"))
-        assert(runTimesAssign("$12.05", -1, "$-12.05"))
+        assertTrue(runTimesAssign("$12.05", 4, "$48.20"))
+        assertTrue(runTimesAssign("$12.05", 0, "$0"))
+        assertTrue(runTimesAssign("$12.05", -1, "$-12.05"))
     }
 
     private fun runTimesAssign(amount: String, mult: Long, expected: String): Boolean {
@@ -82,11 +89,12 @@ class MoneyTest {
     }
 
     @Test
+    @Throws(Exception::class)
     fun testPlusAssign() {
-        assert(runPlusAssign("$12.05", "$24.10", "$48.20"))
-        assert(runPlusAssign("$12.05", "$-12.05", "$0"))
-        assert(runPlusAssign("$12.05", "$-24.10", "$-12.05"))
-        assert(runPlusAssign("$12.05", "0", "$12.05"))
+        assertTrue(runPlusAssign("$12.05", "$24.10", "36.15"))
+        assertTrue(runPlusAssign("$12.05", "$-12.05", "$0"))
+        assertTrue(runPlusAssign("$12.05", "$-24.10", "$-12.05"))
+        assertTrue(runPlusAssign("$12.05", "0", "$12.05"))
     }
 
     private fun runPlusAssign(amount: String, add: String, expected: String): Boolean {
@@ -96,11 +104,12 @@ class MoneyTest {
     }
 
     @Test
+    @Throws(Exception::class)
     fun testMinusAssign() {
-        assert(runMinusAssign("$12.05", "$24.10", "$-12.05"))
-        assert(runMinusAssign("$12.05", "$-12.05", "$0"))
-        assert(runMinusAssign("$12.05", "$-24.10", "$36.15"))
-        assert(runMinusAssign("$12.05", "0", "$12.05"))
+        assertTrue(runMinusAssign("$12.05", "$24.10", "$-12.05"))
+        assertTrue(runMinusAssign("$12.05", "$12.05", "$0"))
+        assertTrue(runMinusAssign("$12.05", "$-24.10", "$36.15"))
+        assertTrue(runMinusAssign("$12.05", "0", "$12.05"))
     }
 
     private fun runMinusAssign(amount: String, add: String, expected: String): Boolean {
