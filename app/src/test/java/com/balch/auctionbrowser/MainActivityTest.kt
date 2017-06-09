@@ -6,7 +6,9 @@ import com.balch.auctionbrowser.note.Note
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
@@ -35,6 +37,7 @@ class MainActivityTest {
         doReturn("").`when`<MainActivity>(activity).getString(eq(R.string.ebay_app_id))
         doReturn(auctionViewModel).`when`<MainActivity>(activity).getAuctionViewModel()
         doReturn(false).`when`<MainActivity>(activity).handleIntent()
+        doReturn(false).`when`<MainActivity>(activity).isFinishing
 
         activity.createView()
         activity.createModel(modelProvider)
@@ -69,7 +72,7 @@ class MainActivityTest {
 
     @Test
     @Throws(Exception::class)
-    fun testSaveNote() {
+    fun testSaveNote_update() {
         val auction = mock(Auction::class.java)
         val note = mock(Note::class.java)
         val text = "test text"
@@ -78,6 +81,22 @@ class MainActivityTest {
 
         verify(note).noteText = text
         verify(modelProvider.mockNotesDao).update(note)
+    }
+
+    @Ignore
+    @Test
+    @Throws(Exception::class)
+    fun testSaveNote_insert() {
+        val auction = mock(Auction::class.java)
+        val text = "test text"
+
+        activity.saveNote(auction, null, text)
+
+        val captor = ArgumentCaptor.forClass(Note::class.java)
+        verify(modelProvider.mockNotesDao).insert(captor.capture())
+        val note: Note = captor.value
+        assertTrue(note.noteText == text)
+        verify(mockView).addNote(auction, note)
     }
 
 }

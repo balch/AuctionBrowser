@@ -243,7 +243,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
             Observable.just(Note(auction.itemId, text))
                     .subscribeOn(Schedulers.io())
                     .doOnNext { note1 ->  auctionViewModel.insertNote(note1) }
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(modelProvider.mainThread)
                     .subscribe { note1 ->
                         if (!isFinishing) {
                             view.addNote(auction, note1)

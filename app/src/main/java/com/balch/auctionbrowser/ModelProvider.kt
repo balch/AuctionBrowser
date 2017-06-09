@@ -22,6 +22,8 @@
 
 package com.balch.auctionbrowser
 
+import io.reactivex.Scheduler
+
 /**
  * Contains Application Scoped objects (aka singletons) used to provide system services to the
  * ModelApi's. This interface is typically implemented by the Application object and facilitates
@@ -30,4 +32,5 @@ package com.balch.auctionbrowser
 interface ModelProvider {
     val database: AuctionDatabase
     val modelApiFactory: ModelApiFactory
+    val mainThread: Scheduler
 }

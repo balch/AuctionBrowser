@@ -37,7 +37,10 @@ import timber.log.Timber
  * @param <V> Type of View to create
 </V> */
 abstract class PresenterActivity<V: View> : AppCompatActivity()  {
+    @set:VisibleForTesting
     lateinit protected var view: V
+
+    protected val modelProvider: ModelProvider by lazy { application as ModelProvider }
 
     /**
      * Override abstract method to create a view of type V used by the Presenter.
@@ -63,10 +66,10 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.view = this.createView()
-        this.setContentView(view)
+        view = this.createView()
+        setContentView(view)
 
-        this.createModel(application as ModelProvider)
+        createModel(modelProvider)
     }
 
     /**
