@@ -40,7 +40,8 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     @set:VisibleForTesting
     lateinit protected var view: V
 
-    protected val modelProvider: ModelProvider by lazy { application as ModelProvider }
+    @set:VisibleForTesting
+    lateinit protected var modelProvider: ModelProvider
 
     /**
      * Override abstract method to create a view of type V used by the Presenter.
@@ -59,6 +60,12 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     abstract fun createModel(modelProvider: ModelProvider)
 
+    @VisibleForTesting
+    fun createModelInternal(modelProvider: ModelProvider) {
+        this.modelProvider = modelProvider
+        createModel(modelProvider)
+    }
+
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
     }
@@ -69,7 +76,7 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
         view = this.createView()
         setContentView(view)
 
-        createModel(modelProvider)
+        createModelInternal(application as ModelProvider)
     }
 
     /**

@@ -40,7 +40,7 @@ class MainActivityTest {
         doReturn(false).`when`<MainActivity>(activity).isFinishing
 
         activity.createView()
-        activity.createModel(modelProvider)
+        activity.createModelInternal(modelProvider)
     }
 
     @Test

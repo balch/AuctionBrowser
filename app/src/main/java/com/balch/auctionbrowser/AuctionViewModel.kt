@@ -62,9 +62,11 @@ class AuctionViewModel : ViewModel() {
 
     // injected models
     lateinit private var auctionModel: EBayModel
+
     @get:VisibleForTesting(otherwise = VisibleForTesting.NONE)
     lateinit var notesModel: NotesModel
         private set
+
     lateinit var auctionAdapter: AuctionAdapter
         private set
 
