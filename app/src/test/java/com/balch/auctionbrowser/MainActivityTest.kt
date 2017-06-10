@@ -3,10 +3,7 @@ package com.balch.auctionbrowser
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
-import com.balch.auctionbrowser.test.CurrentThreadExecutor
-import com.balch.auctionbrowser.test.TestModelProvider
-import com.balch.auctionbrowser.test.makeCaptor
-import com.balch.auctionbrowser.test.uninitialized
+import com.balch.auctionbrowser.test.*
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert.assertFalse
@@ -139,6 +136,16 @@ class MainActivityTest {
 
         verify(modelProvider.mockNotesDao).delete(note)
         verify(mockView).clearNote(auction)
+    }
+
+    @Test
+    fun testClearNote_null() {
+        val auction: Auction = mock(Auction::class.java)
+
+        activity.clearNote(auction, null)
+
+        verify(modelProvider.mockNotesDao, never()).delete(anyArg())
+        verify(mockView, never()).clearNote(anyArg())
     }
 
 }

@@ -21,3 +21,7 @@ fun <S,T> makeCaptor(mock: T, clazz: Class<S> ): CaptorResult<S,T> {
     return CaptorResult(verifier, captor)
 }
 
+fun <T> anyArg(): T {
+    Mockito.any<T>()
+    return uninitialized()
+}

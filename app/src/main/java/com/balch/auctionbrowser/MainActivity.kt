@@ -46,6 +46,7 @@ import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 open class MainActivity : PresenterActivity<AuctionView>(),
@@ -57,8 +58,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
 
     lateinit private var searchView: SearchView
 
-    private var disposableClickAuction: Disposable? = null
-    private var disposableClickNote: Disposable? = null
+    private val disposables = CompositeDisposable()
 
     private var disposableSaveNote: Disposable? = null
     private var disposableClearNote: Disposable? = null
@@ -83,8 +83,9 @@ open class MainActivity : PresenterActivity<AuctionView>(),
 
     @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
+
+        title = ""
         onCreateInternal(savedInstanceState)
     }
 
@@ -98,11 +99,15 @@ open class MainActivity : PresenterActivity<AuctionView>(),
             val auctionAdapter = auctionViewModel.auctionAdapter
             view.setAuctionAdapter(auctionAdapter)
 
-            disposableClickAuction = auctionAdapter.onClickAuction
+            disposables.add(
+                auctionAdapter.onClickAuction
                     .subscribe({ auction -> showDetail(auction) })
+            )
 
-            disposableClickNote = auctionAdapter.onClickNote
+            disposables.add(
+                auctionAdapter.onClickNote
                     .subscribe({ auction -> showDetail(auction) })
+            )
 
             // Get the intent, verify the action and get the query
             handleIntent()
@@ -135,23 +140,9 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     override fun onDestroy() {
         wrap("OnNewIntent") {
             auctionViewModel.auctionData.removeObservers(this)
-            disposableClickNote?.dispose()
-            disposableClickAuction?.dispose()
-
-            disposeClearNoteObserver()
-            disposeSaveNoteObserver()
+            disposables.dispose()
         }
         super.onDestroy()
-    }
-
-    private fun disposeClearNoteObserver() {
-        disposableClearNote?.dispose()
-        disposableClearNote = null
-    }
-
-    private fun disposeSaveNoteObserver() {
-        disposableSaveNote?.dispose()
-        disposableSaveNote = null
     }
 
     override fun onLoadMore(page: Int): Boolean {
@@ -229,13 +220,15 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         val note = view.getNote(auction)
         val dialog = AuctionDetailDialog(auction, note)
 
-        disposeClearNoteObserver()
+        if (disposableClearNote != null) disposables.remove(disposableClearNote)
         disposableClearNote = dialog.onClearNote
-                .subscribe { _ -> clearNote(auction, note!!) }
+                .subscribe { _ -> clearNote(auction, note) }
+        disposables.add(disposableClearNote)
 
-        disposeSaveNoteObserver()
+        if (disposableSaveNote != null) disposables.remove(disposableSaveNote)
         disposableSaveNote = dialog.onSaveNote
                 .subscribe { text -> saveNote(auction, note, text) }
+        disposables.add(disposableSaveNote)
 
         dialog.show(supportFragmentManager, "AuctionDetailDialog")
     }
@@ -275,16 +268,18 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     }
 
     @VisibleForTesting
-    internal fun clearNote(auction: Auction, note: Note) {
-        Single.just(true)
-                .subscribeOn(ioThread)
-                .doOnSuccess { _ ->  auctionViewModel.deleteNote(note) }
-                .observeOn(mainThread)
-                .subscribe { _ ->
-                    if (!isFinishing) {
-                        view.clearNote(auction)
+    internal fun clearNote(auction: Auction, note: Note?) {
+        if (note != null) {
+            Single.just(true)
+                    .subscribeOn(ioThread)
+                    .doOnSuccess { _ -> auctionViewModel.deleteNote(note) }
+                    .observeOn(mainThread)
+                    .subscribe { _ ->
+                        if (!isFinishing) {
+                            view.clearNote(auction)
+                        }
                     }
-                }
+        }
     }
 
     @VisibleForTesting
