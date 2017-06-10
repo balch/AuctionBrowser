@@ -84,10 +84,10 @@ class MainActivityTest {
 
         activity.saveNote(auction, null, text)
 
-        val (verifier, captor) = makeCaptor(modelProvider.mockNotesDao, Note::class.java)
+        val (verifier, captors) = makeCaptor(modelProvider.mockNotesDao, Note::class.java)
         verifier.insert(uninitialized())
 
-        val note: Note = captor.value
+        val note: Note = captors[0].value as Note
         assertTrue(note.noteText == text)
 
         verify(mockView).addNote(auction, note)

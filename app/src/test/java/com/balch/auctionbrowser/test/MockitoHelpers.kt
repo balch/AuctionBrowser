@@ -5,20 +5,23 @@ import org.mockito.Mockito
 
 fun <T> uninitialized(): T = null as T
 
-data class CaptorResult<S, out T>(val verifier: T, val argumentCaptor: ArgumentCaptor<S>)
+data class CaptorResult<out T>(val verifier: T, val captors: List<ArgumentCaptor<*>>)
 
 /**
  * Workaround for Mockito vs Kotlin null enforcement issues.
  *
  * Adapted from https://stackoverflow.com/a/35366060
  */
-fun <S,T> makeCaptor(mock: T, clazz: Class<S> ): CaptorResult<S,T> {
-    val captor = ArgumentCaptor.forClass(clazz)
+fun <T> makeCaptor(mock: T, vararg clazzes: Class<*> ): CaptorResult<T> {
+
+    val captors: List<ArgumentCaptor<*>> = List(clazzes.size,
+            { idx -> ArgumentCaptor.forClass(clazzes[idx]) })
 
     val verifier = Mockito.verify(mock)
-    captor.capture()
 
-    return CaptorResult(verifier, captor)
+    captors.forEach( { it.capture() })
+
+    return CaptorResult(verifier, captors)
 }
 
 fun <T> anyArg(): T {
