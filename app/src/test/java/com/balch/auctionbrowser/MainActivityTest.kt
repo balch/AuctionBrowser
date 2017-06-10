@@ -5,13 +5,14 @@ import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.test.CurrentThreadExecutor
 import com.balch.auctionbrowser.test.TestModelProvider
+import com.balch.auctionbrowser.test.makeCaptor
+import com.balch.auctionbrowser.test.uninitialized
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
@@ -54,7 +55,6 @@ class MainActivityTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testOnLoadMore() {
         val page = 4
         doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
@@ -68,7 +68,6 @@ class MainActivityTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testOnLoadMoreNoMore() {
         val page = 4
         doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
@@ -81,7 +80,6 @@ class MainActivityTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testSaveNote_update() {
         val auction = mock(Auction::class.java)
         val note = mock(Note::class.java)
@@ -93,21 +91,16 @@ class MainActivityTest {
         verify(modelProvider.mockNotesDao).update(note)
     }
 
-    fun <T> uninitialized(): T = null as T
-
     @Test
-    @Throws(Exception::class)
     fun testSaveNote_insert() {
         val auction = mock(Auction::class.java)
         val text = "test text"
 
         activity.saveNote(auction, null, text)
 
-        val captor = ArgumentCaptor.forClass(Note::class.java)
+        val (verifier, captor) = makeCaptor(modelProvider.mockNotesDao, Note::class.java)
+        verifier.insert(uninitialized())
 
-        val v = verify(modelProvider.mockNotesDao)
-        captor.capture()
-        v.insert(uninitialized())
         val note: Note = captor.value
         assertTrue(note.noteText == text)
 
@@ -115,13 +108,26 @@ class MainActivityTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testOnCreateInternal() {
 
         activity.onCreateInternal(null)
 
         verify(mockView).setAuctionAdapter(auctionViewModel.auctionAdapter)
         verify(activity).handleIntent()
+    }
+
+    @Test
+    fun testShowAuctions() {
+        val auctionData: AuctionData = AuctionData().apply {
+            auctions = ArrayList<Auction>()
+            notes = HashMap<Long, Note>()
+        }
+
+        activity.showAuctions(auctionData)
+
+        verify(mockView).hideBusy()
+        verify(mockView).addAuctions(auctionData.auctions, auctionData.notes)
+        verify(mockView).doneLoading()
     }
 
 }

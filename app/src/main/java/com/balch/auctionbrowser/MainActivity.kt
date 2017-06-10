@@ -38,7 +38,6 @@ import android.view.MenuItem
 import android.widget.SearchView
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
-import com.balch.auctionbrowser.R.string.error_auction_get
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
@@ -94,19 +93,8 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     fun onCreateInternal(savedInstanceState: Bundle?) {
         wrap("onCreateInternal") {
             view.auctionViewListener = this
-            auctionViewModel.auctionData.observe(this, Observer<AuctionData> { auctionData ->
-                view.hideBusy()
-
-                if (auctionData?.hasError == false) {
-                    view.addAuctions(auctionData.auctions, auctionData.notes)
-                } else {
-                    if (searchView.query.isNotEmpty()) {
-                        getSnackbar(view, getString(error_auction_get), Snackbar.LENGTH_LONG).show()
-                    }
-                }
-
-                view.doneLoading()
-            })
+            auctionViewModel.auctionData.observe(this,
+                    Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
 
             val auctionAdapter = auctionViewModel.auctionAdapter
             view.setAuctionAdapter(auctionAdapter)
@@ -270,6 +258,21 @@ open class MainActivity : PresenterActivity<AuctionView>(),
                     .subscribeOn(ioThread)
                     .subscribe { note1 -> auctionViewModel.updateNote(note1) }
         }
+    }
+
+    @VisibleForTesting
+    internal fun showAuctions(auctionData: AuctionData?) {
+        view.hideBusy()
+
+        if (auctionData?.hasError == false) {
+            view.addAuctions(auctionData.auctions, auctionData.notes)
+        } else {
+            if (searchView.query.isNotEmpty()) {
+                getSnackbar(view, getString(R.string.error_auction_get), Snackbar.LENGTH_LONG).show()
+            }
+        }
+
+        view.doneLoading()
     }
 
     @VisibleForTesting

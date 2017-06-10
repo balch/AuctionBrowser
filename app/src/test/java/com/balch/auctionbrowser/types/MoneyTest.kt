@@ -28,7 +28,6 @@ import org.junit.Test
 class MoneyTest {
 
     @Test
-    @Throws(Exception::class)
     fun testSetDollars() {
         assertTrue(Money().dollars == 0.0)
         assertTrue(Money("").dollars == 0.0)
@@ -38,7 +37,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testFormatted() {
         assertTrue(Money().formatted == "$0.00")
         assertTrue(Money("$12.05").formatted == "$12.05")
@@ -49,7 +47,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testTimes() {
         assertTrue((Money("$12.05") * 4) == Money("$48.20"))
         assertTrue((Money("$12.05") * 0) == Money("$0"))
@@ -57,7 +54,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testPlus() {
         assertTrue((Money("$12.05") + Money("$24.10")) == Money("$36.15"))
         assertTrue((Money("$12.05") + Money("$-12.05")) == Money("$0"))
@@ -66,7 +62,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testMinus() {
         assertTrue((Money("$12.05") - Money("$24.10")) == Money("$-12.05"))
         assertTrue((Money("$12.05") - Money("$12.05")) == Money("$0"))
@@ -75,7 +70,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testTimesAssign() {
         assertTrue(runTimesAssign("$12.05", 4, "$48.20"))
         assertTrue(runTimesAssign("$12.05", 0, "$0"))
@@ -89,7 +83,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testPlusAssign() {
         assertTrue(runPlusAssign("$12.05", "$24.10", "36.15"))
         assertTrue(runPlusAssign("$12.05", "$-12.05", "$0"))
@@ -104,7 +97,6 @@ class MoneyTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testMinusAssign() {
         assertTrue(runMinusAssign("$12.05", "$24.10", "$-12.05"))
         assertTrue(runMinusAssign("$12.05", "$12.05", "$0"))

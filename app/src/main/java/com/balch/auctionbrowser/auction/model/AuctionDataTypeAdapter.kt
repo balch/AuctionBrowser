@@ -42,15 +42,15 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
                 .asJsonObject
         val success = validateResponse(items)
 
-        val auctionData = AuctionData()
-        if (success) {
-            auctionData.totalPages = getTotalPages(items)
-            auctionData.auctions = parseAuctions(items)
-        } else {
-            auctionData.hasError = true
-        }
-
-        return auctionData
+        return if (success)
+            AuctionData().apply {
+                totalPages = getTotalPages(items)
+                auctions = parseAuctions(items)
+            }
+        else
+            AuctionData().apply {
+                hasError = true
+            }
     }
 
     private fun validateResponse(json: JsonObject?): Boolean {
