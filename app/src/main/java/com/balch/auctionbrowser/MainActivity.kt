@@ -46,7 +46,6 @@ import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
 open class MainActivity : PresenterActivity<AuctionView>(),
@@ -232,7 +231,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
 
         disposeClearNoteObserver()
         disposableClearNote = dialog.onClearNote
-                .subscribe { _ -> clearNote(auction, note) }
+                .subscribe { _ -> clearNote(auction, note!!) }
 
         disposeSaveNoteObserver()
         disposableSaveNote = dialog.onSaveNote
@@ -276,18 +275,16 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     }
 
     @VisibleForTesting
-    internal fun clearNote(auction: Auction, note: Note?) {
-        if (note != null) {
-            Single.just(true)
-                    .subscribeOn(ioThread)
-                    .doOnSuccess { _ ->  auctionViewModel.deleteNote(note) }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { _ ->
-                        if (!isFinishing) {
-                            view.clearNote(auction)
-                        }
+    internal fun clearNote(auction: Auction, note: Note) {
+        Single.just(true)
+                .subscribeOn(ioThread)
+                .doOnSuccess { _ ->  auctionViewModel.deleteNote(note) }
+                .observeOn(mainThread)
+                .subscribe { _ ->
+                    if (!isFinishing) {
+                        view.clearNote(auction)
                     }
-        }
+                }
     }
 
     @VisibleForTesting

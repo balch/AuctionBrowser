@@ -130,4 +130,15 @@ class MainActivityTest {
         verify(mockView).doneLoading()
     }
 
+    @Test
+    fun testClearNote() {
+        val auction: Auction = mock(Auction::class.java)
+        val note: Note = mock(Note::class.java)
+
+        activity.clearNote(auction, note)
+
+        verify(modelProvider.mockNotesDao).delete(note)
+        verify(mockView).clearNote(auction)
+    }
+
 }
