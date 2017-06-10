@@ -24,10 +24,10 @@ package com.balch.auctionbrowser
 
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
+import java.util.*
 
-class AuctionData {
-    lateinit var auctions: List<Auction>
-    lateinit var notes: Map<Long, Note>
+class AuctionData(var auctions: List<Auction> = Collections.emptyList(),
+                  var notes: Map<Long, Note> = Collections.emptyMap(),
+                  var hasError:Boolean = false) {
     var totalPages: Int = 0
-    var hasError = false
 }

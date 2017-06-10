@@ -27,7 +27,7 @@ import com.balch.auctionbrowser.ModelApiFactory
 import com.balch.auctionbrowser.ModelProvider
 import com.balch.auctionbrowser.auction.model.EBayApi
 import com.balch.auctionbrowser.note.NoteDao
-import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
 class TestModelProvider: ModelProvider {
@@ -41,8 +41,8 @@ class TestModelProvider: ModelProvider {
     val mockEbayApi: EBayApi by lazy { mock(EBayApi::class.java) }
 
     init {
-        Mockito.`when`(database.noteDao()).thenReturn(mockNotesDao)
-        Mockito.`when`(modelApiFactory.ebayApi).thenReturn(mockEbayApi)
+        `when`(database.noteDao()).thenReturn(mockNotesDao)
+        `when`(modelApiFactory.ebayApi).thenReturn(mockEbayApi)
     }
 
 }

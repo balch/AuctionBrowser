@@ -49,7 +49,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-open class MainActivity : PresenterActivity<AuctionView>(),
+class MainActivity : PresenterActivity<AuctionView>(),
         AuctionView.AuctionViewListener, LifecycleRegistryOwner {
 
     private val lifecycleRegistry by lazy { LifecycleRegistry(this) }

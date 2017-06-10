@@ -41,13 +41,17 @@ import timber.log.Timber
 </V> */
 abstract class PresenterActivity<V: View> : AppCompatActivity()  {
 
-    lateinit protected var view: V
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    lateinit var view: V
+
     lateinit protected var modelProvider: ModelProvider
 
-    open protected val mainThread: Scheduler
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    val mainThread: Scheduler
         get() = AndroidSchedulers.mainThread()
 
-    open protected val ioThread: Scheduler
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    val ioThread: Scheduler
         get() = Schedulers.io()
 
     /**
