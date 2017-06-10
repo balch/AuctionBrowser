@@ -28,6 +28,9 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.balch.auctionbrowser.ext.logTiming
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 /**
@@ -37,11 +40,15 @@ import timber.log.Timber
  * @param <V> Type of View to create
 </V> */
 abstract class PresenterActivity<V: View> : AppCompatActivity()  {
-    @set:VisibleForTesting
-    lateinit protected var view: V
 
-    @set:VisibleForTesting
+    lateinit protected var view: V
     lateinit protected var modelProvider: ModelProvider
+
+    open protected val mainThread: Scheduler
+        get() = AndroidSchedulers.mainThread()
+
+    open protected val ioThread: Scheduler
+        get() = Schedulers.io()
 
     /**
      * Override abstract method to create a view of type V used by the Presenter.

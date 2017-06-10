@@ -25,8 +25,7 @@ package com.balch.auctionbrowser
 import android.app.Application
 import android.arch.persistence.room.Room
 import android.os.StrictMode
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
+
 import net.danlew.android.joda.JodaTimeAndroid
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -35,9 +34,6 @@ open class AuctionApplication : Application(), ModelProvider {
     private val DATABASE_NAME = "auction_browser.db"
 
     // ModelProvider Overrides
-    override val mainThread: Scheduler
-        get() = AndroidSchedulers.mainThread()
-
     override val database: AuctionDatabase by lazy {
         Room.databaseBuilder(this, AuctionDatabase::class.java, DATABASE_NAME).build()
     }

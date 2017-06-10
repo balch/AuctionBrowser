@@ -3,10 +3,11 @@ package com.balch.auctionbrowser
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
+import io.reactivex.Scheduler
+import io.reactivex.schedulers.Schedulers
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mock
@@ -28,6 +29,13 @@ class MainActivityTest {
         initMocks(this)
 
         activity = spy<MainActivity>(object : MainActivity() {
+
+            override val mainThread: Scheduler
+                get() = Schedulers.from(CurrentThreadExecutor())
+
+            override val ioThread: Scheduler
+                get() = Schedulers.from(CurrentThreadExecutor())
+
             override fun createView(): AuctionView {
                 view = mockView
                 return mockView
@@ -83,7 +91,8 @@ class MainActivityTest {
         verify(modelProvider.mockNotesDao).update(note)
     }
 
-    @Ignore
+    fun <T> uninitialized(): T = null as T
+
     @Test
     @Throws(Exception::class)
     fun testSaveNote_insert() {
@@ -93,10 +102,24 @@ class MainActivityTest {
         activity.saveNote(auction, null, text)
 
         val captor = ArgumentCaptor.forClass(Note::class.java)
-        verify(modelProvider.mockNotesDao).insert(captor.capture())
+
+        val v = verify(modelProvider.mockNotesDao)
+        captor.capture()
+        v.insert(uninitialized())
         val note: Note = captor.value
         assertTrue(note.noteText == text)
+
         verify(mockView).addNote(auction, note)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testOnCreateInternal() {
+
+        activity.onCreateInternal(null)
+
+        verify(mockView).setAuctionAdapter(auctionViewModel.auctionAdapter)
+        verify(activity).handleIntent()
     }
 
 }

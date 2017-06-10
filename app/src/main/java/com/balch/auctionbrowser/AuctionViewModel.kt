@@ -25,7 +25,6 @@ package com.balch.auctionbrowser
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.support.annotation.VisibleForTesting
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
@@ -61,14 +60,9 @@ class AuctionViewModel : ViewModel() {
         private set
 
     // injected models
+    lateinit var auctionAdapter: AuctionAdapter private set
     lateinit private var auctionModel: EBayModel
-
-    @get:VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    lateinit var notesModel: NotesModel
-        private set
-
-    lateinit var auctionAdapter: AuctionAdapter
-        private set
+    lateinit private var notesModel: NotesModel
 
     // paging vars
     private var totalPages: Long = 0
@@ -118,6 +112,7 @@ class AuctionViewModel : ViewModel() {
     }
 
     private fun getAuctionsAsync() {
+
         disposeGetAuctionDisposable()
         disposableGetAuction = auctionModel
                 .getAuctions(searchText!!, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)

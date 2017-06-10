@@ -22,12 +22,11 @@
 
 package com.balch.auctionbrowser
 
-/**
- * Contains Application Scoped objects (aka singletons) used to provide system services to the
- * ModelApi's. This interface is typically implemented by the Application object and facilitates
- * UnitTest Dependency Injection (this ApplicationComponent in Dagger2)
- */
-interface ModelProvider {
-    val database: AuctionDatabase
-    val modelApiFactory: ModelApiFactory
+import java.util.concurrent.Executor
+
+// use the current thread to make sure rxJava run synchronously
+class CurrentThreadExecutor : Executor {
+    override fun execute(r: Runnable) {
+        r.run()
+    }
 }

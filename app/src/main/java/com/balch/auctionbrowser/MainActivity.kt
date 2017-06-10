@@ -49,7 +49,6 @@ import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
 open class MainActivity : PresenterActivity<AuctionView>(),
         AuctionView.AuctionViewListener, LifecycleRegistryOwner {
@@ -88,9 +87,26 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        wrap("onCreate") {
+        onCreateInternal(savedInstanceState)
+    }
+
+    @VisibleForTesting
+    fun onCreateInternal(savedInstanceState: Bundle?) {
+        wrap("onCreateInternal") {
             view.auctionViewListener = this
-            auctionViewModel.auctionData.observe(this, auctionDataObserver)
+            auctionViewModel.auctionData.observe(this, Observer<AuctionData> { auctionData ->
+                view.hideBusy()
+
+                if (auctionData?.hasError == false) {
+                    view.addAuctions(auctionData.auctions, auctionData.notes)
+                } else {
+                    if (searchView.query.isNotEmpty()) {
+                        getSnackbar(view, getString(error_auction_get), Snackbar.LENGTH_LONG).show()
+                    }
+                }
+
+                view.doneLoading()
+            })
 
             val auctionAdapter = auctionViewModel.auctionAdapter
             view.setAuctionAdapter(auctionAdapter)
@@ -131,7 +147,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
 
     override fun onDestroy() {
         wrap("OnNewIntent") {
-            auctionViewModel.auctionData.removeObserver(auctionDataObserver)
+            auctionViewModel.auctionData.removeObservers(this)
             disposableClickNote?.dispose()
             disposableClickAuction?.dispose()
 
@@ -241,9 +257,9 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     internal fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
             Single.just(Note(auction.itemId, text))
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(ioThread)
                     .doOnSuccess { note1 ->  auctionViewModel.insertNote(note1) }
-                    .observeOn(modelProvider.mainThread)
+                    .observeOn(mainThread)
                     .subscribe { note1 ->
                         if (!isFinishing) {
                             view.addNote(auction, note1)
@@ -251,7 +267,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
         } else {
             note.noteText = text
             Single.just(note)
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(ioThread)
                     .subscribe { note1 -> auctionViewModel.updateNote(note1) }
         }
     }
@@ -260,7 +276,7 @@ open class MainActivity : PresenterActivity<AuctionView>(),
     internal fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
             Single.just(true)
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(ioThread)
                     .doOnSuccess { _ ->  auctionViewModel.deleteNote(note) }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { _ ->
@@ -270,22 +286,6 @@ open class MainActivity : PresenterActivity<AuctionView>(),
                     }
         }
     }
-
-    @VisibleForTesting
-    internal val auctionDataObserver = Observer<AuctionData> {
-        auctionData: AuctionData? ->
-            view.hideBusy()
-
-            if (auctionData?.hasError == false) {
-                view.addAuctions(auctionData.auctions, auctionData.notes)
-            } else {
-                if (searchView.query.isNotEmpty()) {
-                    getSnackbar(view, getString(error_auction_get), Snackbar.LENGTH_LONG).show()
-                }
-            }
-
-            view.doneLoading()
-        }
 
     @VisibleForTesting
     internal fun getAuctionViewModel(): AuctionViewModel {

@@ -24,8 +24,6 @@ package com.balch.auctionbrowser
 
 import com.balch.auctionbrowser.auction.model.EBayApi
 import com.balch.auctionbrowser.note.NoteDao
-import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 
@@ -36,8 +34,6 @@ class TestModelProvider: ModelProvider {
     val ebayApi: EBayApi by lazy { mock(EBayApi::class.java) }
 
     // app scope delegation objects to create api and dao objects
-    override val mainThread: Scheduler
-        get() = Schedulers.io()
     override val database: AuctionDatabase = mock(AuctionDatabase::class.java)
     override val modelApiFactory: ModelApiFactory = mock(ModelApiFactory::class.java)
 
@@ -47,4 +43,3 @@ class TestModelProvider: ModelProvider {
     }
 
 }
-
