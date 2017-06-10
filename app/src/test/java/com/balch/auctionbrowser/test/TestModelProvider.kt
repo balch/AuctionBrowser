@@ -32,17 +32,17 @@ import org.mockito.Mockito.mock
 
 class TestModelProvider: ModelProvider {
 
-    // mock versions of app scoped objects used in test to verify interactions
-    val mockNotesDao: NoteDao by lazy { mock(NoteDao::class.java) }
-    val ebayApi: EBayApi by lazy { mock(EBayApi::class.java) }
-
     // app scope delegation objects to create api and dao objects
     override val database: AuctionDatabase = mock(AuctionDatabase::class.java)
     override val modelApiFactory: ModelApiFactory = mock(ModelApiFactory::class.java)
 
+    // mock versions of app scoped objects used in test to verify interactions
+    val mockNotesDao: NoteDao by lazy { mock(NoteDao::class.java) }
+    val mockEbayApi: EBayApi by lazy { mock(EBayApi::class.java) }
+
     init {
         Mockito.`when`(database.noteDao()).thenReturn(mockNotesDao)
-        Mockito.`when`(modelApiFactory.ebayApi).thenReturn(ebayApi)
+        Mockito.`when`(modelApiFactory.ebayApi).thenReturn(mockEbayApi)
     }
 
 }
