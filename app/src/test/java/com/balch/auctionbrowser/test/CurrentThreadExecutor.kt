@@ -20,7 +20,7 @@
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.test
 
 import java.util.concurrent.Executor
 

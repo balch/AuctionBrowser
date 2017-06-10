@@ -3,6 +3,8 @@ package com.balch.auctionbrowser
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
+import com.balch.auctionbrowser.test.CurrentThreadExecutor
+import com.balch.auctionbrowser.test.TestModelProvider
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert.assertFalse
