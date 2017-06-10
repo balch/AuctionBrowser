@@ -66,8 +66,7 @@ class AuctionViewModel : ViewModel() {
     val auctionData: LiveData<AuctionData>
         get() = auctionDataLive
 
-    var searchText: String? = null
-        private set
+    @set:VisibleForTesting var searchText: String? = null
 
     // injected models
     lateinit var auctionAdapter: AuctionAdapter private set
@@ -75,13 +74,12 @@ class AuctionViewModel : ViewModel() {
     lateinit private var notesModel: NotesModel
 
     // paging vars
-    private var totalPages: Long = 0
-    private var currentPage: Int = 0
-    private var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
+    @VisibleForTesting var currentPage: Int = 0
+    @VisibleForTesting var totalPages: Long = 0
+    @VisibleForTesting var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
 
     // LiveData<AuctionData>
-    @VisibleForTesting
-    val auctionDataLive = MutableLiveData<AuctionData>()
+    @VisibleForTesting val auctionDataLive = MutableLiveData<AuctionData>()
 
     // disposables
     private var disposableGetAuction: Disposable? = null

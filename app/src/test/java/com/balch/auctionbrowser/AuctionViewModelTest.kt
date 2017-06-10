@@ -26,7 +26,6 @@ import android.arch.lifecycle.MutableLiveData
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
-import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import com.balch.auctionbrowser.test.CurrentThreadExecutor
 import com.balch.auctionbrowser.test.TestModelProvider
@@ -65,15 +64,6 @@ class AuctionViewModelTest {
     }
 
     @Test
-    fun testClearNote() {
-        val note = Note(1, "test")
-
-        viewModel.deleteNote(note)
-
-        verify(modelProvider.mockNotesDao).delete(note)
-    }
-
-    @Test
     fun testLoadAuctions() {
         val searchText = "Search"
         val sortColumn = EBayModel.SortColumn.BEST_MATCH
@@ -86,9 +76,32 @@ class AuctionViewModelTest {
 
         viewModel.loadAuctions(searchText, sortColumn)
 
+        verify(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
         verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())
         verify(mockAuctionDataLive).value = auctionData
+    }
 
+    @Test
+    fun testLoadAuctionsNextPage() {
+        val searchText = "Search"
+        val sortColumn = EBayModel.SortColumn.BEST_MATCH
+        val currentPage = 5
+
+        viewModel.searchText = searchText
+        viewModel.sortColumn = sortColumn
+        viewModel.currentPage = currentPage
+
+        val auctions:MutableList<Auction> = ArrayList()
+        auctions.add(mock(Auction::class.java))
+        val auctionData = AuctionData(auctions)
+        doReturn(Single.just(auctionData)).`when`(ebayModel)
+                .getAuctions(searchText, currentPage + 1L, 30, sortColumn)
+
+        viewModel.loadAuctionsNextPage()
+
+        verify(ebayModel).getAuctions(searchText, currentPage + 1L, 30, sortColumn)
+        verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())
+        verify(mockAuctionDataLive).value = auctionData
     }
 
 }
