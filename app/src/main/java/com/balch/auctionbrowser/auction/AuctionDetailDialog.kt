@@ -40,11 +40,11 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_detail_dialog.*
 
-class AuctionDetailDialog constructor(auction: Auction, note: Note?): DialogFragment() {
+class AuctionDetailDialog constructor(): DialogFragment() {
     private val ARG_NOTE = "ARG_NOTE"
     private val ARG_AUCTION = "ARG_AUCTION"
 
-    init {
+    constructor(auction: Auction, note: Note?) : this() {
         val args = Bundle()
         if (note != null) {
             args.putString(ARG_NOTE, note.noteText)
