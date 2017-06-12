@@ -103,7 +103,6 @@
             android:textSize="12sp"
             android:textColor="@android:color/black"/>
 
-        <!-- TODO: Figure out how to make this button green -->
         <Button
             android:id="@+id/member_detail_button_save"
             android:layout_weight="1"

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/cardview_light_background"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/auction_detail_title"
+            style="@style/CardValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textSize="16sp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/auction_detail_item_img"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignTop="@id/auction_detail_item_img"
+                android:layout_toEndOf="@id/auction_detail_item_img">
+
+                <com.balch.auctionbrowser.ui.LabelTextView
+                    android:id="@+id/auction_detail_end_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:label_text="@string/label_end_time"/>
+
+                <com.balch.auctionbrowser.ui.LabelTextView
+                    android:id="@+id/auction_detail_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:label_text="@string/label_price"/>
+
+                <com.balch.auctionbrowser.ui.LabelTextView
+                    android:id="@+id/auction_detail_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:label_text="@string/label_location"/>
+
+                <com.balch.auctionbrowser.ui.LabelTextView
+                    android:id="@+id/auction_detail_shipping_cost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:label_text="@string/label_shipping_cost"/>
+
+                <com.balch.auctionbrowser.ui.LabelTextView
+                    android:id="@+id/auction_detail_buy_it_now"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:label_text="@string/label_buy_it_now"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/member_detail_label_note"
+            style="@style/CardLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_note"
+            android:layout_marginTop="10dp"/>
+
+        <EditText
+            android:id="@+id/auction_detail_note"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:lines="2"
+            android:inputType="textMultiLine"
+            android:textColor="@android:color/black"
+            android:padding="2dp"
+            android:gravity="start|bottom"
+            android:background="@android:color/background_light"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/member_detail_button_clear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_clear"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+        <Button
+            android:id="@+id/member_detail_button_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_save"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
+</LinearLayout>
