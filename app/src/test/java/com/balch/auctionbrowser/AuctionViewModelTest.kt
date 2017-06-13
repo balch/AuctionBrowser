@@ -73,8 +73,10 @@ class AuctionViewModelTest: BaseTest() {
 
         doReturn(Single.just(auctionData)).`when`(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
 
+        //region Execute Test
         viewModel.loadAuctions(searchText, sortColumn)
         testScheduler.triggerActions()
+        //endregion
 
         verify(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
         verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())
@@ -97,8 +99,10 @@ class AuctionViewModelTest: BaseTest() {
         doReturn(Single.just(auctionData)).`when`(ebayModel)
                 .getAuctions(searchText, currentPage + 1L, 30, sortColumn)
 
+        //region Execute Test
         viewModel.loadAuctionsNextPage()
         testScheduler.triggerActions()
+        //endregion
 
         verify(ebayModel).getAuctions(searchText, currentPage + 1L, 30, sortColumn)
         verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())

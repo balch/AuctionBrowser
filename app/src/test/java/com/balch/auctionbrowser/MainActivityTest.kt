@@ -43,9 +43,12 @@ class MainActivityTest: BaseTest() {
         doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
         doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
 
-        assertTrue(activity.onLoadMorePages(page))
+        //region Execute Test
+        val hasMore = activity.onLoadMorePages(page)
         testScheduler.triggerActions()
+        //endregion
 
+        assertTrue(hasMore)
         verify(mockView).showBusy()
         verify(auctionViewModel).hasMoreAuctionPages(page.toLong())
         verify(auctionViewModel).loadAuctionsNextPage()
@@ -56,9 +59,12 @@ class MainActivityTest: BaseTest() {
         val page = 4
         doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
 
-        assertFalse(activity.onLoadMorePages(page))
+        //region Execute Test
+        val hasMore = activity.onLoadMorePages(page)
         testScheduler.triggerActions()
+        //endregion
 
+        assertFalse(hasMore)
         verify(mockView, never()).showBusy()
         verify(auctionViewModel).hasMoreAuctionPages(page.toLong())
         verify(auctionViewModel, never()).loadAuctionsNextPage()
@@ -70,8 +76,10 @@ class MainActivityTest: BaseTest() {
         val note = mock(Note::class.java)
         val text = "test text"
 
+        //region Execute Test
         activity.saveNote(auction, note, text)
         testScheduler.triggerActions()
+        //endregion
 
         verify(note).noteText = text
         verify(modelProvider.mockNotesDao).update(note)
@@ -82,8 +90,10 @@ class MainActivityTest: BaseTest() {
         val auction = mock(Auction::class.java)
         val text = "test text"
 
+        //region Execute Test
         activity.saveNote(auction, null, text)
         testScheduler.triggerActions()
+        //endregion
 
         val (verifier, captors) = makeCaptor(modelProvider.mockNotesDao, Note::class.java)
         verifier.insert(uninitialized())
@@ -97,7 +107,9 @@ class MainActivityTest: BaseTest() {
     @Test
     fun testOnCreateInternal() {
 
+        //region Execute Test
         activity.onCreateInternal(null)
+        //endregion
 
         verify(mockView).setAuctionAdapter(auctionViewModel.auctionAdapter)
         verify(activity).handleIntent()
@@ -110,7 +122,9 @@ class MainActivityTest: BaseTest() {
             notes = HashMap<Long, Note>()
         }
 
+        //region Execute Test
         activity.showAuctions(auctionData)
+        //endregion
 
         verify(mockView).hideBusy()
         verify(mockView).addAuctions(auctionData.auctions, auctionData.notes)
@@ -122,8 +136,10 @@ class MainActivityTest: BaseTest() {
         val auction: Auction = mock(Auction::class.java)
         val note: Note = mock(Note::class.java)
 
+        //region Execute Test
         activity.clearNote(auction, note)
         testScheduler.triggerActions()
+        //endregion
 
         verify(modelProvider.mockNotesDao).delete(note)
         verify(mockView).clearNote(auction)
@@ -133,7 +149,9 @@ class MainActivityTest: BaseTest() {
     fun testClearNote_null() {
         val auction: Auction = mock(Auction::class.java)
 
+        //region Execute Test
         activity.clearNote(auction, null)
+        //endregion
 
         verify(modelProvider.mockNotesDao, never()).delete(anyArg())
         verify(mockView, never()).clearNote(anyArg())
