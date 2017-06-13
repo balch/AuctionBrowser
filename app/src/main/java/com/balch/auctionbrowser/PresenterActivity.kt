@@ -22,15 +22,13 @@
 
 package com.balch.auctionbrowser
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.balch.auctionbrowser.ext.logTiming
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 /**
@@ -41,18 +39,13 @@ import timber.log.Timber
 </V> */
 abstract class PresenterActivity<V: View> : AppCompatActivity()  {
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    lateinit var view: V
+    protected val view: V
+        get() = viewInternal!!
 
     lateinit protected var modelProvider: ModelProvider
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    val mainThread: Scheduler
-        get() = AndroidSchedulers.mainThread()
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    val ioThread: Scheduler
-        get() = Schedulers.io()
+    // cleanup variables
+    @VisibleForTesting var viewInternal: V? = null
 
     /**
      * Override abstract method to create a view of type V used by the Presenter.
@@ -81,13 +74,19 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
         return false
     }
 
+    @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = this.createView()
+        viewInternal = this.createView()
         setContentView(view)
 
         createModelInternal(application as ModelProvider)
+    }
+
+    override fun onDestroy() {
+        viewInternal = null
+        super.onDestroy()
     }
 
     /**

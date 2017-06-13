@@ -4,7 +4,6 @@ import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.test.*
-import io.reactivex.schedulers.Schedulers
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -13,7 +12,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
 
-class MainActivityTest {
+class MainActivityTest: BaseTest() {
 
     @Mock lateinit private var mockView: AuctionView
 
@@ -28,10 +27,8 @@ class MainActivityTest {
 
         activity = spy(MainActivity())
 
-        activity.view = mockView
+        activity.viewInternal = mockView
 
-        doReturn(Schedulers.from(CurrentThreadExecutor())).`when`(activity).mainThread
-        doReturn(Schedulers.from(CurrentThreadExecutor())).`when`(activity).ioThread
         doReturn("").`when`(activity).getString(eq(R.string.ebay_app_id))
         doReturn(auctionViewModel).`when`(activity).getAuctionViewModel()
         doReturn(false).`when`(activity).handleIntent()
@@ -46,7 +43,8 @@ class MainActivityTest {
         doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
         doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
 
-        assertTrue(activity.onLoadMore(page))
+        assertTrue(activity.onLoadMorePages(page))
+        testScheduler.triggerActions()
 
         verify(mockView).showBusy()
         verify(auctionViewModel).hasMoreAuctionPages(page.toLong())
@@ -58,7 +56,8 @@ class MainActivityTest {
         val page = 4
         doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
 
-        assertFalse(activity.onLoadMore(page))
+        assertFalse(activity.onLoadMorePages(page))
+        testScheduler.triggerActions()
 
         verify(mockView, never()).showBusy()
         verify(auctionViewModel).hasMoreAuctionPages(page.toLong())
@@ -72,6 +71,7 @@ class MainActivityTest {
         val text = "test text"
 
         activity.saveNote(auction, note, text)
+        testScheduler.triggerActions()
 
         verify(note).noteText = text
         verify(modelProvider.mockNotesDao).update(note)
@@ -83,6 +83,7 @@ class MainActivityTest {
         val text = "test text"
 
         activity.saveNote(auction, null, text)
+        testScheduler.triggerActions()
 
         val (verifier, captors) = makeCaptor(modelProvider.mockNotesDao, Note::class.java)
         verifier.insert(uninitialized())
@@ -122,6 +123,7 @@ class MainActivityTest {
         val note: Note = mock(Note::class.java)
 
         activity.clearNote(auction, note)
+        testScheduler.triggerActions()
 
         verify(modelProvider.mockNotesDao).delete(note)
         verify(mockView).clearNote(auction)

@@ -46,11 +46,12 @@ import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
-class MainActivity : PresenterActivity<AuctionView>(),
-        AuctionView.AuctionViewListener, LifecycleRegistryOwner {
+class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
 
     private val lifecycleRegistry by lazy { LifecycleRegistry(this) }
 
@@ -92,7 +93,12 @@ class MainActivity : PresenterActivity<AuctionView>(),
     @VisibleForTesting
     fun onCreateInternal(savedInstanceState: Bundle?) {
         wrap("onCreateInternal") {
-            view.auctionViewListener = this
+            view.auctionViewListener = object : AuctionView.AuctionViewListener {
+                override fun onLoadMore(page: Int): Boolean {
+                    return onLoadMorePages(page)
+                }
+            }
+
             auctionViewModel.auctionData.observe(this,
                     Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
 
@@ -139,13 +145,15 @@ class MainActivity : PresenterActivity<AuctionView>(),
 
     override fun onDestroy() {
         wrap("OnNewIntent") {
+            view.cleanup()
             auctionViewModel.auctionData.removeObservers(this)
             disposables.dispose()
         }
         super.onDestroy()
     }
 
-    override fun onLoadMore(page: Int): Boolean {
+    @VisibleForTesting
+    internal fun onLoadMorePages(page: Int): Boolean {
         val hasMore = auctionViewModel.hasMoreAuctionPages(page.toLong())
         if (hasMore) {
             view.showBusy()
@@ -237,9 +245,9 @@ class MainActivity : PresenterActivity<AuctionView>(),
     internal fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
             Single.just(Note(auction.itemId, text))
-                    .subscribeOn(ioThread)
+                    .subscribeOn(Schedulers.io())
                     .doOnSuccess { note1 ->  auctionViewModel.insertNote(note1) }
-                    .observeOn(mainThread)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { note1 ->
                         if (!isFinishing) {
                             view.addNote(auction, note1)
@@ -247,7 +255,7 @@ class MainActivity : PresenterActivity<AuctionView>(),
         } else {
             note.noteText = text
             Single.just(note)
-                    .subscribeOn(ioThread)
+                    .subscribeOn(Schedulers.io())
                     .subscribe { note1 -> auctionViewModel.updateNote(note1) }
         }
     }
@@ -271,9 +279,9 @@ class MainActivity : PresenterActivity<AuctionView>(),
     internal fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
             Single.just(true)
-                    .subscribeOn(ioThread)
+                    .subscribeOn(Schedulers.io())
                     .doOnSuccess { _ -> auctionViewModel.deleteNote(note) }
-                    .observeOn(mainThread)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { _ ->
                         if (!isFinishing) {
                             view.clearNote(auction)

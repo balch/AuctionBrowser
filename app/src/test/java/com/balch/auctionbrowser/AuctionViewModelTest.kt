@@ -27,19 +27,19 @@ import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.NotesModel
-import com.balch.auctionbrowser.test.CurrentThreadExecutor
+import com.balch.auctionbrowser.test.BaseTest
 import com.balch.auctionbrowser.test.TestModelProvider
 import com.balch.auctionbrowser.test.anyArg
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
 
-class AuctionViewModelTest {
 
+
+class AuctionViewModelTest: BaseTest() {
     lateinit private var viewModel: AuctionViewModel
 
     @Mock lateinit private var mockAdapter: AuctionAdapter
@@ -52,6 +52,7 @@ class AuctionViewModelTest {
 
     @Before
     fun setUp() {
+
         initMocks(this)
 
         notesModel = NotesModel(modelProvider.mockNotesDao)
@@ -59,8 +60,6 @@ class AuctionViewModelTest {
         viewModel = spy(AuctionViewModel())
         viewModel.inject(mockAdapter, ebayModel, notesModel)
         doReturn(mockAuctionDataLive).`when`(viewModel).auctionDataLive
-        doReturn(Schedulers.from(CurrentThreadExecutor())).`when`(viewModel).mainThread
-        doReturn(Schedulers.from(CurrentThreadExecutor())).`when`(viewModel).ioThread
     }
 
     @Test
@@ -75,6 +74,7 @@ class AuctionViewModelTest {
         doReturn(Single.just(auctionData)).`when`(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
 
         viewModel.loadAuctions(searchText, sortColumn)
+        testScheduler.triggerActions()
 
         verify(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
         verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())
@@ -98,6 +98,7 @@ class AuctionViewModelTest {
                 .getAuctions(searchText, currentPage + 1L, 30, sortColumn)
 
         viewModel.loadAuctionsNextPage()
+        testScheduler.triggerActions()
 
         verify(ebayModel).getAuctions(searchText, currentPage + 1L, 30, sortColumn)
         verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())

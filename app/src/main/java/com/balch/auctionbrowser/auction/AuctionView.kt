@@ -30,8 +30,8 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import com.balch.auctionbrowser.R
-import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.note.Note
 import kotlinx.android.synthetic.main.auction_view.view.*
 
@@ -45,9 +45,10 @@ class AuctionView : FrameLayout {
     private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
     lateinit private var recyclerOnScrollListener: RecyclerOnScrollListener
-    lateinit private var auctionAdapter: AuctionAdapter
 
-    lateinit var auctionViewListener: AuctionViewListener
+    // cleanup variables
+    private var auctionAdapter: AuctionAdapter? = null
+    var auctionViewListener: AuctionViewListener? = null
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -70,7 +71,7 @@ class AuctionView : FrameLayout {
         recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager,
                 object : RecyclerOnScrollListener.LoadMoreListener {
                     override fun onLoadMore(page: Int): Boolean {
-                        return auctionViewListener.onLoadMore(page)
+                        return auctionViewListener!!.onLoadMore(page)
                     }
                 })
 
@@ -84,6 +85,13 @@ class AuctionView : FrameLayout {
         recyclerView.adapter = this.auctionAdapter
     }
 
+    fun cleanup() {
+        recyclerView.clearOnScrollListeners()
+        recyclerView.adapter = null
+        this.auctionViewListener = null
+        this.auctionAdapter = null
+    }
+
     fun showBusy() {
         progressBar.visibility = View.VISIBLE
     }
@@ -93,11 +101,11 @@ class AuctionView : FrameLayout {
     }
 
     fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
-        auctionAdapter.addAuctions(auctions, notes)
+        auctionAdapter!!.addAuctions(auctions, notes)
     }
 
     fun clearAuctions() {
-        auctionAdapter.clearAuctions()
+        auctionAdapter!!.clearAuctions()
         recyclerOnScrollListener.reset()
     }
 
@@ -106,17 +114,17 @@ class AuctionView : FrameLayout {
     }
 
     fun getNote(auction: Auction): Note? {
-        return auctionAdapter.notes[auction.itemId]
+        return auctionAdapter!!.notes[auction.itemId]
     }
 
     fun clearNote(auction: Auction) {
-        auctionAdapter.notes.remove(auction.itemId)
-        auctionAdapter.notifyDataSetChanged()
+        auctionAdapter!!.notes.remove(auction.itemId)
+        auctionAdapter!!.notifyDataSetChanged()
     }
 
     fun addNote(auction: Auction, note: Note) {
-        auctionAdapter.notes.put(auction.itemId, note)
-        auctionAdapter.notifyDataSetChanged()
+        auctionAdapter!!.notes.put(auction.itemId, note)
+        auctionAdapter!!.notifyDataSetChanged()
     }
 
     class RecyclerOnScrollListener internal constructor(private val linearLayoutManager: LinearLayoutManager,

@@ -30,7 +30,6 @@ import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -50,14 +49,6 @@ import timber.log.Timber
 class AuctionViewModel : ViewModel() {
 
     private val AUCTION_FETCH_COUNT = 30
-
-    @VisibleForTesting
-    val mainThread: Scheduler
-        get() = AndroidSchedulers.mainThread()
-
-    @VisibleForTesting
-    val ioThread: Scheduler
-        get() = Schedulers.io()
 
     // public properties
     var isInitialized = false
@@ -125,12 +116,12 @@ class AuctionViewModel : ViewModel() {
         disposeGetAuctionDisposable()
         disposableGetAuction = auctionModel
                 .getAuctions(searchText!!, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
-                .subscribeOn(ioThread)
+                .subscribeOn(Schedulers.io())
                 .doOnSuccess { auctionData ->
                     auctionData.notes = notesModel.getNotes(auctionData.auctions)
                     totalPages = auctionData.totalPages.toLong()
                 }
-                .observeOn(mainThread)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({auctionData -> auctionDataLive.setValue(auctionData)},
                             { throwable ->
                                 Timber.e(throwable, "Error in .getAuctions()")
