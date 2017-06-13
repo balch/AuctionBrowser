@@ -24,8 +24,8 @@ package com.balch.auctionbrowser.test
 
 import com.balch.auctionbrowser.AuctionDatabase
 import com.balch.auctionbrowser.ModelApiFactory
-import com.balch.auctionbrowser.ModelProvider
 import com.balch.auctionbrowser.auction.model.EBayApi
+import com.balch.auctionbrowser.base.ModelProvider
 import com.balch.auctionbrowser.note.NoteDao
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock

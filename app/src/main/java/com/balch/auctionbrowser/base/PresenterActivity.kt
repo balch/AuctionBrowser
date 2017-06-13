@@ -20,7 +20,7 @@
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.base
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -37,15 +37,14 @@ import timber.log.Timber
 
  * @param <V> Type of View to create
 </V> */
-abstract class PresenterActivity<V: View> : AppCompatActivity()  {
+abstract class PresenterActivity<V> : AppCompatActivity()
+    where V: View, V: BaseView {
 
-    protected val view: V
-        get() = viewInternal!!
+    @set:VisibleForTesting
+    @get:VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    lateinit var view: V
 
     lateinit protected var modelProvider: ModelProvider
-
-    // cleanup variables
-    @VisibleForTesting var viewInternal: V? = null
 
     /**
      * Override abstract method to create a view of type V used by the Presenter.
@@ -78,14 +77,14 @@ abstract class PresenterActivity<V: View> : AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewInternal = this.createView()
+        view = this.createView()
         setContentView(view)
 
         createModelInternal(application as ModelProvider)
     }
 
     override fun onDestroy() {
-        viewInternal = null
+        view.cleanup()
         super.onDestroy()
     }
 

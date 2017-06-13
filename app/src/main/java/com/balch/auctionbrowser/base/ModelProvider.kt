@@ -20,7 +20,10 @@
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.base
+
+import com.balch.auctionbrowser.AuctionDatabase
+import com.balch.auctionbrowser.ModelApiFactory
 
 /**
  * Contains Application Scoped objects (aka singletons) used to provide system services to the

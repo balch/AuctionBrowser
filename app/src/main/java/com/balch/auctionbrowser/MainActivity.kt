@@ -43,6 +43,8 @@ import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.base.ModelProvider
+import com.balch.auctionbrowser.base.PresenterActivity
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import io.reactivex.Single
@@ -145,7 +147,6 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
 
     override fun onDestroy() {
         wrap("OnNewIntent") {
-            view.cleanup()
             auctionViewModel.auctionData.removeObservers(this)
             disposables.dispose()
         }

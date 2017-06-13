@@ -27,7 +27,7 @@ class MainActivityTest: BaseTest() {
 
         activity = spy(MainActivity())
 
-        activity.viewInternal = mockView
+        activity.view = mockView
 
         doReturn("").`when`(activity).getString(eq(R.string.ebay_app_id))
         doReturn(auctionViewModel).`when`(activity).getAuctionViewModel()

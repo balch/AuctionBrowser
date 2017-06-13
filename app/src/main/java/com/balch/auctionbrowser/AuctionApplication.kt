@@ -25,6 +25,7 @@ package com.balch.auctionbrowser
 import android.app.Application
 import android.arch.persistence.room.Room
 import android.os.StrictMode
+import com.balch.auctionbrowser.base.ModelProvider
 
 import net.danlew.android.joda.JodaTimeAndroid
 import timber.log.Timber
