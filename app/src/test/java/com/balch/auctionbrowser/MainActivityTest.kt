@@ -4,6 +4,7 @@ import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.test.*
+import io.reactivex.Observable
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -28,6 +29,8 @@ class MainActivityTest: BaseTest() {
         activity = spy(MainActivity())
 
         activity.view = mockView
+        doReturn(Observable.just(1)).`when`(mockView).onLoadMore
+
 
         doReturn("").`when`(activity).getString(eq(R.string.ebay_app_id))
         doReturn(auctionViewModel).`when`(activity).getAuctionViewModel()
@@ -40,7 +43,7 @@ class MainActivityTest: BaseTest() {
     @Test
     fun testOnLoadMore() {
         val page = 4
-        doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
+        doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyInt())
         doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
 
         //region Execute Test
@@ -50,14 +53,14 @@ class MainActivityTest: BaseTest() {
 
         assertTrue(hasMore)
         verify(mockView).showBusy()
-        verify(auctionViewModel).hasMoreAuctionPages(page.toLong())
+        verify(auctionViewModel).hasMoreAuctionPages(page)
         verify(auctionViewModel).loadAuctionsNextPage()
     }
 
     @Test
     fun testOnLoadMoreNoMore() {
         val page = 4
-        doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyLong())
+        doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyInt())
 
         //region Execute Test
         val hasMore = activity.onLoadMorePages(page)
@@ -66,7 +69,7 @@ class MainActivityTest: BaseTest() {
 
         assertFalse(hasMore)
         verify(mockView, never()).showBusy()
-        verify(auctionViewModel).hasMoreAuctionPages(page.toLong())
+        verify(auctionViewModel).hasMoreAuctionPages(page)
         verify(auctionViewModel, never()).loadAuctionsNextPage()
     }
 
@@ -128,7 +131,7 @@ class MainActivityTest: BaseTest() {
 
         verify(mockView).hideBusy()
         verify(mockView).addAuctions(auctionData.auctions, auctionData.notes)
-        verify(mockView).doneLoading()
+        verify(mockView).doneLoading(false)
     }
 
     @Test

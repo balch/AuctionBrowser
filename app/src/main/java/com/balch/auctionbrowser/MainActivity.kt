@@ -95,11 +95,10 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     @VisibleForTesting
     fun onCreateInternal(savedInstanceState: Bundle?) {
         wrap("onCreateInternal") {
-            view.auctionViewListener = object : AuctionView.AuctionViewListener {
-                override fun onLoadMore(page: Int): Boolean {
-                    return onLoadMorePages(page)
-                }
-            }
+            disposables.add(
+                view.onLoadMore
+                        .subscribe({page -> onLoadMorePages(page)})
+            )
 
             auctionViewModel.auctionData.observe(this,
                     Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
@@ -155,7 +154,7 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
 
     @VisibleForTesting
     internal fun onLoadMorePages(page: Int): Boolean {
-        val hasMore = auctionViewModel.hasMoreAuctionPages(page.toLong())
+        val hasMore = auctionViewModel.hasMoreAuctionPages(page)
         if (hasMore) {
             view.showBusy()
             auctionViewModel.loadAuctionsNextPage()
@@ -273,7 +272,8 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
             }
         }
 
-        view.doneLoading()
+        view.doneLoading(auctionViewModel.hasMoreAuctionPages)
+
     }
 
     @VisibleForTesting

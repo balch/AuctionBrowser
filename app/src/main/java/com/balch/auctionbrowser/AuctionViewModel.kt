@@ -54,6 +54,9 @@ class AuctionViewModel : ViewModel() {
     var isInitialized = false
         private set
 
+    val hasMoreAuctionPages
+        get() = hasMoreAuctionPages(currentPage)
+
     val auctionData: LiveData<AuctionData>
         get() = auctionDataLive
 
@@ -95,7 +98,7 @@ class AuctionViewModel : ViewModel() {
         getAuctionsAsync()
     }
 
-    fun hasMoreAuctionPages(page: Long): Boolean {
+    fun hasMoreAuctionPages(page: Int): Boolean {
         return totalPages == -1L || page < totalPages
     }
 

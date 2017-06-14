@@ -29,27 +29,29 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import com.balch.auctionbrowser.base.BaseView
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.base.BaseView
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.note.Note
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_view.view.*
 
 class AuctionView : FrameLayout, BaseView {
-
-    interface AuctionViewListener {
-        fun onLoadMore(page: Int): Boolean
-    }
 
     private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
     private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
     lateinit private var recyclerOnScrollListener: RecyclerOnScrollListener
 
-    // cleanup variables
-    private var auctionAdapter: AuctionAdapter? = null
-    var auctionViewListener: AuctionViewListener? = null
+    lateinit private var auctionAdapter: AuctionAdapter
+
+    val onLoadMore: Observable<Int>
+        get() = loadMoreSubject
+
+    // backing for exposing user initiated events to Activity
+    private val loadMoreSubject: PublishSubject<Int> = PublishSubject.create<Int>()
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -69,13 +71,7 @@ class AuctionView : FrameLayout, BaseView {
         id = View.generateViewId()
 
         val layoutManager = LinearLayoutManager(context)
-        recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager,
-                object : RecyclerOnScrollListener.LoadMoreListener {
-                    override fun onLoadMore(page: Int): Boolean {
-                        return auctionViewListener!!.onLoadMore(page)
-                    }
-                })
-
+        recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager, loadMoreSubject)
 
         recyclerView.layoutManager = layoutManager
         recyclerView.addOnScrollListener(recyclerOnScrollListener)
@@ -89,8 +85,6 @@ class AuctionView : FrameLayout, BaseView {
     override fun cleanup() {
         recyclerView.clearOnScrollListeners()
         recyclerView.adapter = null
-        this.auctionViewListener = null
-        this.auctionAdapter = null
     }
 
     fun showBusy() {
@@ -102,38 +96,39 @@ class AuctionView : FrameLayout, BaseView {
     }
 
     fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
-        auctionAdapter!!.addAuctions(auctions, notes)
+        auctionAdapter.addAuctions(auctions, notes)
     }
 
     fun clearAuctions() {
-        auctionAdapter!!.clearAuctions()
+        auctionAdapter.clearAuctions()
         recyclerOnScrollListener.reset()
     }
 
-    fun doneLoading() {
-        recyclerOnScrollListener.doneLoading()
+    fun doneLoading(hasMore: Boolean) {
+        recyclerOnScrollListener.doneLoading(hasMore)
     }
 
     fun getNote(auction: Auction): Note? {
-        return auctionAdapter!!.notes[auction.itemId]
+        return auctionAdapter.notes[auction.itemId]
     }
 
     fun clearNote(auction: Auction) {
-        auctionAdapter!!.notes.remove(auction.itemId)
-        auctionAdapter!!.notifyDataSetChanged()
+        auctionAdapter.notes.remove(auction.itemId)
+        auctionAdapter.notifyDataSetChanged()
     }
 
     fun addNote(auction: Auction, note: Note) {
-        auctionAdapter!!.notes.put(auction.itemId, note)
-        auctionAdapter!!.notifyDataSetChanged()
+        auctionAdapter.notes.put(auction.itemId, note)
+        auctionAdapter.notifyDataSetChanged()
     }
 
     class RecyclerOnScrollListener internal constructor(private val linearLayoutManager: LinearLayoutManager,
-                                                        private val loadMoreListener: LoadMoreListener) : RecyclerView.OnScrollListener() {
+                    private val loadMoreSubject: PublishSubject<Int>): RecyclerView.OnScrollListener() {
+
+        var hasMore = true
 
         private var currentPage = 1
         private var loading = false
-        private var hasMore = true
 
         internal fun reset() {
             currentPage = 1
@@ -141,7 +136,8 @@ class AuctionView : FrameLayout, BaseView {
             loading = false
         }
 
-        internal fun doneLoading() {
+        internal fun doneLoading(hasMore: Boolean) {
+            this.hasMore = hasMore
             loading = false
         }
 
@@ -154,14 +150,10 @@ class AuctionView : FrameLayout, BaseView {
                 val firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition()
 
                 if (visibleItemCount + firstVisibleItem >= totalItemCount) {
-                    hasMore = loadMoreListener.onLoadMore(++currentPage)
-                    loading = hasMore
+                    loadMoreSubject.onNext(++currentPage)
+                    loading = true
                 }
             }
-        }
-
-        interface LoadMoreListener {
-            fun onLoadMore(page: Int): Boolean
         }
     }
 }
