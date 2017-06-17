@@ -50,7 +50,7 @@ class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: P
     fun bind(auction: Auction, note: Note?) {
 
         with (auction) {
-            itemImageView.loadUrl(imageUrl)
+            itemImageView.loadUrl(imageUrl) {it.centerCrop()}
             titleTextView.value = title
 
             priceTextView.value = currentPrice.getFormatted(2)

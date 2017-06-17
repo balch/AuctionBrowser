@@ -92,7 +92,7 @@ class AuctionDetailDialog constructor(): DialogFragment() {
 
             with (auction) {
                 dialog.auction_detail_title.text = title
-                dialog.auction_detail_item_img.loadUrl(imageUrl)
+                dialog.auction_detail_item_img.loadUrl(imageUrl) {it.centerCrop()}
                 dialog.auction_detail_end_time.value = endTime.toLongDateTimeString()
                 dialog.auction_detail_price.value = currentPrice.getFormatted(2)
                 dialog.auction_detail_location.value = location

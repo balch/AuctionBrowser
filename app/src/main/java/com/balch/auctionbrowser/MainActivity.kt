@@ -96,8 +96,7 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     fun onCreateInternal(savedInstanceState: Bundle?) {
         wrap("onCreateInternal") {
             disposables.add(
-                view.onLoadMore
-                        .subscribe({page -> onLoadMorePages(page)})
+                view.onLoadMore.subscribe({ onLoadMorePages() })
             )
 
             auctionViewModel.auctionData.observe(this,
@@ -153,17 +152,13 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     }
 
     @VisibleForTesting
-    internal fun onLoadMorePages(page: Int): Boolean {
-        val hasMore = auctionViewModel.hasMoreAuctionPages(page)
-        if (hasMore) {
-            view.showBusy()
-            auctionViewModel.loadAuctionsNextPage()
-        }
-        return hasMore
+    internal fun onLoadMorePages(): Unit {
+        view.showBusy = true
+        auctionViewModel.loadAuctionsNextPage()
     }
 
     internal fun sortAuctions(sortColumn: EBayModel.SortColumn) {
-        view.showBusy()
+        view.showBusy = true
         view.clearAuctions()
         auctionViewModel.loadAuctions(sortColumn = sortColumn)
     }
@@ -214,7 +209,7 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     private fun doSearch(keyword: String) {
         searchView.clearFocus()
 
-        view.showBusy()
+        view.showBusy = true
         view.clearAuctions()
         auctionViewModel.loadAuctions(keyword)
     }
@@ -262,7 +257,7 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
 
     @VisibleForTesting
     internal fun showAuctions(auctionData: AuctionData?) {
-        view.hideBusy()
+        view.showBusy = false
 
         if (auctionData?.hasError == false) {
             view.addAuctions(auctionData.auctions, auctionData.notes)

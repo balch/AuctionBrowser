@@ -5,7 +5,6 @@ import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.test.*
 import io.reactivex.Observable
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -42,35 +41,16 @@ class MainActivityTest: BaseTest() {
 
     @Test
     fun testOnLoadMore() {
-        val page = 4
         doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyInt())
         doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
 
         //region Execute Test
-        val hasMore = activity.onLoadMorePages(page)
+        activity.onLoadMorePages()
         testScheduler.triggerActions()
         //endregion
 
-        assertTrue(hasMore)
-        verify(mockView).showBusy()
-        verify(auctionViewModel).hasMoreAuctionPages(page)
+        verify(mockView).showBusy = true
         verify(auctionViewModel).loadAuctionsNextPage()
-    }
-
-    @Test
-    fun testOnLoadMoreNoMore() {
-        val page = 4
-        doReturn(false).`when`(auctionViewModel).hasMoreAuctionPages(anyInt())
-
-        //region Execute Test
-        val hasMore = activity.onLoadMorePages(page)
-        testScheduler.triggerActions()
-        //endregion
-
-        assertFalse(hasMore)
-        verify(mockView, never()).showBusy()
-        verify(auctionViewModel).hasMoreAuctionPages(page)
-        verify(auctionViewModel, never()).loadAuctionsNextPage()
     }
 
     @Test
@@ -129,7 +109,7 @@ class MainActivityTest: BaseTest() {
         activity.showAuctions(auctionData)
         //endregion
 
-        verify(mockView).hideBusy()
+        verify(mockView).showBusy = false
         verify(mockView).addAuctions(auctionData.auctions, auctionData.notes)
         verify(mockView).doneLoading(false)
     }

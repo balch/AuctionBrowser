@@ -34,6 +34,7 @@ import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.base.BaseView
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.note.Note
+import com.balch.auctionbrowser.ui.EndlessScrollListener
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_view.view.*
@@ -43,15 +44,20 @@ class AuctionView : FrameLayout, BaseView {
     private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
     private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
-    lateinit private var recyclerOnScrollListener: RecyclerOnScrollListener
+    lateinit private var recyclerOnScrollListener: EndlessScrollListener
 
     lateinit private var auctionAdapter: AuctionAdapter
 
-    val onLoadMore: Observable<Int>
+    // public properties
+    val onLoadMore: Observable<Unit>
         get() = loadMoreSubject
 
+    var showBusy: Boolean
+        get() = progressBar.visibility == View.VISIBLE
+        set(value) { progressBar.visibility = if (value) View.VISIBLE else View.GONE }
+
     // backing for exposing user initiated events to Activity
-    private val loadMoreSubject: PublishSubject<Int> = PublishSubject.create<Int>()
+    private val loadMoreSubject: PublishSubject<Unit> = PublishSubject.create<Unit>()
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -71,7 +77,7 @@ class AuctionView : FrameLayout, BaseView {
         id = View.generateViewId()
 
         val layoutManager = LinearLayoutManager(context)
-        recyclerOnScrollListener = RecyclerOnScrollListener(layoutManager, loadMoreSubject)
+        recyclerOnScrollListener = EndlessScrollListener(layoutManager, loadMoreSubject)
 
         recyclerView.layoutManager = layoutManager
         recyclerView.addOnScrollListener(recyclerOnScrollListener)
@@ -85,14 +91,6 @@ class AuctionView : FrameLayout, BaseView {
     override fun cleanup() {
         recyclerView.clearOnScrollListeners()
         recyclerView.adapter = null
-    }
-
-    fun showBusy() {
-        progressBar.visibility = View.VISIBLE
-    }
-
-    fun hideBusy() {
-        progressBar.visibility = View.GONE
     }
 
     fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
@@ -120,40 +118,5 @@ class AuctionView : FrameLayout, BaseView {
     fun addNote(auction: Auction, note: Note) {
         auctionAdapter.notes.put(auction.itemId, note)
         auctionAdapter.notifyDataSetChanged()
-    }
-
-    class RecyclerOnScrollListener internal constructor(private val linearLayoutManager: LinearLayoutManager,
-                    private val loadMoreSubject: PublishSubject<Int>): RecyclerView.OnScrollListener() {
-
-        var hasMore = true
-
-        private var currentPage = 1
-        private var loading = false
-
-        internal fun reset() {
-            currentPage = 1
-            hasMore = true
-            loading = false
-        }
-
-        internal fun doneLoading(hasMore: Boolean) {
-            this.hasMore = hasMore
-            loading = false
-        }
-
-        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-
-            if (hasMore && !loading) {
-                val visibleItemCount = linearLayoutManager.childCount
-                val totalItemCount = linearLayoutManager.itemCount
-                val firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition()
-
-                if (visibleItemCount + firstVisibleItem >= totalItemCount) {
-                    loadMoreSubject.onNext(++currentPage)
-                    loading = true
-                }
-            }
-        }
     }
 }
