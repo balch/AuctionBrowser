@@ -24,12 +24,17 @@ package com.balch.auctionbrowser.ui
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 class EndlessScrollListener(private val linearLayoutManager: LinearLayoutManager,
-                            private val loadMoreSubject: PublishSubject<Unit>,
                             private val triggerPosition:Int = 10):
         RecyclerView.OnScrollListener() {
+
+    val onLoadMore: Observable<Unit>
+        get() = loadMoreSubject
+
+    private val loadMoreSubject: PublishSubject<Unit> = PublishSubject.create<Unit>()
 
     private var hasMore = true
     private var loading = false

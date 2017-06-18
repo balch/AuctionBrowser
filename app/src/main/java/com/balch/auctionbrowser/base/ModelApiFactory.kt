@@ -22,14 +22,13 @@
 
 package com.balch.auctionbrowser.base
 
-import com.balch.auctionbrowser.AuctionDatabase
+import com.balch.auctionbrowser.auction.model.EBayApi
 
 /**
- * Contains Application Scoped objects (aka singletons) used to provide system services to the
- * ModelApi's. This interface is typically implemented by the Application object and facilitates
- * UnitTest Dependency Injection (this ApplicationComponent in Dagger2)
+ * Factory used to dependency inject retrofit Api's into the ModelApi classes.
+ * Provides a common location to build the the Retrofit Service objects.
+ * Easy to override in UnitTests
  */
-interface ModelProvider {
-    val database: AuctionDatabase
-    val modelApiFactory: ModelApiFactory
+interface ModelApiFactory {
+    val ebayApi: EBayApi
 }

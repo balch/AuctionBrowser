@@ -36,28 +36,25 @@ import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.EndlessScrollListener
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_view.view.*
 
 class AuctionView : FrameLayout, BaseView {
 
-    private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
-    private val recyclerView: RecyclerView by lazy { action_view_recycler }
-
-    lateinit private var recyclerOnScrollListener: EndlessScrollListener
-
-    lateinit private var auctionAdapter: AuctionAdapter
-
     // public properties
     val onLoadMore: Observable<Unit>
-        get() = loadMoreSubject
+        get() = recyclerOnScrollListener.onLoadMore
 
     var showBusy: Boolean
         get() = progressBar.visibility == View.VISIBLE
         set(value) { progressBar.visibility = if (value) View.VISIBLE else View.GONE }
 
-    // backing for exposing user initiated events to Activity
-    private val loadMoreSubject: PublishSubject<Unit> = PublishSubject.create<Unit>()
+    // private properties
+    lateinit private var auctionAdapter: AuctionAdapter
+    lateinit private var recyclerOnScrollListener: EndlessScrollListener
+
+    // private view layouts
+    private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
+    private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -77,7 +74,7 @@ class AuctionView : FrameLayout, BaseView {
         id = View.generateViewId()
 
         val layoutManager = LinearLayoutManager(context)
-        recyclerOnScrollListener = EndlessScrollListener(layoutManager, loadMoreSubject)
+        recyclerOnScrollListener = EndlessScrollListener(layoutManager)
 
         recyclerView.layoutManager = layoutManager
         recyclerView.addOnScrollListener(recyclerOnScrollListener)

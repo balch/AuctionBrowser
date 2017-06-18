@@ -28,8 +28,7 @@ class MainActivityTest: BaseTest() {
         activity = spy(MainActivity())
 
         activity.view = mockView
-        doReturn(Observable.just(1)).`when`(mockView).onLoadMore
-
+        doReturn(Observable.just(Unit)).`when`(mockView).onLoadMore
 
         doReturn("").`when`(activity).getString(eq(R.string.ebay_app_id))
         doReturn(auctionViewModel).`when`(activity).getAuctionViewModel()
@@ -65,7 +64,7 @@ class MainActivityTest: BaseTest() {
         //endregion
 
         verify(note).noteText = text
-        verify(modelProvider.mockNotesDao).update(note)
+        verify(modelProvider.database.noteDao()).update(note)
     }
 
     @Test
@@ -78,7 +77,7 @@ class MainActivityTest: BaseTest() {
         testScheduler.triggerActions()
         //endregion
 
-        val (verifier, captors) = makeCaptor(modelProvider.mockNotesDao, Note::class.java)
+        val (verifier, captors) = makeCaptor(modelProvider.database.noteDao(), Note::class.java)
         verifier.insert(uninitialized())
 
         val note: Note = captors[0].value as Note
@@ -124,7 +123,7 @@ class MainActivityTest: BaseTest() {
         testScheduler.triggerActions()
         //endregion
 
-        verify(modelProvider.mockNotesDao).delete(note)
+        verify(modelProvider.database.noteDao()).delete(note)
         verify(mockView).clearNote(auction)
     }
 
@@ -136,7 +135,7 @@ class MainActivityTest: BaseTest() {
         activity.clearNote(auction, null)
         //endregion
 
-        verify(modelProvider.mockNotesDao, never()).delete(anyArg())
+        verify(modelProvider.database.noteDao(), never()).delete(anyArg())
         verify(mockView, never()).clearNote(anyArg())
     }
 

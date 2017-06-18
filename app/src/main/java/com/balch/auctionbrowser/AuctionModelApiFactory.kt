@@ -24,6 +24,7 @@ package com.balch.auctionbrowser
 
 import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
 import com.balch.auctionbrowser.auction.model.EBayApi
+import com.balch.auctionbrowser.base.ModelApiFactory
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -31,15 +32,10 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-/**
- * Factory used to dependency inject retrofit Api's into the ModelApi classes.
- * Provides a common location to build the the Retrofit Service objects.
- * Easy to override in UnitTests
- */
-class ModelApiFactory {
+open class AuctionModelApiFactory: ModelApiFactory {
     private val EBAY_URL_BASE = "http://svcs.ebay.com/"
 
-    val ebayApi: EBayApi by lazy { getRetrofitService(EBAY_URL_BASE).create(EBayApi::class.java) }
+    override val ebayApi: EBayApi by lazy { getRetrofitService(EBAY_URL_BASE).create(EBayApi::class.java) }
 
     private val gson by lazy {
         GsonBuilder()

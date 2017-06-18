@@ -25,6 +25,7 @@ package com.balch.auctionbrowser
 import android.app.Application
 import android.arch.persistence.room.Room
 import android.os.StrictMode
+import android.widget.FrameLayout
 import com.balch.auctionbrowser.base.ModelProvider
 
 import net.danlew.android.joda.JodaTimeAndroid
@@ -39,7 +40,7 @@ open class AuctionApplication : Application(), ModelProvider {
         Room.databaseBuilder(this, AuctionDatabase::class.java, DATABASE_NAME).build()
     }
 
-    override val modelApiFactory = ModelApiFactory()
+    override val modelApiFactory = AuctionModelApiFactory()
 
     override fun onCreate() {
         super.onCreate()

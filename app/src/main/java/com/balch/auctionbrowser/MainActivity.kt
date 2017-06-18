@@ -58,11 +58,9 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     private val lifecycleRegistry by lazy { LifecycleRegistry(this) }
 
     lateinit private var auctionViewModel: AuctionViewModel
-
     lateinit private var searchView: SearchView
 
     private val disposables = CompositeDisposable()
-
     private var disposableSaveNote: Disposable? = null
     private var disposableClearNote: Disposable? = null
 

@@ -22,27 +22,43 @@
 
 package com.balch.auctionbrowser.test
 
+import android.arch.persistence.db.SupportSQLiteOpenHelper
+import android.arch.persistence.room.DatabaseConfiguration
+import android.arch.persistence.room.InvalidationTracker
 import com.balch.auctionbrowser.AuctionDatabase
-import com.balch.auctionbrowser.ModelApiFactory
+import com.balch.auctionbrowser.base.ModelApiFactory
 import com.balch.auctionbrowser.auction.model.EBayApi
 import com.balch.auctionbrowser.base.ModelProvider
 import com.balch.auctionbrowser.note.NoteDao
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
 class TestModelProvider: ModelProvider {
+    override val database: AuctionDatabase = TestAuctionDatabase()
+    override val modelApiFactory: ModelApiFactory = TestModelApiFactory()
+}
 
-    // app scope delegation objects to create api and dao objects
-    override val database: AuctionDatabase = mock(AuctionDatabase::class.java)
-    override val modelApiFactory: ModelApiFactory = mock(ModelApiFactory::class.java)
-
-    // mock versions of app scoped objects used in test to verify interactions
-    val mockNotesDao: NoteDao by lazy { mock(NoteDao::class.java) }
+class TestModelApiFactory: ModelApiFactory {
     val mockEbayApi: EBayApi by lazy { mock(EBayApi::class.java) }
 
-    init {
-        `when`(database.noteDao()).thenReturn(mockNotesDao)
-        `when`(modelApiFactory.ebayApi).thenReturn(mockEbayApi)
+    override val ebayApi: EBayApi
+        get() = mockEbayApi
+}
+
+class TestAuctionDatabase: AuctionDatabase() {
+    val mockNotesDao: NoteDao by lazy { mock(NoteDao::class.java) }
+
+    override fun noteDao(): NoteDao {
+        return mockNotesDao
+    }
+
+    override fun createOpenHelper(p0: DatabaseConfiguration?): SupportSQLiteOpenHelper? {
+        // no-op
+        return null
+    }
+
+    override fun createInvalidationTracker(): InvalidationTracker? {
+        // no-op
+        return null
     }
 
 }

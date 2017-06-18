@@ -55,7 +55,7 @@ class AuctionViewModelTest: BaseTest() {
 
         initMocks(this)
 
-        notesModel = NotesModel(modelProvider.mockNotesDao)
+        notesModel = NotesModel(modelProvider.database.noteDao())
 
         viewModel = spy(AuctionViewModel())
         viewModel.inject(mockAdapter, ebayModel, notesModel)
@@ -79,7 +79,7 @@ class AuctionViewModelTest: BaseTest() {
         //endregion
 
         verify(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
-        verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())
+        verify(modelProvider.database.noteDao()).loadAllByIds(anyArg())
         verify(mockAuctionDataLive).value = auctionData
     }
 
@@ -105,7 +105,7 @@ class AuctionViewModelTest: BaseTest() {
         //endregion
 
         verify(ebayModel).getAuctions(searchText, currentPage + 1L, 30, sortColumn)
-        verify(modelProvider.mockNotesDao).loadAllByIds(anyArg())
+        verify(modelProvider.database.noteDao()).loadAllByIds(anyArg())
         verify(mockAuctionDataLive).value = auctionData
     }
 

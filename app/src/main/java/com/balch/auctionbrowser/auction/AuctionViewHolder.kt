@@ -41,6 +41,7 @@ class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: P
                    private val clickNoteObservable: PublishSubject<Auction>)
     : RecyclerView.ViewHolder(parent.inflate(R.layout.auction_list_item)) {
 
+    // private view layouts
     private val itemImageView: ImageView by lazy { itemView.list_item_auction_img }
     private val titleTextView: LabelTextView by lazy { itemView.list_item_auction_title }
     private val priceTextView: LabelTextView by lazy { itemView.list_item_auction_price }
