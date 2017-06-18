@@ -52,6 +52,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
 
@@ -86,36 +87,40 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = ""
-        onCreateInternal(savedInstanceState)
+        wrap("onCreateInternal") {
+            title = ""
+            onCreateInternal(savedInstanceState)
+        }
     }
 
     @VisibleForTesting
     fun onCreateInternal(savedInstanceState: Bundle?) {
-        wrap("onCreateInternal") {
-            disposables.add(
-                view.onLoadMore.subscribe({ onLoadMorePages() })
-            )
+        disposables.add(
+                view.onLoadMore
+                        .subscribe({ onLoadMorePages() },
+                                { throwable -> Timber.e(throwable, "onLoadMorePages error") })
+        )
 
-            auctionViewModel.auctionData.observe(this,
-                    Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
+        auctionViewModel.auctionData.observe(this,
+                Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
 
-            val auctionAdapter = auctionViewModel.auctionAdapter
-            view.setAuctionAdapter(auctionAdapter)
+        val auctionAdapter = auctionViewModel.auctionAdapter
+        view.setAuctionAdapter(auctionAdapter)
 
-            disposables.add(
+        disposables.add(
                 auctionAdapter.onClickAuction
-                    .subscribe({ auction -> showDetail(auction) })
-            )
+                        .subscribe({ auction -> showDetail(auction) },
+                                { throwable -> Timber.e(throwable, "onClickAuction error") })
+        )
 
-            disposables.add(
+        disposables.add(
                 auctionAdapter.onClickNote
-                    .subscribe({ auction -> showDetail(auction) })
-            )
+                        .subscribe({ auction -> showDetail(auction) },
+                                { throwable -> Timber.e(throwable, "onClickNote error") })
+        )
 
-            // Get the intent, verify the action and get the query
-            handleIntent()
-        }
+        // Get the intent, verify the action and get the query
+        handleIntent()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -186,17 +191,17 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
                 menu_sort_best_match -> {
                     sortAuctions(EBayModel.SortColumn.BEST_MATCH)
                     item.isChecked = true
-                    handled =true
+                    handled = true
                 }
                 menu_sort_ending_soonest -> {
                     sortAuctions(EBayModel.SortColumn.ENDING_SOONEST)
                     item.isChecked = true
-                    handled =true
+                    handled = true
                 }
                 menu_sort_lowest_price -> {
                     sortAuctions(EBayModel.SortColumn.LOWEST_PRICE)
                     item.isChecked = true
-                    handled =true
+                    handled = true
                 }
             }
         }
@@ -223,12 +228,14 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
 
         if (disposableClearNote != null) disposables.remove(disposableClearNote)
         disposableClearNote = dialog.onClearNote
-                .subscribe { _ -> clearNote(auction, note) }
+                .subscribe({ _ -> clearNote(auction, note) },
+                        { throwable -> Timber.e(throwable, "clearNote error") })
         disposables.add(disposableClearNote)
 
         if (disposableSaveNote != null) disposables.remove(disposableSaveNote)
         disposableSaveNote = dialog.onSaveNote
-                .subscribe { text -> saveNote(auction, note, text) }
+                .subscribe({ text -> saveNote(auction, note, text) },
+                        { throwable -> Timber.e(throwable, "saveNote error") })
         disposables.add(disposableSaveNote)
 
         dialog.show(supportFragmentManager, "AuctionDetailDialog")
@@ -239,17 +246,16 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
         if (note == null) {
             Single.just(Note(auction.itemId, text))
                     .subscribeOn(Schedulers.io())
-                    .doOnSuccess { note1 ->  auctionViewModel.insertNote(note1) }
+                    .doOnSuccess { note1 -> auctionViewModel.insertNote(note1) }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { note1 ->
-                        if (!isFinishing) {
-                            view.addNote(auction, note1)
-                        }}
+                    .subscribe({ note1 -> if (!isFinishing) view.addNote(auction, note1) },
+                            { throwable -> Timber.e(throwable, "insertNote error") })
         } else {
             note.noteText = text
             Single.just(note)
                     .subscribeOn(Schedulers.io())
-                    .subscribe { note1 -> auctionViewModel.updateNote(note1) }
+                    .subscribe({ note1 -> auctionViewModel.updateNote(note1) },
+                            { throwable -> Timber.e(throwable, "updateNote error") })
         }
     }
 
@@ -276,11 +282,8 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
                     .subscribeOn(Schedulers.io())
                     .doOnSuccess { _ -> auctionViewModel.deleteNote(note) }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { _ ->
-                        if (!isFinishing) {
-                            view.clearNote(auction)
-                        }
-                    }
+                    .subscribe({ _ -> if (!isFinishing) view.clearNote(auction) },
+                            { throwable -> Timber.e(throwable, "deleteNote error") })
         }
     }
 

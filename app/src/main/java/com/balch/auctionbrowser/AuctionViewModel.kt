@@ -125,11 +125,11 @@ class AuctionViewModel : ViewModel() {
                     totalPages = auctionData.totalPages.toLong()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({auctionData -> auctionDataLive.setValue(auctionData)},
-                            { throwable ->
-                                Timber.e(throwable, "Error in .getAuctions()")
-                                auctionDataLive.setValue(null)
-                            })
+                .subscribe({ auctionData -> auctionDataLive.setValue(auctionData) },
+                        { throwable ->
+                            Timber.e(throwable, "Error in .getAuctions()")
+                            auctionDataLive.setValue(null)
+                        })
     }
 
     fun disposeGetAuctionDisposable() {
