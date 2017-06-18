@@ -40,12 +40,10 @@ class MainActivityTest: BaseTest() {
 
     @Test
     fun testOnLoadMore() {
-        doReturn(true).`when`(auctionViewModel).hasMoreAuctionPages(anyInt())
         doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
 
         //region Execute Test
         activity.onLoadMorePages()
-        testScheduler.triggerActions()
         //endregion
 
         verify(mockView).showBusy = true
