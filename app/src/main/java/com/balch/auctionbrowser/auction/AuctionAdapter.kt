@@ -44,7 +44,7 @@ class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
         get() = clickNoteSubject
 
     // adapter auction data
-    private val auctions = ArrayList<Auction>()
+    val auctions = ArrayList<Auction>()
 
     // backing for exposing user initiated events to Activity
     private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()

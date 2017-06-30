@@ -22,6 +22,7 @@ buildscript {
     ext.junit="4.12"
     ext.mockito="2.7.22"
     ext.timber="4.5.1"
+    ext.assertj="3.5.2"
 
     repositories {
         jcenter()

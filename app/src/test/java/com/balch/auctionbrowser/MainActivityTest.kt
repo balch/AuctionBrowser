@@ -5,7 +5,7 @@ import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.test.*
 import io.reactivex.Observable
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -79,7 +79,7 @@ class MainActivityTest: BaseTest() {
         verifier.insert(uninitialized())
 
         val note: Note = captors[0].value as Note
-        assertTrue(note.noteText == text)
+        assertThat(note.noteText).isEqualTo(text)
 
         verify(mockView).addNote(auction, note)
     }

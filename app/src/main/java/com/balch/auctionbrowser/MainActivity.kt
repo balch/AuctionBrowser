@@ -244,18 +244,22 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     @VisibleForTesting
     internal fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
-            Single.just(Note(auction.itemId, text))
-                    .subscribeOn(Schedulers.io())
-                    .doOnSuccess { note1 -> auctionViewModel.insertNote(note1) }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ note1 -> if (!isFinishing) view.addNote(auction, note1) },
-                            { throwable -> Timber.e(throwable, "insertNote error") })
+            disposables.add(
+                Single.just(Note(auction.itemId, text))
+                        .subscribeOn(Schedulers.io())
+                        .doOnSuccess { note1 -> auctionViewModel.insertNote(note1) }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ note1 -> if (!isFinishing) view.addNote(auction, note1) },
+                                { throwable -> Timber.e(throwable, "insertNote error") })
+            )
         } else {
             note.noteText = text
-            Single.just(note)
-                    .subscribeOn(Schedulers.io())
-                    .subscribe({ note1 -> auctionViewModel.updateNote(note1) },
-                            { throwable -> Timber.e(throwable, "updateNote error") })
+            disposables.add(
+                Single.just(note)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({ note1 -> auctionViewModel.updateNote(note1) },
+                                { throwable -> Timber.e(throwable, "updateNote error") })
+            )
         }
     }
 
@@ -278,12 +282,14 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
     @VisibleForTesting
     internal fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
-            Single.just(true)
-                    .subscribeOn(Schedulers.io())
-                    .doOnSuccess { _ -> auctionViewModel.deleteNote(note) }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ _ -> if (!isFinishing) view.clearNote(auction) },
-                            { throwable -> Timber.e(throwable, "deleteNote error") })
+            disposables.add(
+                Single.just(true)
+                        .subscribeOn(Schedulers.io())
+                        .doOnSuccess { _ -> auctionViewModel.deleteNote(note) }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ _ -> if (!isFinishing) view.clearNote(auction) },
+                                { throwable -> Timber.e(throwable, "deleteNote error") })
+            )
         }
     }
 
