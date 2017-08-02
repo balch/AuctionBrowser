@@ -226,17 +226,17 @@ class MainActivity : PresenterActivity<AuctionView>(), LifecycleRegistryOwner {
         val note = view.getNote(auction)
         val dialog = AuctionDetailDialog(auction, note)
 
-        if (disposableClearNote != null) disposables.remove(disposableClearNote)
+        if (disposableClearNote != null) disposables.remove(disposableClearNote!!)
         disposableClearNote = dialog.onClearNote
                 .subscribe({ _ -> clearNote(auction, note) },
                         { throwable -> Timber.e(throwable, "clearNote error") })
-        disposables.add(disposableClearNote)
+        disposables.add(disposableClearNote!!)
 
-        if (disposableSaveNote != null) disposables.remove(disposableSaveNote)
+        if (disposableSaveNote != null) disposables.remove(disposableSaveNote!!)
         disposableSaveNote = dialog.onSaveNote
                 .subscribe({ text -> saveNote(auction, note, text) },
                         { throwable -> Timber.e(throwable, "saveNote error") })
-        disposables.add(disposableSaveNote)
+        disposables.add(disposableSaveNote!!)
 
         dialog.show(supportFragmentManager, "AuctionDetailDialog")
     }
