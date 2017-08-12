@@ -95,20 +95,20 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/member_detail_button_clear"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_note_clear"
-            android:textSize="12sp"
-            android:textColor="@android:color/black"/>
-
-        <Button
             android:id="@+id/member_detail_button_save"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/button_note_save"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"/>
+
+        <Button
+            android:id="@+id/member_detail_button_clear"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_note_clear"
             android:textSize="12sp"
             android:textColor="@android:color/black"/>
 
