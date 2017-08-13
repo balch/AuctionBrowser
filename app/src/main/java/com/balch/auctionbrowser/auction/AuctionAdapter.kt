@@ -22,33 +22,29 @@
 
 package com.balch.auctionbrowser.auction
 
-import android.annotation.SuppressLint
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import java.util.*
 
 class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
 
     // public properties
-    @SuppressLint("UseSparseArrays")
-    val notes = HashMap<Long, Note>()
-
     val onClickAuction: Observable<Auction>
         get() = clickAuctionSubject
 
     val onClickNote: Observable<Auction>
         get() = clickNoteSubject
 
-    // adapter auction data
-    val auctions = ArrayList<Auction>()
-
     // backing for exposing user initiated events to Activity
     private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
     private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
+
+    // adapter auction data
+    private val auctions = mutableListOf<Auction>()
+    internal val notes = mutableMapOf<Long, Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
         return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
@@ -56,7 +52,7 @@ class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
 
     override fun onBindViewHolder(holder: AuctionViewHolder, position: Int) {
         val auction = auctions[position]
-        holder.bind(auction, this.notes[auction.itemId])
+        holder.bind(auction, notes[auction.itemId])
     }
 
     override fun getItemCount(): Int {
@@ -70,8 +66,8 @@ class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
     }
 
     internal fun clearAuctions() {
-        this.auctions.clear()
-        this.notes.clear()
+        auctions.clear()
+        notes.clear()
         notifyDataSetChanged()
     }
 
