@@ -34,11 +34,13 @@
     <style name="CardValue">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/default_font</item>
     </style>
 
     <style name="CardLabel" parent="CardValue">
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/default_font</item>
     </style>
 
 
