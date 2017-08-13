@@ -40,17 +40,22 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.auction_detail_dialog.*
 
-class AuctionDetailDialog constructor(): DialogFragment() {
-    private val ARG_NOTE = "ARG_NOTE"
-    private val ARG_AUCTION = "ARG_AUCTION"
+class AuctionDetailDialog: DialogFragment() {
+    companion object {
+        private val ARG_NOTE = "ARG_NOTE"
+        private val ARG_AUCTION = "ARG_AUCTION"
 
-    constructor(auction: Auction, note: Note?) : this() {
-        val args = Bundle()
-        if (note != null) {
-            args.putString(ARG_NOTE, note.noteText)
+        fun newInstance(auction: Auction, note: Note?): AuctionDetailDialog {
+            val args = Bundle()
+            if (note != null) {
+                args.putString(ARG_NOTE, note.noteText)
+            }
+            args.putSerializable(ARG_AUCTION, auction)
+
+            return AuctionDetailDialog().apply {
+                arguments = args
+            }
         }
-        args.putSerializable(ARG_AUCTION, auction)
-        arguments = args
     }
 
     val onSaveNote: Observable<String>

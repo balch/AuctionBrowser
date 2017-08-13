@@ -59,6 +59,8 @@ dependencies {
     implementation "com.android.support:cardview-v7:$support"
     implementation "com.android.support:design:$support"
 
+    implementation "com.android.support.constraint:constraint-layout:$contraint_layout"
+
     implementation "android.arch.lifecycle:runtime:$android_arch"
     implementation "android.arch.lifecycle:extensions:$android_arch"
     annotationProcessor "android.arch.lifecycle:compiler:$android_arch"

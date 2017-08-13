@@ -37,14 +37,12 @@ import timber.log.Timber
 
  * @param <V> Type of View to create
 </V> */
-abstract class PresenterActivity<V> : AppCompatActivity()
-    where V: View, V: BaseView {
+abstract class PresenterActivity<V, P: BasePresenter<V>> : AppCompatActivity()
+    where V: View, V: BaseView{
 
     @set:VisibleForTesting
     @get:VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    lateinit var view: V
-
-    lateinit protected var modelProvider: ModelProvider
+    lateinit var presenter: P
 
     /**
      * Override abstract method to create a view of type V used by the Presenter.
@@ -54,20 +52,8 @@ abstract class PresenterActivity<V> : AppCompatActivity()
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     abstract fun createView(): V
 
-    /**
-     * Override abstract method to create any models needed by the Presenter. AuctionModelProvider
-     * is injected into this method to take advantage the Dependency Injection pattern.
-
-     * @param modelProvider injected ModelProvider
-     */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    abstract fun createModel(modelProvider: ModelProvider)
-
-    @VisibleForTesting
-    fun createModelInternal(modelProvider: ModelProvider) {
-        this.modelProvider = modelProvider
-        createModel(modelProvider)
-    }
+    abstract fun createPresenter(view: V): P
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
@@ -77,14 +63,16 @@ abstract class PresenterActivity<V> : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        view = this.createView()
+        val view = createView()
         setContentView(view)
 
-        createModelInternal(application as ModelProvider)
+        presenter = createPresenter(view).apply {
+            createModelInternal(application as ModelProvider)
+        }
     }
 
     override fun onDestroy() {
-        view.cleanup()
+        presenter.cleanup()
         super.onDestroy()
     }
 
