@@ -26,6 +26,8 @@ import android.support.annotation.VisibleForTesting
 
 abstract class BasePresenter<out V: BaseView>(private var viewInternal: V?) {
 
+    // this pattern allows the derived classes to use view with the !! but
+    // still allows viewInternal to be set to null on in cleanup()
     protected val view: V
         get() = viewInternal!!
 

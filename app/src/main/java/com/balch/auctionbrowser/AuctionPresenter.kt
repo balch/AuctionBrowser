@@ -66,6 +66,8 @@ class AuctionPresenter(view: AuctionView,
             searchView!!.setQuery(activityBridge.auctionViewModel.searchText, false)
         }
 
+    // this pattern allows this class to use activityBridge with the !! but
+    // still allows activityBridgeInternal to be set to null on in cleanup()
     private val activityBridge: ActivityBridge
         get() = activityBridgeInternal!!
 
