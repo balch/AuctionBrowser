@@ -44,6 +44,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.internal.operators.completable.CompletableFromAction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
@@ -168,9 +169,9 @@ class AuctionPresenter(view: AuctionView,
         } else {
             note.noteText = text
             disposables.add(
-                    Single.just(note)
+                    CompletableFromAction({ auctionViewModel.updateNote(note) })
                             .subscribeOn(Schedulers.io())
-                            .subscribe({ note1 -> auctionViewModel.updateNote(note1) },
+                            .subscribe({ -> /* no-op */ },
                                     { throwable -> Timber.e(throwable, "updateNote error") })
             )
         }
@@ -195,11 +196,10 @@ class AuctionPresenter(view: AuctionView,
     fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
             disposables.add(
-                    Single.just(true)
+                    CompletableFromAction({ auctionViewModel.deleteNote(note) })
                             .subscribeOn(Schedulers.io())
-                            .doOnSuccess { _ -> auctionViewModel.deleteNote(note) }
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ _ -> if (!isFinishing) view.clearNote(auction) },
+                            .subscribe({  -> if (!isFinishing) view.clearNote(auction) },
                                     { throwable -> Timber.e(throwable, "deleteNote error") })
             )
         }
