@@ -48,28 +48,34 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class AuctionPresenter(view: AuctionView,
-                       private var auctionViewModelInternal: AuctionViewModel?,
-                       private var lifecycleOwner: LifecycleOwner?,
                        private val ebayAppId: String,
-                       private var listener: AuctionPresenterListener?) : BasePresenter<AuctionView>(view) {
+                       private var activityBridgeInternal: ActivityBridge?) : BasePresenter<AuctionView>(view) {
 
-    interface AuctionPresenterListener {
-        val isActivityFinishing: Boolean
-        val activityFragmentManager: FragmentManager
+    interface ActivityBridge {
+        val isFinishing: Boolean
+        val fragmentManager: FragmentManager
+        val auctionViewModel: AuctionViewModel
+        val lifecycleOwner: LifecycleOwner
         fun showSnackBar(view: View, @StringRes msg: Int)
     }
 
     var searchView: SearchView? = null
         set(value) {
             field = value
-            searchView!!.setQuery(auctionViewModel.searchText, false)
+            searchView!!.setQuery(activityBridge.auctionViewModel.searchText, false)
         }
 
-    private val auctionViewModel: AuctionViewModel
-        get() = auctionViewModelInternal!!
+    private val activityBridge: ActivityBridge
+        get() = activityBridgeInternal!!
 
     private val isFinishing: Boolean
-        get() = listener != null && listener!!.isActivityFinishing
+        get() = activityBridge.isFinishing
+
+    private val auctionViewModel: AuctionViewModel
+        get() = activityBridge.auctionViewModel
+
+    private val lifecycleOwner: LifecycleOwner
+        get() = activityBridge.lifecycleOwner
 
     private val disposables = CompositeDisposable()
     private var disposableSaveNote: Disposable? = null
@@ -145,7 +151,7 @@ class AuctionPresenter(view: AuctionView,
                 .subscribe({ text -> saveNote(auction, note, text) },
                         { throwable -> Timber.e(throwable, "saveNote error") })
 
-        dialog.show(listener?.activityFragmentManager, "AuctionDetailDialog")
+        dialog.show(activityBridge?.fragmentManager, "AuctionDetailDialog")
     }
 
     @VisibleForTesting
@@ -178,7 +184,7 @@ class AuctionPresenter(view: AuctionView,
             view.addAuctions(auctionData.auctions, auctionData.notes)
         } else {
             if (searchView?.query?.isNotEmpty() ?: true) {
-                listener?.showSnackBar(view, R.string.error_auction_get)
+                activityBridge?.showSnackBar(view, R.string.error_auction_get)
             }
         }
 
@@ -206,9 +212,7 @@ class AuctionPresenter(view: AuctionView,
         disposableClearNote?.dispose()
         disposables.dispose()
 
-        auctionViewModelInternal?.auctionData?.removeObservers(lifecycleOwner)
-        auctionViewModelInternal = null
-        lifecycleOwner = null
-        listener = null
+        activityBridgeInternal?.auctionViewModel?.auctionData?.removeObservers(lifecycleOwner)
+        activityBridgeInternal = null
     }
 }

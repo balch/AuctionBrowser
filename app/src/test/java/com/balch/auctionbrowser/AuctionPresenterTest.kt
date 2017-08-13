@@ -40,7 +40,7 @@ class AuctionPresenterTest : BaseTest() {
 
     @Mock lateinit private var mockView: AuctionView
     @Mock lateinit private var lifecycleOwner: LifecycleOwner
-    @Mock lateinit private var listener: AuctionPresenter.AuctionPresenterListener
+    @Mock lateinit private var bridge: AuctionPresenter.ActivityBridge
 
     private val auctionViewModel = spy(AuctionViewModel())
     private val modelProvider = TestModelProvider()
@@ -51,11 +51,13 @@ class AuctionPresenterTest : BaseTest() {
     fun setUp() {
         initMocks(this)
 
-        presenter = spy(AuctionPresenter(mockView, auctionViewModel, lifecycleOwner, "ebayAppId", listener))
+        presenter = spy(AuctionPresenter(mockView, "ebayAppId", bridge))
 
         doReturn(Observable.just(Unit)).`when`(mockView).onLoadMore
 
-        doReturn(false).`when`(listener).isActivityFinishing
+        doReturn(false).`when`(bridge).isFinishing
+        doReturn(auctionViewModel).`when`(bridge).auctionViewModel
+        doReturn(lifecycleOwner).`when`(bridge).lifecycleOwner
 
         presenter.createModelInternal(modelProvider)
     }

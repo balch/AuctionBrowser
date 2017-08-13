@@ -24,13 +24,13 @@ package com.balch.auctionbrowser
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
+import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
 import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentManager
@@ -44,23 +44,32 @@ import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.PresenterActivity
 
-class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
-        LifecycleRegistryOwner, AuctionPresenter.AuctionPresenterListener {
+class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(), LifecycleRegistryOwner {
     private val lifecycleRegistry by lazy { LifecycleRegistry(this) }
-
-    override val isActivityFinishing: Boolean
-        get() = isFinishing
-
-    override val activityFragmentManager: FragmentManager
-        get() = supportFragmentManager
 
     override fun createView(): AuctionView {
         return AuctionView(this)
     }
 
+    private val auctionViewModel by lazy { ViewModelProviders.of(this).get(AuctionViewModel::class.java) }
+
     @SuppressLint("VisibleForTests")
     override fun createPresenter(view: AuctionView): AuctionPresenter {
-        return AuctionPresenter(view, getAuctionViewModel(), this, getString(R.string.ebay_app_id), this)
+        return AuctionPresenter(view, getString(R.string.ebay_app_id),
+                object: AuctionPresenter.ActivityBridge {
+                    override val isFinishing: Boolean
+                        get() = this@MainActivity.isFinishing
+                    override val fragmentManager: FragmentManager
+                        get() = this@MainActivity.supportFragmentManager
+                    override val auctionViewModel: AuctionViewModel
+                        get() = this@MainActivity.auctionViewModel
+                    override val lifecycleOwner: LifecycleOwner
+                        get() = this@MainActivity
+
+                    override fun showSnackBar(view: View, msg: Int) {
+                        getSnackbar(view, getString(msg), Snackbar.LENGTH_LONG).show()
+                    }
+                })
     }
 
     @SuppressLint("VisibleForTests")
@@ -155,14 +164,5 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
 
     override fun getLifecycle(): LifecycleRegistry {
         return lifecycleRegistry
-    }
-
-    @VisibleForTesting
-    internal fun getAuctionViewModel(): AuctionViewModel {
-        return ViewModelProviders.of(this).get(AuctionViewModel::class.java)
-    }
-
-    override fun showSnackBar(view: View, @StringRes msg: Int) {
-        getSnackbar(view, getString(msg), Snackbar.LENGTH_LONG).show()
     }
 }
