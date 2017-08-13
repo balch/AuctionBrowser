@@ -45,9 +45,8 @@ abstract class BasePresenter<out V: BaseView>(private var viewInternal: V?) {
         createModel(modelProvider)
     }
 
-
     open fun cleanup() {
-        view.cleanup()
+        viewInternal?.cleanup()
         viewInternal = null
     }
 }

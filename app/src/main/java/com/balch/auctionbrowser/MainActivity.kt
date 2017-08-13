@@ -30,33 +30,29 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.StringRes
 import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
+import android.support.v4.app.FragmentManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
-import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
-import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.PresenterActivity
-import com.balch.auctionbrowser.note.Note
-import io.reactivex.disposables.Disposable
-import timber.log.Timber
 
 class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
         LifecycleRegistryOwner, AuctionPresenter.AuctionPresenterListener {
     private val lifecycleRegistry by lazy { LifecycleRegistry(this) }
 
-    lateinit private var searchView: SearchView
-    private var disposableSaveNote: Disposable? = null
-    private var disposableClearNote: Disposable? = null
-
     override val isActivityFinishing: Boolean
         get() = isFinishing
+
+    override val activityFragmentManager: FragmentManager
+        get() = supportFragmentManager
 
     override fun createView(): AuctionView {
         return AuctionView(this)
@@ -80,7 +76,6 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
     @VisibleForTesting
     fun onCreateInternal(savedInstanceState: Bundle?) {
         presenter.initialize(savedInstanceState)
-        // Get the intent, verify the action and get the query
         handleIntent()
     }
 
@@ -99,7 +94,7 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
         var handled = false
         if (Intent.ACTION_SEARCH == intent.action) {
             val query = intent.getStringExtra(SearchManager.QUERY)
-            doSearch(query)
+            presenter.doSearch(query)
 
             handled = true
         }
@@ -108,9 +103,7 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
     }
 
     override fun onDestroy() {
-        wrap("OnNewIntent") {
-            disposableSaveNote?.dispose()
-            disposableClearNote?.dispose()
+        wrap("onDestroy") {
             presenter.cleanup()
         }
         super.onDestroy()
@@ -124,10 +117,10 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
             menuInflater.inflate(options_menu, menu)
 
             val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-            searchView = menu.findItem(menu_search).actionView as SearchView
+            val searchView = menu.findItem(menu_search).actionView as SearchView
             searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
             searchView.setIconifiedByDefault(false)
-            searchView.setQuery(presenter.searchText, false)
+            presenter.searchView = searchView
 
             menu.findItem(menu_sort_best_match).isChecked = true
         }
@@ -160,11 +153,6 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
         return handled || super.onOptionsItemSelected(item)
     }
 
-    private fun doSearch(keyword: String) {
-        searchView.clearFocus()
-        presenter.doSearch(keyword)
-    }
-
     override fun getLifecycle(): LifecycleRegistry {
         return lifecycleRegistry
     }
@@ -174,26 +162,7 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(),
         return ViewModelProviders.of(this).get(AuctionViewModel::class.java)
     }
 
-    @SuppressLint("VisibleForTests")
-    override fun showDetail(auction: Auction, note: Note?) {
-        val dialog = AuctionDetailDialog.newInstance(auction, note)
-
-        disposableClearNote?.dispose()
-        disposableClearNote = dialog.onClearNote
-                .subscribe({ _ -> presenter.clearNote(auction, note) },
-                        { throwable -> Timber.e(throwable, "clearNote error") })
-
-        disposableSaveNote?.dispose()
-        disposableSaveNote = dialog.onSaveNote
-                .subscribe({ text -> presenter.saveNote(auction, note, text) },
-                        { throwable -> Timber.e(throwable, "saveNote error") })
-
-        dialog.show(supportFragmentManager, "AuctionDetailDialog")
-    }
-
-    override fun showSearchError(view: View) {
-        if (searchView.query.isNotEmpty()) {
-            getSnackbar(view, getString(R.string.error_auction_get), Snackbar.LENGTH_LONG).show()
-        }
+    override fun showSnackBar(view: View, @StringRes msg: Int) {
+        getSnackbar(view, getString(msg), Snackbar.LENGTH_LONG).show()
     }
 }
