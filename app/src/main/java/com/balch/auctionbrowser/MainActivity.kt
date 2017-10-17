@@ -25,8 +25,6 @@ package com.balch.auctionbrowser
 import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
@@ -44,8 +42,7 @@ import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.PresenterActivity
 
-class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(), LifecycleRegistryOwner {
-    private val lifecycleRegistry by lazy { LifecycleRegistry(this) }
+class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>() {
 
     override fun createView(): AuctionView {
         return AuctionView(this)
@@ -162,7 +159,4 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>(), Lifecyc
         return handled || super.onOptionsItemSelected(item)
     }
 
-    override fun getLifecycle(): LifecycleRegistry {
-        return lifecycleRegistry
-    }
 }
