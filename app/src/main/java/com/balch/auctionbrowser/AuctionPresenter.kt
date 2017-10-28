@@ -154,7 +154,7 @@ class AuctionPresenter(view: AuctionView,
                 .subscribe({ text -> saveNote(auction, note, text) },
                         { throwable -> Timber.e(throwable, "saveNote error") })
 
-        dialog.show(activityBridge?.fragmentManager, "AuctionDetailDialog")
+        dialog.show(activityBridge.fragmentManager, "AuctionDetailDialog")
     }
 
     @VisibleForTesting
@@ -187,7 +187,7 @@ class AuctionPresenter(view: AuctionView,
             view.addAuctions(auctionData.auctions, auctionData.notes)
         } else {
             if (searchView?.query?.isNotEmpty() ?: true) {
-                activityBridge?.showSnackBar(view, R.string.error_auction_get)
+                activityBridge.showSnackBar(view, R.string.error_auction_get)
             }
         }
 

@@ -70,7 +70,7 @@ class AuctionDetailDialog: DialogFragment() {
     private val clearNoteSubject: PublishSubject<Unit> = PublishSubject.create()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(activity)
+        return AlertDialog.Builder(context!!)
                 .setView(inflate(auction_detail_dialog))
                 .create()
     }

@@ -26,6 +26,6 @@ import android.support.v4.app.DialogFragment
 import android.view.View
 
 fun DialogFragment.inflate(layoutId: Int): View {
-    return activity.layoutInflater.inflate(layoutId, null)
+    return activity!!.layoutInflater.inflate(layoutId, null)
 }
 
