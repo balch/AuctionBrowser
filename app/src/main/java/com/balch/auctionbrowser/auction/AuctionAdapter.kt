@@ -25,11 +25,15 @@ package com.balch.auctionbrowser.auction
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.dagger.ActivityScope
 import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 
-class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
+@ActivityScope
+class AuctionAdapter @Inject constructor() :
+        RecyclerView.Adapter<AuctionViewHolder>() {
 
     // public properties
     val onClickAuction: Observable<Auction>
@@ -44,7 +48,7 @@ class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
 
     // adapter auction data
     private val auctions = mutableListOf<Auction>()
-    internal val notes = mutableMapOf<Long, Note>()
+    val notes = mutableMapOf<Long, Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
         return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
@@ -59,13 +63,13 @@ class AuctionAdapter : RecyclerView.Adapter<AuctionViewHolder>() {
         return auctions.size
     }
 
-    internal fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
+    fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
         this.auctions.addAll(auctions)
         this.notes.putAll(notes)
         notifyDataSetChanged()
     }
 
-    internal fun clearAuctions() {
+    fun clearAuctions() {
         auctions.clear()
         notes.clear()
         notifyDataSetChanged()

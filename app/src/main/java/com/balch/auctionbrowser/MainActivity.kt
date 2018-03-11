@@ -25,7 +25,6 @@ package com.balch.auctionbrowser
 import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -38,36 +37,14 @@ import android.view.View
 import android.widget.SearchView
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
-import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.EBayModel
-import com.balch.auctionbrowser.base.PresenterActivity
+import com.balch.auctionbrowser.base.BaseActivity
+import javax.inject.Inject
 
-class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>() {
+class MainActivity : BaseActivity(), AuctionPresenter.ActivityBridge {
 
-    override fun createView(): AuctionView {
-        return AuctionView(this)
-    }
-
-    private val auctionViewModel by lazy { ViewModelProviders.of(this).get(AuctionViewModel::class.java) }
-
-    @SuppressLint("VisibleForTests")
-    override fun createPresenter(view: AuctionView): AuctionPresenter {
-        return AuctionPresenter(view, getString(R.string.ebay_app_id),
-                object: AuctionPresenter.ActivityBridge {
-                    override val isFinishing: Boolean
-                        get() = this@MainActivity.isFinishing
-                    override val fragmentManager: FragmentManager
-                        get() = this@MainActivity.supportFragmentManager
-                    override val auctionViewModel: AuctionViewModel
-                        get() = this@MainActivity.auctionViewModel
-                    override val lifecycleOwner: LifecycleOwner
-                        get() = this@MainActivity
-
-                    override fun showSnackBar(view: View, msg: Int) {
-                        getSnackbar(view, getString(msg), Snackbar.LENGTH_LONG).show()
-                    }
-                })
-    }
+    @Inject
+    lateinit var presenter: AuctionPresenter
 
     @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +52,7 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>() {
 
         wrap("onCreateInternal") {
             title = ""
+            setContentView(presenter.view)
             onCreateInternal(savedInstanceState)
         }
     }
@@ -92,7 +70,7 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>() {
     }
 
     @VisibleForTesting
-    internal fun handleIntent(): Boolean {
+    fun handleIntent(): Boolean {
         return handleIntent(intent)
     }
 
@@ -158,5 +136,15 @@ class MainActivity : PresenterActivity<AuctionView, AuctionPresenter>() {
 
         return handled || super.onOptionsItemSelected(item)
     }
+
+    override val fragmentManager: FragmentManager
+        get() = supportFragmentManager
+    override val lifecycleOwner: LifecycleOwner
+        get() = this
+
+    override fun showSnackBar(view: View, msg: Int) {
+        getSnackbar(view, getString(msg), Snackbar.LENGTH_LONG).show()
+    }
+
 
 }

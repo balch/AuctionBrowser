@@ -31,14 +31,13 @@ import android.widget.FrameLayout
 import android.widget.ProgressBar
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.base.BaseView
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.EndlessScrollListener
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.auction_view.view.*
 
-class AuctionView : FrameLayout, BaseView {
+class AuctionView : FrameLayout {
 
     // public properties
     val onLoadMore: Observable<Unit>
@@ -85,7 +84,7 @@ class AuctionView : FrameLayout, BaseView {
         recyclerView.adapter = this.auctionAdapter
     }
 
-    override fun cleanup() {
+    fun cleanup() {
         recyclerView.clearOnScrollListeners()
         recyclerView.adapter = null
     }

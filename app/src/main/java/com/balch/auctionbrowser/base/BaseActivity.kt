@@ -24,11 +24,11 @@ package com.balch.auctionbrowser.base
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.balch.auctionbrowser.ext.logTiming
+import dagger.android.AndroidInjection
 import timber.log.Timber
 
 /**
@@ -37,23 +37,7 @@ import timber.log.Timber
 
  * @param <V> Type of View to create
 </V> */
-abstract class PresenterActivity<V, P: BasePresenter<V>> : AppCompatActivity()
-    where V: View, V: BaseView{
-
-    @set:VisibleForTesting
-    @get:VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    lateinit var presenter: P
-
-    /**
-     * Override abstract method to create a view of type V used by the Presenter.
-     * The view id will be managed by this class if not specified
-     * @return View containing view logic in the MVP pattern
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    abstract fun createView(): V
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    abstract fun createPresenter(view: V): P
+abstract class BaseActivity : AppCompatActivity() {
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
@@ -63,17 +47,7 @@ abstract class PresenterActivity<V, P: BasePresenter<V>> : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val view = createView()
-        setContentView(view)
-
-        presenter = createPresenter(view).apply {
-            createModelInternal(application as ModelProvider)
-        }
-    }
-
-    override fun onDestroy() {
-        presenter.cleanup()
-        super.onDestroy()
+        AndroidInjection.inject(this)
     }
 
     /**

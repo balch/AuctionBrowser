@@ -26,9 +26,9 @@ import android.arch.lifecycle.MutableLiveData
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.note.NoteDao
 import com.balch.auctionbrowser.note.NotesModel
 import com.balch.auctionbrowser.test.BaseTest
-import com.balch.auctionbrowser.test.TestModelProvider
 import com.balch.auctionbrowser.test.anyArg
 import io.reactivex.Single
 import org.junit.Before
@@ -45,9 +45,8 @@ class AuctionViewModelTest: BaseTest() {
     @Mock lateinit private var mockAdapter: AuctionAdapter
     @Mock lateinit private var mockAuctionDataLive: MutableLiveData<AuctionData>
 
-    private val modelProvider = TestModelProvider()
-
     @Mock lateinit private var ebayModel: EBayModel
+    @Mock lateinit private var noteDao: NoteDao
     lateinit private var notesModel: NotesModel
 
     @Before
@@ -55,10 +54,9 @@ class AuctionViewModelTest: BaseTest() {
 
         initMocks(this)
 
-        notesModel = NotesModel(modelProvider.database.noteDao())
+        notesModel = NotesModel(noteDao)
 
-        viewModel = spy(AuctionViewModel())
-        viewModel.inject(mockAdapter, ebayModel, notesModel)
+        viewModel = spy(AuctionViewModel(mockAdapter, ebayModel, notesModel))
         doReturn(mockAuctionDataLive).`when`(viewModel).auctionDataLive
     }
 
@@ -79,7 +77,7 @@ class AuctionViewModelTest: BaseTest() {
         //endregion
 
         verify(ebayModel).getAuctions(searchText, 1, 30, sortColumn)
-        verify(modelProvider.database.noteDao()).loadAllByIds(anyArg())
+        verify(noteDao).loadAllByIds(anyArg())
         verify(mockAuctionDataLive).value = auctionData
     }
 
@@ -105,7 +103,7 @@ class AuctionViewModelTest: BaseTest() {
         //endregion
 
         verify(ebayModel).getAuctions(searchText, currentPage + 1L, 30, sortColumn)
-        verify(modelProvider.database.noteDao()).loadAllByIds(anyArg())
+        verify(noteDao).loadAllByIds(anyArg())
         verify(mockAuctionDataLive).value = auctionData
     }
 
