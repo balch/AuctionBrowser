@@ -30,13 +30,14 @@ import com.balch.auctionbrowser.note.NotesModel
 import javax.inject.Inject
 
 
+@Suppress("UNCHECKED_CAST")
 internal class AuctionViewModelFactory
-    @Inject constructor(val adapter: AuctionAdapter,
-                        val eBayModel: EBayModel,
-                        val notesModel: NotesModel) : ViewModelProvider.Factory {
+    @Inject constructor(private val adapter: AuctionAdapter,
+                        private val eBayModel: EBayModel,
+                        private val notesModel: NotesModel) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AuctionViewModel::class.java!!)) {
+        if (modelClass.isAssignableFrom(AuctionViewModel::class.java)) {
             return AuctionViewModel(adapter, eBayModel, notesModel) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

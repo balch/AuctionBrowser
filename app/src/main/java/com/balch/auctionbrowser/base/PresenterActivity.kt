@@ -38,7 +38,7 @@ import javax.inject.Inject
 
  * @param <V> Type of View to create
 </V> */
-abstract class BaseActivity<P: BasePresenter> : AppCompatActivity() {
+abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
 
     @Inject
     lateinit var presenter: P

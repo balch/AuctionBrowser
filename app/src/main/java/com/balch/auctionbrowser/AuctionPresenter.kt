@@ -107,7 +107,7 @@ class AuctionPresenter
     }
 
     @VisibleForTesting
-    fun onLoadMorePages(): Unit {
+    fun onLoadMorePages() {
         view.showBusy = true
         auctionViewModel.loadAuctionsNextPage()
     }
@@ -118,8 +118,8 @@ class AuctionPresenter
         auctionViewModel.loadAuctions(sortColumn = sortColumn)
     }
 
-    @VisibleForTesting
-    internal fun showDetail(auction: Auction) {
+    @SuppressLint("VisibleForTests")
+    private fun showDetail(auction: Auction) {
         val note = view.getNote(auction)
 
         val dialog = AuctionDetailDialog.newInstance(auction, note)
@@ -153,7 +153,7 @@ class AuctionPresenter
             disposables.add(
                     CompletableFromAction({ auctionViewModel.updateNote(note) })
                             .subscribeOn(Schedulers.io())
-                            .subscribe({ -> /* no-op */ },
+                            .subscribe({ /* no-op */ },
                                     { throwable -> Timber.e(throwable, "updateNote error") })
             )
         }
@@ -193,7 +193,7 @@ class AuctionPresenter
         disposableClearNote?.dispose()
         disposables.dispose()
 
-        auctionViewModel.auctionData?.removeObservers(lifecycleOwner)
+        auctionViewModel.auctionData.removeObservers(lifecycleOwner)
 
         view.cleanup()
     }

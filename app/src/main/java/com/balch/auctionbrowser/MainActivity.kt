@@ -38,9 +38,9 @@ import android.widget.SearchView
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
 import com.balch.auctionbrowser.auction.model.EBayModel
-import com.balch.auctionbrowser.base.BaseActivity
+import com.balch.auctionbrowser.base.PresenterActivity
 
-class MainActivity : BaseActivity<AuctionPresenter>(), AuctionPresenter.ActivityBridge {
+class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.ActivityBridge {
 
     @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
