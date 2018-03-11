@@ -26,11 +26,15 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.os.Bundle
+import android.view.View
 
 abstract class BasePresenter : LifecycleObserver {
 
     abstract fun initialize(savedInstanceState: Bundle?)
     abstract fun cleanup()
+    abstract val view: View
+
+    fun onSaveInstanceState(outState: Bundle) {}
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun onDestroy() { cleanup() }

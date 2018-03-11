@@ -49,7 +49,7 @@ import javax.inject.Inject
 
 @ActivityScope
 class AuctionPresenter
-    @Inject constructor(private val view: AuctionView,
+    @Inject constructor(override val view: AuctionView,
                         private val auctionViewModel: AuctionViewModel,
                         private val activityBridgeInternal: ActivityBridge?) : BasePresenter() {
 

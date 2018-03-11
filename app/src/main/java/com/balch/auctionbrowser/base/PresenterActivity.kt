@@ -40,8 +40,7 @@ import javax.inject.Inject
 </V> */
 abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
 
-    @Inject
-    lateinit var presenter: P
+    @Inject lateinit var presenter: P
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
@@ -55,11 +54,17 @@ abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
 
         presenter.initialize(savedInstanceState)
         lifecycle.addObserver(presenter)
+        setContentView(presenter.view)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         lifecycle.removeObserver(presenter)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenter.onSaveInstanceState(outState)
     }
 
     /**
