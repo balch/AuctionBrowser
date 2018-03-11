@@ -23,9 +23,9 @@
 package com.balch.auctionbrowser
 
 import android.arch.lifecycle.LifecycleOwner
-import com.balch.auctionbrowser.auction.AuctionAdapter
-import com.balch.auctionbrowser.auction.AuctionView
+import com.balch.auctionbrowser.auction.*
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
@@ -51,7 +51,7 @@ class AuctionPresenterTest : BaseTest() {
     @Mock lateinit private var notesModel: NotesModel
 
     lateinit var auctionAdapter: AuctionAdapter
-    lateinit var auctionViewModel:AuctionViewModel
+    lateinit var auctionViewModel: AuctionViewModel
 
     lateinit private var presenter: AuctionPresenter
 

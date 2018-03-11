@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2017
+ * Copyright (C) 2018
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.auction.model
 
-import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
 import java.util.*
 

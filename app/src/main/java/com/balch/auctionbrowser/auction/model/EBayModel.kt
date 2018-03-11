@@ -22,7 +22,6 @@
 
 package com.balch.auctionbrowser.auction.model
 
-import com.balch.auctionbrowser.AuctionData
 import com.balch.auctionbrowser.dagger.ApplicationModule
 import io.reactivex.Single
 import javax.inject.Inject

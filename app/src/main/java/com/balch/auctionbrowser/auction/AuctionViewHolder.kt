@@ -35,11 +35,11 @@ import com.balch.auctionbrowser.ext.toLongDateTimeString
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.LabelTextView
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.auction_list_item.view.*
+import kotlinx.android.synthetic.main.item_auction_list.view.*
 
 class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: PublishSubject<Auction>,
                    private val clickNoteObservable: PublishSubject<Auction>)
-    : RecyclerView.ViewHolder(parent.inflate(R.layout.auction_list_item)) {
+    : RecyclerView.ViewHolder(parent.inflate(R.layout.item_auction_list)) {
 
     // private view layouts
     private val itemImageView: ImageView by lazy { itemView.list_item_auction_img }

@@ -30,7 +30,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.EditText
-import com.balch.auctionbrowser.R.layout.auction_detail_dialog
+import com.balch.auctionbrowser.R.layout.dialog_auction_detai
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.ext.loadUrl
@@ -38,7 +38,7 @@ import com.balch.auctionbrowser.ext.toLongDateTimeString
 import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.auction_detail_dialog.*
+import kotlinx.android.synthetic.main.dialog_auction_detai.*
 
 class AuctionDetailDialog: DialogFragment() {
     companion object {
@@ -71,7 +71,7 @@ class AuctionDetailDialog: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(context!!)
-                .setView(inflate(auction_detail_dialog))
+                .setView(inflate(dialog_auction_detai))
                 .create()
     }
 

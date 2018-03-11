@@ -23,8 +23,8 @@
 package com.balch.auctionbrowser.dagger
 
 import android.content.Context
-import com.balch.auctionbrowser.AuctionData
-import com.balch.auctionbrowser.AuctionModule
+import com.balch.auctionbrowser.auction.model.AuctionData
+import com.balch.auctionbrowser.auction.AuctionModule
 import com.balch.auctionbrowser.BuildConfig
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter

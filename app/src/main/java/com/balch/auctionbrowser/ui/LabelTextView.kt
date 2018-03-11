@@ -27,10 +27,10 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.balch.auctionbrowser.R
-import com.balch.auctionbrowser.R.layout.label_text_view
+import com.balch.auctionbrowser.R.layout.view_label_text
 import com.balch.auctionbrowser.R.styleable.LabelTextView_label_text
 import com.balch.auctionbrowser.ext.inflate
-import kotlinx.android.synthetic.main.label_text_view.view.*
+import kotlinx.android.synthetic.main.view_label_text.view.*
 
 class LabelTextView : LinearLayout {
     private val labelTextView: TextView by lazy {label_text_view_label}
@@ -54,7 +54,7 @@ class LabelTextView : LinearLayout {
 
     private fun initializeLayout(attrs: AttributeSet?) {
 
-        inflate(label_text_view, true)
+        inflate(view_label_text, true)
 
         if (attrs != null) {
             val typedArray = context.theme.obtainStyledAttributes(

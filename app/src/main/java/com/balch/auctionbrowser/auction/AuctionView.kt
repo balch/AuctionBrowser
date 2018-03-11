@@ -35,7 +35,7 @@ import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.EndlessScrollListener
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.auction_view.view.*
+import kotlinx.android.synthetic.main.view_auction.view.*
 
 class AuctionView : FrameLayout {
 
@@ -68,7 +68,7 @@ class AuctionView : FrameLayout {
     }
 
     private fun initializeLayout() {
-        inflate(R.layout.auction_view, true)
+        inflate(R.layout.view_auction, true)
 
         id = View.generateViewId()
 

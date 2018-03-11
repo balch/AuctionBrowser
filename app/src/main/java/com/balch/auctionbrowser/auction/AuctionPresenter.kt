@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2017
+ * Copyright (C) 2018
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.auction
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.LifecycleOwner
@@ -31,9 +31,9 @@ import android.support.annotation.VisibleForTesting
 import android.support.v4.app.FragmentManager
 import android.view.View
 import android.widget.SearchView
-import com.balch.auctionbrowser.auction.AuctionDetailDialog
-import com.balch.auctionbrowser.auction.AuctionView
+import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.BasePresenter
 import com.balch.auctionbrowser.dagger.ActivityScope

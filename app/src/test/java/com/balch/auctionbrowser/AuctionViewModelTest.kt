@@ -24,6 +24,8 @@ package com.balch.auctionbrowser
 
 import android.arch.lifecycle.MutableLiveData
 import com.balch.auctionbrowser.auction.AuctionAdapter
+import com.balch.auctionbrowser.auction.model.AuctionData
+import com.balch.auctionbrowser.auction.AuctionViewModel
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.NoteDao
