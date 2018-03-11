@@ -39,32 +39,21 @@ import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.BaseActivity
-import javax.inject.Inject
 
-class MainActivity : BaseActivity(), AuctionPresenter.ActivityBridge {
-
-    @Inject
-    lateinit var presenter: AuctionPresenter
+class MainActivity : BaseActivity<AuctionPresenter>(), AuctionPresenter.ActivityBridge {
 
     @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        wrap("onCreateInternal") {
+        log("onCreateInternal") {
             title = ""
-            setContentView(presenter.view)
-            onCreateInternal(savedInstanceState)
+            handleIntent()
         }
     }
 
-    @VisibleForTesting
-    fun onCreateInternal(savedInstanceState: Bundle?) {
-        presenter.initialize(savedInstanceState)
-        handleIntent()
-    }
-
     override fun onNewIntent(intent: Intent) {
-        wrap("OnNewIntent") {
+        log("OnNewIntent") {
             handleIntent(intent)
         }
     }
@@ -86,17 +75,9 @@ class MainActivity : BaseActivity(), AuctionPresenter.ActivityBridge {
         return handled
     }
 
-    override fun onDestroy() {
-        wrap("onDestroy") {
-            presenter.cleanup()
-        }
-        super.onDestroy()
-    }
-
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
-        wrap("onCreateOptionsMenu") {
+        log("onCreateOptionsMenu") {
             // Inflate the options menu from XML
             menuInflater.inflate(options_menu, menu)
 
@@ -113,7 +94,7 @@ class MainActivity : BaseActivity(), AuctionPresenter.ActivityBridge {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var handled = false
-        wrap("onOptionsItemSelected") {
+        log("onOptionsItemSelected") {
             // Handle item selection
             when (item.itemId) {
                 menu_sort_best_match -> {

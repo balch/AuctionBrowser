@@ -42,7 +42,9 @@ class AuctionModule {
     @Provides
     @ActivityScope
     internal fun providesAuctionView(activity: MainActivity): AuctionView {
-        return AuctionView(activity)
+        val view = AuctionView(activity)
+        activity.setContentView(view)
+        return view
     }
 
     @Provides

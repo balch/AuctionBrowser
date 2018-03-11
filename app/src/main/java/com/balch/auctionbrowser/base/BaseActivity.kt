@@ -30,6 +30,7 @@ import android.view.View
 import com.balch.auctionbrowser.ext.logTiming
 import dagger.android.AndroidInjection
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * This class enhances the Activity functionality by providing View/Model creation abstraction
@@ -37,7 +38,10 @@ import timber.log.Timber
 
  * @param <V> Type of View to create
 </V> */
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity<P: BasePresenter> : AppCompatActivity() {
+
+    @Inject
+    lateinit var presenter: P
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false
@@ -48,12 +52,20 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         AndroidInjection.inject(this)
+
+        presenter.initialize(savedInstanceState)
+        lifecycle.addObserver(presenter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(presenter)
     }
 
     /**
      * add timing logging and exception handling around the passed in body
      */
-    protected fun wrap(tag: String, body: () -> Unit) {
+    protected fun log(tag: String, body: () -> Unit) {
 
         try {
             logTiming(tag) { body() }

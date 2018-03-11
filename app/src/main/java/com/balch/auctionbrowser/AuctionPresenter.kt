@@ -35,6 +35,7 @@ import com.balch.auctionbrowser.auction.AuctionDetailDialog
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.base.BasePresenter
 import com.balch.auctionbrowser.dagger.ActivityScope
 import com.balch.auctionbrowser.note.Note
 import io.reactivex.Single
@@ -48,9 +49,9 @@ import javax.inject.Inject
 
 @ActivityScope
 class AuctionPresenter
-    @Inject constructor(val view: AuctionView,
+    @Inject constructor(private val view: AuctionView,
                         private val auctionViewModel: AuctionViewModel,
-                        private val activityBridgeInternal: ActivityBridge?) {
+                        private val activityBridgeInternal: ActivityBridge?) : BasePresenter() {
 
     interface ActivityBridge {
         val fragmentManager: FragmentManager
@@ -77,7 +78,7 @@ class AuctionPresenter
     private var disposableClearNote: Disposable? = null
 
     @SuppressLint("VisibleForTests")
-    fun initialize(savedInstanceState: Bundle?) {
+    override  fun initialize(savedInstanceState: Bundle?) {
         auctionViewModel.auctionData.observe(lifecycleOwner,
                 Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
 
@@ -186,12 +187,14 @@ class AuctionPresenter
         }
     }
 
-    fun cleanup() {
+    override fun cleanup() {
 
         disposableSaveNote?.dispose()
         disposableClearNote?.dispose()
         disposables.dispose()
 
         auctionViewModel.auctionData?.removeObservers(lifecycleOwner)
+
+        view.cleanup()
     }
 }
