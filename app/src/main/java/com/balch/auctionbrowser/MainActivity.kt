@@ -47,14 +47,14 @@ class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.Act
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        log("onCreateInternal") {
+        wrap("onCreateInternal") {
             title = ""
             handleIntent()
         }
     }
 
     override fun onNewIntent(intent: Intent) {
-        log("OnNewIntent") {
+        wrap("OnNewIntent") {
             handleIntent(intent)
         }
     }
@@ -78,7 +78,7 @@ class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.Act
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
-        log("onCreateOptionsMenu") {
+        wrap("onCreateOptionsMenu") {
             // Inflate the options menu from XML
             menuInflater.inflate(options_menu, menu)
 
@@ -95,7 +95,7 @@ class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.Act
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var handled = false
-        log("onOptionsItemSelected") {
+        wrap("onOptionsItemSelected") {
             // Handle item selection
             when (item.itemId) {
                 menu_sort_best_match -> {

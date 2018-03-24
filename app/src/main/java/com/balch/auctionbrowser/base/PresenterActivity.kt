@@ -70,7 +70,7 @@ abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
     /**
      * add timing logging and exception handling around the passed in body
      */
-    protected fun log(tag: String, body: () -> Unit) {
+    protected fun wrap(tag: String, body: () -> Unit) {
 
         try {
             logTiming(tag) { body() }
