@@ -51,7 +51,7 @@ import javax.inject.Inject
 class AuctionPresenter
     @Inject constructor(override val view: AuctionView,
                         private val auctionViewModel: AuctionViewModel,
-                        private val activityBridgeInternal: ActivityBridge?) : BasePresenter() {
+                        private val activityBridge: ActivityBridge) : BasePresenter() {
 
     interface ActivityBridge {
         val fragmentManager: FragmentManager
@@ -64,11 +64,6 @@ class AuctionPresenter
             field = value
             searchView!!.setQuery(auctionViewModel.searchText, false)
         }
-
-    // this pattern allows this class to use activityBridge with the !! but
-    // still allows activityBridgeInternal to be set to null on in cleanup()
-    private val activityBridge: ActivityBridge
-        get() = activityBridgeInternal!!
 
     private val lifecycleOwner: LifecycleOwner
         get() = activityBridge.lifecycleOwner
