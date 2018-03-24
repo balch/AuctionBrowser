@@ -16,19 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2017
+ * Copyright (C) 2018
  *
  */
 
-package com.balch.auctionbrowser.base
+package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.auction.model.EBayApi
+import com.balch.auctionbrowser.auction.AuctionModule
+import com.balch.auctionbrowser.MainActivity
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
-/**
- * Factory used to dependency inject retrofit Api's into the ModelApi classes.
- * Provides a common location to build the the Retrofit Service objects.
- * Easy to override in UnitTests
- */
-interface ModelApiFactory {
-    val ebayApi: EBayApi
+@Module(includes = arrayOf(NetworkModule::class))
+abstract class ActivityBindingModule {
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = arrayOf(AuctionModule::class))
+    internal abstract fun mainActivity(): MainActivity
+
 }

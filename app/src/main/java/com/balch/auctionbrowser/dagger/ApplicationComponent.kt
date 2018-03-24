@@ -20,23 +20,23 @@
  *
  */
 
-package com.balch.auctionbrowser.base
+package com.balch.auctionbrowser.dagger
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
-import android.os.Bundle
-import android.view.View
+import com.balch.auctionbrowser.AuctionApplication
+import dagger.Component
+import dagger.android.AndroidInjector
+import dagger.android.support.AndroidSupportInjectionModule
+import javax.inject.Singleton
 
-abstract class BasePresenter : LifecycleObserver {
+@Singleton
+@Component(modules = arrayOf(
+        AndroidSupportInjectionModule::class,
+        ActivityBindingModule::class,
+        ApplicationModule::class))
+interface ApplicationComponent : AndroidInjector<AuctionApplication> {
 
-    abstract fun initialize(savedInstanceState: Bundle?)
-    abstract fun cleanup()
-    abstract val view: View
 
-    fun onSaveInstanceState(outState: Bundle) {}
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy() { cleanup() }
+    @Component.Builder
+    abstract class Builder : AndroidInjector.Builder<AuctionApplication>()
 
 }

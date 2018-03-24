@@ -16,20 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2017
+ * Copyright (C) 2018
  *
  */
 
-package com.balch.auctionbrowser.base
+package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.AuctionDatabase
+import javax.inject.Scope
 
-/**
- * Contains Application Scoped objects (aka singletons) used to provide system services to the
- * ModelApi's. This interface is typically implemented by the Application object and facilitates
- * UnitTest Dependency Injection (this ApplicationComponent in Dagger2)
- */
-interface ModelProvider {
-    val database: AuctionDatabase
-    val modelApiFactory: ModelApiFactory
-}
+@Scope
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ActivityScope

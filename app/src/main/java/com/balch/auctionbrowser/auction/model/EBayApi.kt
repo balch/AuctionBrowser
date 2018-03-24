@@ -22,7 +22,6 @@
 
 package com.balch.auctionbrowser.auction.model
 
-import com.balch.auctionbrowser.AuctionData
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query

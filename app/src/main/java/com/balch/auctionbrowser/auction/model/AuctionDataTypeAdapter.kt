@@ -22,7 +22,6 @@
 
 package com.balch.auctionbrowser.auction.model
 
-import com.balch.auctionbrowser.AuctionData
 import com.balch.auctionbrowser.types.Money
 import com.google.gson.*
 import org.joda.time.DateTime

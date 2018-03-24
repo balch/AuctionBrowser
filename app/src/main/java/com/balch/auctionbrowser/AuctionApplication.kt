@@ -22,23 +22,23 @@
 
 package com.balch.auctionbrowser
 
-import android.app.Application
-import android.arch.persistence.room.Room
 import android.os.StrictMode
-import com.balch.auctionbrowser.base.ModelProvider
+import com.balch.auctionbrowser.dagger.DaggerApplicationComponent
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 import net.danlew.android.joda.JodaTimeAndroid
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
-open class AuctionApplication : Application(), ModelProvider {
-    private val DATABASE_NAME = "auction_browser.db"
 
-    // ModelProvider Overrides
-    override val database: AuctionDatabase by lazy {
-        Room.databaseBuilder(this, AuctionDatabase::class.java, DATABASE_NAME).build()
+open class AuctionApplication : DaggerApplication() {
+    companion object {
+        val DATABASE_NAME = "auction_browser.db"
     }
 
-    override val modelApiFactory = AuctionModelApiFactory()
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerApplicationComponent.builder().create(this)
+    }
 
     override fun onCreate() {
         super.onCreate()

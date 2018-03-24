@@ -23,10 +23,16 @@
 package com.balch.auctionbrowser
 
 import android.arch.lifecycle.LifecycleOwner
-import com.balch.auctionbrowser.auction.AuctionView
+import com.balch.auctionbrowser.auction.*
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.auction.model.AuctionData
+import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
-import com.balch.auctionbrowser.test.*
+import com.balch.auctionbrowser.note.NotesModel
+import com.balch.auctionbrowser.test.BaseTest
+import com.balch.auctionbrowser.test.anyArg
+import com.balch.auctionbrowser.test.makeCaptor
+import com.balch.auctionbrowser.test.uninitialized
 import io.reactivex.Observable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -41,9 +47,11 @@ class AuctionPresenterTest : BaseTest() {
     @Mock lateinit private var mockView: AuctionView
     @Mock lateinit private var lifecycleOwner: LifecycleOwner
     @Mock lateinit private var bridge: AuctionPresenter.ActivityBridge
+    @Mock lateinit private var ebayModel: EBayModel
+    @Mock lateinit private var notesModel: NotesModel
 
-    private val auctionViewModel = spy(AuctionViewModel())
-    private val modelProvider = TestModelProvider()
+    lateinit var auctionAdapter: AuctionAdapter
+    lateinit var auctionViewModel: AuctionViewModel
 
     lateinit private var presenter: AuctionPresenter
 
@@ -51,15 +59,13 @@ class AuctionPresenterTest : BaseTest() {
     fun setUp() {
         initMocks(this)
 
-        presenter = spy(AuctionPresenter(mockView, "ebayAppId", bridge))
+        auctionAdapter = spy(AuctionAdapter())
+        auctionViewModel = spy(AuctionViewModel(auctionAdapter, ebayModel, notesModel))
+        presenter = spy(AuctionPresenter(mockView, auctionViewModel, bridge))
 
         doReturn(Observable.just(Unit)).`when`(mockView).onLoadMore
 
-        doReturn(false).`when`(bridge).isFinishing
-        doReturn(auctionViewModel).`when`(bridge).auctionViewModel
         doReturn(lifecycleOwner).`when`(bridge).lifecycleOwner
-
-        presenter.createModelInternal(modelProvider)
     }
 
     @Test
@@ -86,7 +92,7 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(note).noteText = text
-        verify(modelProvider.database.noteDao()).update(note)
+        verify(notesModel).update(note)
     }
 
     @Test
@@ -99,7 +105,7 @@ class AuctionPresenterTest : BaseTest() {
         testScheduler.triggerActions()
         //endregion
 
-        val (verifier, captors) = makeCaptor(modelProvider.database.noteDao(), Note::class.java)
+        val (verifier, captors) = makeCaptor(notesModel, Note::class.java)
         verifier.insert(uninitialized())
 
         val note: Note = captors[0].value as Note
@@ -134,7 +140,7 @@ class AuctionPresenterTest : BaseTest() {
         testScheduler.triggerActions()
         //endregion
 
-        verify(modelProvider.database.noteDao()).delete(note)
+        verify(notesModel).delete(note)
         verify(mockView).clearNote(auction)
     }
 
@@ -146,7 +152,7 @@ class AuctionPresenterTest : BaseTest() {
         presenter.clearNote(auction, null)
         //endregion
 
-        verify(modelProvider.database.noteDao(), never()).delete(anyArg())
+        verify(notesModel, never()).delete(anyArg())
         verify(mockView, never()).clearNote(anyArg())
     }
 }

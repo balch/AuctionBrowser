@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2017
+ * Copyright (C) 2018
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.auction
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.support.annotation.VisibleForTesting
-import com.balch.auctionbrowser.auction.AuctionAdapter
+import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
@@ -46,14 +46,13 @@ import timber.log.Timber
  * The class implements simple dependency injection using the `inject()` method to setter-inject
  * the Adapter and ModelApis.
  */
-class AuctionViewModel : ViewModel() {
+class AuctionViewModel(val auctionAdapter: AuctionAdapter,
+                       private val auctionModel: EBayModel,
+                       private val notesModel: NotesModel) : ViewModel() {
 
     private val AUCTION_FETCH_COUNT = 30
 
     // public properties
-    var isInitialized = false
-        private set
-
     val hasMoreAuctionPages
         get() = hasMoreAuctionPages(currentPage)
 
@@ -61,11 +60,6 @@ class AuctionViewModel : ViewModel() {
         get() = auctionDataLive
 
     @set:VisibleForTesting var searchText: String? = null
-
-    // injected models
-    lateinit var auctionAdapter: AuctionAdapter private set
-    lateinit private var auctionModel: EBayModel
-    lateinit private var notesModel: NotesModel
 
     // paging vars
     @VisibleForTesting var currentPage: Int = 0
@@ -77,13 +71,6 @@ class AuctionViewModel : ViewModel() {
 
     // disposables
     private var disposableGetAuction: Disposable? = null
-
-    fun inject(adapter: AuctionAdapter, eBayModel: EBayModel, notesModel: NotesModel) {
-        isInitialized = true
-        this.auctionAdapter = adapter
-        this.auctionModel = eBayModel
-        this.notesModel = notesModel
-    }
 
     fun loadAuctions(searchText: String? = null, sortColumn: EBayModel.SortColumn? = null) {
         this.totalPages = -1

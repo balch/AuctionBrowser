@@ -26,11 +26,14 @@ import android.annotation.SuppressLint
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.logTiming
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Model API for retrieving/persisting data to the NotesDao repository (Sqlite db)
  */
-class NotesModel(private val noteDao: NoteDao) {
+@Singleton
+class NotesModel @Inject constructor(private val noteDao: NoteDao) {
     @SuppressLint("UseSparseArrays")
     fun getNotes(auctions: List<Auction>): Map<Long, Note> {
         var noteMap:Map<Long, Note>? = null

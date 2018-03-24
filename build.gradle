@@ -9,13 +9,14 @@ buildscript {
     ext.versionName="1.1"
 
     ext.kotlin_version = '1.1.51'
-    ext.android_arch="1.0.0"
+    ext.android_arch="1.1.0"
+    ext.room="1.0.0"
     ext.gson="2.8.0"
     ext.okhttp_logging_xcepter="3.8.0"
     ext.retrofit="2.3.0"
     ext.rxjava2="2.1.0"
     ext.rxandroid="2.0.1"
-    ext.support="27.0.2"
+    ext.support="27.1.0"
     ext.glide="3.8.0"
     ext.joda="2.9.9"
     ext.support_test="0.5"
@@ -24,6 +25,7 @@ buildscript {
     ext.timber="4.6.0"
     ext.assertj="3.5.2"
     ext.contraint_layout="1.0.2"
+    ext.dagger2="2.15"
 
     repositories {
         jcenter()
