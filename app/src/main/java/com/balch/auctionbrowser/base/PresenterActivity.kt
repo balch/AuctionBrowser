@@ -22,7 +22,6 @@
 
 package com.balch.auctionbrowser.base
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -46,7 +45,6 @@ abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
         return false
     }
 
-    @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,7 +73,7 @@ abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
         try {
             logTiming(tag) { body() }
         } catch (ex: Exception) {
-            if (!handleException("$tag ", ex)) {
+            if (!handleException(tag, ex)) {
                 throw ex
             }
         }
