@@ -8,14 +8,14 @@ buildscript {
     ext.versionCode=1
     ext.versionName="1.1"
 
-    ext.kotlin_version = '1.1.51'
-    ext.android_arch="1.1.0"
+    ext.kotlin_version = '1.2.31'
+    ext.android_arch="1.1.1"
     ext.room="1.0.0"
     ext.gson="2.8.0"
     ext.okhttp_logging_xcepter="3.8.0"
     ext.retrofit="2.3.0"
     ext.rxjava2="2.1.0"
-    ext.rxandroid="2.0.1"
+    ext.rxandroid="2.0.2"
     ext.support="27.1.0"
     ext.glide="3.8.0"
     ext.joda="2.9.9"
@@ -30,9 +30,10 @@ buildscript {
     repositories {
         jcenter()
         maven { url "https://maven.google.com" }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -47,3 +48,8 @@ allprojects {
         maven { url 'https://maven.google.com' }
     }
 }
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+

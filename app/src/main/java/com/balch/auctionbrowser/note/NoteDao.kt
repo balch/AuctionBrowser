@@ -26,7 +26,7 @@ import android.arch.persistence.room.*
 
 @Dao
 interface NoteDao {
-    @Query("SELECT * FROM note WHERE itemId IN (:arg0)")
+    @Query("SELECT * FROM note WHERE itemId IN (:itemIds)")
     fun loadAllByIds(itemIds: LongArray): List<Note>
 
     @Insert
