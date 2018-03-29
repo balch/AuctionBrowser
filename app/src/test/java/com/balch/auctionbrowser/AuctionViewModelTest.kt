@@ -24,9 +24,9 @@ package com.balch.auctionbrowser
 
 import android.arch.lifecycle.MutableLiveData
 import com.balch.auctionbrowser.auction.AuctionAdapter
-import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.AuctionViewModel
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.NoteDao
 import com.balch.auctionbrowser.note.NotesModel
@@ -42,14 +42,14 @@ import org.mockito.MockitoAnnotations.initMocks
 
 
 class AuctionViewModelTest: BaseTest() {
-    lateinit private var viewModel: AuctionViewModel
+    private lateinit var viewModel: AuctionViewModel
 
-    @Mock lateinit private var mockAdapter: AuctionAdapter
-    @Mock lateinit private var mockAuctionDataLive: MutableLiveData<AuctionData>
+    @Mock private lateinit var mockAdapter: AuctionAdapter
+    @Mock private lateinit var mockAuctionDataLive: MutableLiveData<AuctionData>
 
-    @Mock lateinit private var ebayModel: EBayModel
-    @Mock lateinit private var noteDao: NoteDao
-    lateinit private var notesModel: NotesModel
+    @Mock private lateinit var ebayModel: EBayModel
+    @Mock private lateinit var noteDao: NoteDao
+    private lateinit var notesModel: NotesModel
 
     @Before
     fun setUp() {
@@ -58,8 +58,7 @@ class AuctionViewModelTest: BaseTest() {
 
         notesModel = NotesModel(noteDao)
 
-        viewModel = spy(AuctionViewModel(mockAdapter, ebayModel, notesModel))
-        doReturn(mockAuctionDataLive).`when`(viewModel).auctionDataLive
+        viewModel = spy(AuctionViewModel(mockAdapter, ebayModel, notesModel, mockAuctionDataLive))
     }
 
     @Test

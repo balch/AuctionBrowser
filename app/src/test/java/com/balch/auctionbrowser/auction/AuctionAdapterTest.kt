@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations
 import kotlin.test.assertTrue
 
 class AuctionAdapterTest: BaseTest() {
-    lateinit private var adapter: AuctionAdapter
+    private lateinit var adapter: AuctionAdapter
 
     @Before
     fun setUp() {

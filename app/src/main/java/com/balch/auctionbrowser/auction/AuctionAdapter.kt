@@ -75,4 +75,18 @@ class AuctionAdapter @Inject constructor() :
         notifyDataSetChanged()
     }
 
+    fun getNote(auction: Auction): Note? {
+        return notes[auction.itemId]
+    }
+
+    fun clearNote(auction: Auction) {
+        notes.remove(auction.itemId)
+        notifyDataSetChanged()
+    }
+
+    fun addNote(auction: Auction, note: Note) {
+        notes.put(auction.itemId, note)
+        notifyDataSetChanged()
+    }
+
 }

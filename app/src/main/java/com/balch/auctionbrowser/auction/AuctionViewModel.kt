@@ -48,7 +48,8 @@ import timber.log.Timber
  */
 class AuctionViewModel(val auctionAdapter: AuctionAdapter,
                        private val auctionModel: EBayModel,
-                       private val notesModel: NotesModel) : ViewModel() {
+                       private val notesModel: NotesModel,
+                       private val auctionDataLive:MutableLiveData<AuctionData> = MutableLiveData()) : ViewModel() {
 
     private val AUCTION_FETCH_COUNT = 30
 
@@ -66,8 +67,6 @@ class AuctionViewModel(val auctionAdapter: AuctionAdapter,
     @VisibleForTesting var totalPages: Long = 0
     @VisibleForTesting var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
 
-    // LiveData<AuctionData>
-    @VisibleForTesting val auctionDataLive = MutableLiveData<AuctionData>()
 
     // disposables
     private var disposableGetAuction: Disposable? = null
@@ -112,14 +111,14 @@ class AuctionViewModel(val auctionAdapter: AuctionAdapter,
                     totalPages = auctionData.totalPages.toLong()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ auctionData -> auctionDataLive.setValue(auctionData) },
+                .subscribe(auctionDataLive::setValue,
                         { throwable ->
                             Timber.e(throwable, "Error in .getAuctions()")
                             auctionDataLive.setValue(null)
                         })
     }
 
-    fun disposeGetAuctionDisposable() {
+    private fun disposeGetAuctionDisposable() {
         disposableGetAuction?.dispose()
         disposableGetAuction = null
     }

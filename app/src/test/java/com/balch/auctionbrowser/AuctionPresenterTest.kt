@@ -23,7 +23,10 @@
 package com.balch.auctionbrowser
 
 import android.arch.lifecycle.LifecycleOwner
-import com.balch.auctionbrowser.auction.*
+import com.balch.auctionbrowser.auction.AuctionAdapter
+import com.balch.auctionbrowser.auction.AuctionPresenter
+import com.balch.auctionbrowser.auction.AuctionView
+import com.balch.auctionbrowser.auction.AuctionViewModel
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
@@ -44,16 +47,16 @@ import org.mockito.MockitoAnnotations.initMocks
 
 class AuctionPresenterTest : BaseTest() {
 
-    @Mock lateinit private var mockView: AuctionView
-    @Mock lateinit private var lifecycleOwner: LifecycleOwner
-    @Mock lateinit private var bridge: AuctionPresenter.ActivityBridge
-    @Mock lateinit private var ebayModel: EBayModel
-    @Mock lateinit private var notesModel: NotesModel
+    @Mock private lateinit var mockView: AuctionView
+    @Mock private lateinit var lifecycleOwner: LifecycleOwner
+    @Mock private lateinit var bridge: AuctionPresenter.ActivityBridge
+    @Mock private lateinit var ebayModel: EBayModel
+    @Mock private lateinit var notesModel: NotesModel
 
     lateinit var auctionAdapter: AuctionAdapter
     lateinit var auctionViewModel: AuctionViewModel
 
-    lateinit private var presenter: AuctionPresenter
+    private lateinit var presenter: AuctionPresenter
 
     @Before
     fun setUp() {
@@ -64,6 +67,7 @@ class AuctionPresenterTest : BaseTest() {
         presenter = spy(AuctionPresenter(mockView, auctionViewModel, bridge))
 
         doReturn(Observable.just(Unit)).`when`(mockView).onLoadMore
+        doNothing().`when`(auctionAdapter).notifyDataSetChanged()
 
         doReturn(lifecycleOwner).`when`(bridge).lifecycleOwner
     }
@@ -111,14 +115,14 @@ class AuctionPresenterTest : BaseTest() {
         val note: Note = captors[0].value as Note
         assertThat(note.noteText).isEqualTo(text)
 
-        verify(mockView).addNote(auction, note)
+        verify(auctionAdapter).addNote(auction, note)
     }
 
     @Test
     fun testShowAuctions() {
         val auctionData: AuctionData = AuctionData().apply {
-            auctions = ArrayList<Auction>()
-            notes = HashMap<Long, Note>()
+            auctions = ArrayList()
+            notes = HashMap()
         }
 
         //region Execute Test
@@ -126,7 +130,7 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(mockView).showBusy = false
-        verify(mockView).addAuctions(auctionData.auctions, auctionData.notes)
+        verify(auctionAdapter).addAuctions(auctionData.auctions, auctionData.notes)
         verify(mockView).doneLoading(false)
     }
 
@@ -141,7 +145,7 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(notesModel).delete(note)
-        verify(mockView).clearNote(auction)
+        verify(auctionAdapter).clearNote(auction)
     }
 
     @Test
@@ -153,6 +157,6 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(notesModel, never()).delete(anyArg())
-        verify(mockView, never()).clearNote(anyArg())
+        verify(auctionAdapter, never()).clearNote(anyArg())
     }
 }

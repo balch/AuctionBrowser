@@ -25,7 +25,6 @@ package com.balch.auctionbrowser.note
 import android.annotation.SuppressLint
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.logTiming
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,7 +47,7 @@ class NotesModel @Inject constructor(private val noteDao: NoteDao) {
             }
         }
 
-        return noteMap ?: HashMap<Long, Note>()
+        return noteMap ?: mutableMapOf()
     }
 
     fun insert(note: Note) {

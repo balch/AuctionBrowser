@@ -30,9 +30,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import com.balch.auctionbrowser.R
-import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.inflate
-import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.EndlessScrollListener
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.view_auction.view.*
@@ -48,8 +46,7 @@ class AuctionView : FrameLayout {
         set(value) { progressBar.visibility = if (value) View.VISIBLE else View.GONE }
 
     // private properties
-    lateinit private var auctionAdapter: AuctionAdapter
-    lateinit private var recyclerOnScrollListener: EndlessScrollListener
+    private lateinit var recyclerOnScrollListener: EndlessScrollListener
 
     // private view layouts
     private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
@@ -80,8 +77,7 @@ class AuctionView : FrameLayout {
     }
 
     fun setAuctionAdapter(auctionAdapter: AuctionAdapter) {
-        this.auctionAdapter = auctionAdapter
-        recyclerView.adapter = this.auctionAdapter
+        recyclerView.adapter = auctionAdapter
     }
 
     fun cleanup() {
@@ -89,30 +85,11 @@ class AuctionView : FrameLayout {
         recyclerView.adapter = null
     }
 
-    fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
-        auctionAdapter.addAuctions(auctions, notes)
-    }
-
     fun clearAuctions() {
-        auctionAdapter.clearAuctions()
         recyclerOnScrollListener.reset()
     }
 
     fun doneLoading(hasMore: Boolean) {
         recyclerOnScrollListener.doneLoading(hasMore)
-    }
-
-    fun getNote(auction: Auction): Note? {
-        return auctionAdapter.notes[auction.itemId]
-    }
-
-    fun clearNote(auction: Auction) {
-        auctionAdapter.notes.remove(auction.itemId)
-        auctionAdapter.notifyDataSetChanged()
-    }
-
-    fun addNote(auction: Auction, note: Note) {
-        auctionAdapter.notes.put(auction.itemId, note)
-        auctionAdapter.notifyDataSetChanged()
     }
 }

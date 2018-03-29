@@ -68,16 +68,17 @@ class AuctionPresenter
     private val lifecycleOwner: LifecycleOwner
         get() = activityBridge.lifecycleOwner
 
+    private val auctionAdapter: AuctionAdapter
+        get() = auctionViewModel.auctionAdapter
+
     private val disposables = CompositeDisposable()
     private var disposableSaveNote: Disposable? = null
     private var disposableClearNote: Disposable? = null
 
     @SuppressLint("VisibleForTests")
     override  fun initialize(savedInstanceState: Bundle?) {
-        auctionViewModel.auctionData.observe(lifecycleOwner,
-                Observer<AuctionData> { auctionData -> showAuctions(auctionData) })
+        auctionViewModel.auctionData.observe(lifecycleOwner, Observer<AuctionData>(this::showAuctions))
 
-        val auctionAdapter = auctionViewModel.auctionAdapter
         view.setAuctionAdapter(auctionAdapter)
 
         disposables.addAll(
@@ -115,7 +116,7 @@ class AuctionPresenter
 
     @SuppressLint("VisibleForTests")
     private fun showDetail(auction: Auction) {
-        val note = view.getNote(auction)
+        val note = auctionAdapter.getNote(auction)
 
         val dialog = AuctionDetailDialog.newInstance(auction, note)
 
@@ -140,7 +141,7 @@ class AuctionPresenter
                             .subscribeOn(Schedulers.io())
                             .doOnSuccess { note1 -> auctionViewModel.insertNote(note1) }
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ note1 -> view.addNote(auction, note1) },
+                            .subscribe({ note1 -> auctionAdapter.addNote(auction, note1) },
                                     { throwable -> Timber.e(throwable, "insertNote error") })
             )
         } else {
@@ -159,7 +160,7 @@ class AuctionPresenter
         view.showBusy = false
 
         if (auctionData?.hasError == false) {
-            view.addAuctions(auctionData.auctions, auctionData.notes)
+            auctionAdapter.addAuctions(auctionData.auctions, auctionData.notes)
         } else {
             if (searchView?.query?.isNotEmpty() != false) {
                 activityBridge.showSnackBar(view, R.string.error_auction_get)
@@ -176,7 +177,7 @@ class AuctionPresenter
                     CompletableFromAction({ auctionViewModel.deleteNote(note) })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ view.clearNote(auction) },
+                            .subscribe({ auctionAdapter.clearNote(auction) },
                                     { throwable -> Timber.e(throwable, "deleteNote error") })
             )
         }
