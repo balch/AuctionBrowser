@@ -49,7 +49,7 @@ import timber.log.Timber
 class AuctionViewModel(val auctionAdapter: AuctionAdapter,
                        private val auctionModel: EBayModel,
                        private val notesModel: NotesModel,
-                       private val auctionDataLive:MutableLiveData<AuctionData> = MutableLiveData()) : ViewModel() {
+                       private val auctionDataLive: MutableLiveData<AuctionData> = MutableLiveData()) : ViewModel() {
 
     private val AUCTION_FETCH_COUNT = 30
 
@@ -60,12 +60,16 @@ class AuctionViewModel(val auctionAdapter: AuctionAdapter,
     val auctionData: LiveData<AuctionData>
         get() = auctionDataLive
 
-    @set:VisibleForTesting var searchText: String? = null
+    @set:VisibleForTesting
+    var searchText: String? = null
 
     // paging vars
-    @VisibleForTesting var currentPage: Int = 0
-    @VisibleForTesting var totalPages: Long = 0
-    @VisibleForTesting var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
+    @VisibleForTesting
+    var currentPage: Int = 0
+    @VisibleForTesting
+    var totalPages: Long = 0
+    @VisibleForTesting
+    var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
 
 
     // disposables

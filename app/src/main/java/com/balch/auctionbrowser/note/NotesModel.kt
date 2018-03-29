@@ -35,7 +35,7 @@ import javax.inject.Singleton
 class NotesModel @Inject constructor(private val noteDao: NoteDao) {
     @SuppressLint("UseSparseArrays")
     fun getNotes(auctions: List<Auction>): Map<Long, Note> {
-        var noteMap:Map<Long, Note>? = null
+        var noteMap: Map<Long, Note>? = null
 
         logTiming("getNotes") {
             if (auctions.isNotEmpty()) {

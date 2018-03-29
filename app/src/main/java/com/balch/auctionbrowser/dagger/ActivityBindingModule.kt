@@ -22,8 +22,8 @@
 
 package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.auction.AuctionModule
 import com.balch.auctionbrowser.MainActivity
+import com.balch.auctionbrowser.auction.AuctionModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

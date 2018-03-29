@@ -40,15 +40,18 @@ import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
 
 
-
-class AuctionViewModelTest: BaseTest() {
+class AuctionViewModelTest : BaseTest() {
     private lateinit var viewModel: AuctionViewModel
 
-    @Mock private lateinit var mockAdapter: AuctionAdapter
-    @Mock private lateinit var mockAuctionDataLive: MutableLiveData<AuctionData>
+    @Mock
+    private lateinit var mockAdapter: AuctionAdapter
+    @Mock
+    private lateinit var mockAuctionDataLive: MutableLiveData<AuctionData>
 
-    @Mock private lateinit var ebayModel: EBayModel
-    @Mock private lateinit var noteDao: NoteDao
+    @Mock
+    private lateinit var ebayModel: EBayModel
+    @Mock
+    private lateinit var noteDao: NoteDao
     private lateinit var notesModel: NotesModel
 
     @Before
@@ -66,7 +69,7 @@ class AuctionViewModelTest: BaseTest() {
         val searchText = "Search"
         val sortColumn = EBayModel.SortColumn.BEST_MATCH
 
-        val auctions:MutableList<Auction> = ArrayList()
+        val auctions: MutableList<Auction> = ArrayList()
         auctions.add(mock(Auction::class.java))
         val auctionData = AuctionData(auctions)
 
@@ -92,7 +95,7 @@ class AuctionViewModelTest: BaseTest() {
         viewModel.sortColumn = sortColumn
         viewModel.currentPage = currentPage
 
-        val auctions:MutableList<Auction> = ArrayList()
+        val auctions: MutableList<Auction> = ArrayList()
         auctions.add(mock(Auction::class.java))
         val auctionData = AuctionData(auctions)
         doReturn(Single.just(auctionData)).`when`(ebayModel)

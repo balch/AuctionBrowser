@@ -43,7 +43,9 @@ class AuctionView : FrameLayout {
 
     var showBusy: Boolean
         get() = progressBar.visibility == View.VISIBLE
-        set(value) { progressBar.visibility = if (value) View.VISIBLE else View.GONE }
+        set(value) {
+            progressBar.visibility = if (value) View.VISIBLE else View.GONE
+        }
 
     // private properties
     private lateinit var recyclerOnScrollListener: EndlessScrollListener

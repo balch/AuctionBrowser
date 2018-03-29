@@ -31,9 +31,9 @@ import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
 internal class AuctionViewModelFactory
-    @Inject constructor(private val adapter: AuctionAdapter,
-                        private val eBayModel: EBayModel,
-                        private val notesModel: NotesModel) : ViewModelProvider.Factory {
+@Inject constructor(private val adapter: AuctionAdapter,
+                    private val eBayModel: EBayModel,
+                    private val notesModel: NotesModel) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuctionViewModel::class.java)) {

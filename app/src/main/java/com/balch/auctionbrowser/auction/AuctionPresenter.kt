@@ -49,9 +49,9 @@ import javax.inject.Inject
 
 @ActivityScope
 class AuctionPresenter
-    @Inject constructor(override val view: AuctionView,
-                        private val auctionViewModel: AuctionViewModel,
-                        private val activityBridge: ActivityBridge) : BasePresenter() {
+@Inject constructor(override val view: AuctionView,
+                    private val auctionViewModel: AuctionViewModel,
+                    private val activityBridge: ActivityBridge) : BasePresenter() {
 
     interface ActivityBridge {
         val fragmentManager: FragmentManager
@@ -76,7 +76,7 @@ class AuctionPresenter
     private var disposableClearNote: Disposable? = null
 
     @SuppressLint("VisibleForTests")
-    override  fun initialize(savedInstanceState: Bundle?) {
+    override fun initialize(savedInstanceState: Bundle?) {
         auctionViewModel.auctionData.observe(lifecycleOwner, Observer<AuctionData>(this::showAuctions))
 
         view.setAuctionAdapter(auctionAdapter)

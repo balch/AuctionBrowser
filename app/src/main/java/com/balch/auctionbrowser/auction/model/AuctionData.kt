@@ -27,6 +27,6 @@ import java.util.*
 
 class AuctionData(var auctions: List<Auction> = Collections.emptyList(),
                   var notes: Map<Long, Note> = Collections.emptyMap(),
-                  var hasError:Boolean = false) {
+                  var hasError: Boolean = false) {
     var totalPages: Int = 0
 }

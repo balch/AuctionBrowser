@@ -28,7 +28,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 class EndlessScrollListener(private val linearLayoutManager: LinearLayoutManager,
-                            private val triggerPosition:Int = 10):
+                            private val triggerPosition: Int = 10) :
         RecyclerView.OnScrollListener() {
 
     val onLoadMore: Observable<Unit>

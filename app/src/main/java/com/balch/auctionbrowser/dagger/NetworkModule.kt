@@ -23,10 +23,10 @@
 package com.balch.auctionbrowser.dagger
 
 import android.content.Context
-import com.balch.auctionbrowser.auction.model.AuctionData
-import com.balch.auctionbrowser.auction.AuctionModule
 import com.balch.auctionbrowser.BuildConfig
 import com.balch.auctionbrowser.R
+import com.balch.auctionbrowser.auction.AuctionModule
+import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
 import com.balch.auctionbrowser.auction.model.EBayApi
 import com.google.gson.Gson
@@ -82,13 +82,13 @@ class NetworkModule {
     @Provides
     @Singleton
     @Named(EBAY_URL)
-    internal fun providesEbayApiUrl(@Named(ApplicationModule.APP_CONTEXT)context: Context): String {
+    internal fun providesEbayApiUrl(@Named(ApplicationModule.APP_CONTEXT) context: Context): String {
         return context.getString(R.string.url_ebay_api)
     }
 
     @Provides
     @Singleton
-    internal fun providesEbayApi(@Named(EBAY_URL)baseUrl: String,
+    internal fun providesEbayApi(@Named(EBAY_URL) baseUrl: String,
                                  okHttpClient: OkHttpClient,
                                  gson: Gson): EBayApi {
         return getRetrofitService(baseUrl, okHttpClient, gson).create(EBayApi::class.java)

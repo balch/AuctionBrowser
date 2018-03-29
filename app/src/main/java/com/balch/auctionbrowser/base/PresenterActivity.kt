@@ -37,9 +37,10 @@ import javax.inject.Inject
 
  * @param <V> Type of View to create
 </V> */
-abstract class PresenterActivity<P: BasePresenter> : AppCompatActivity() {
+abstract class PresenterActivity<P : BasePresenter> : AppCompatActivity() {
 
-    @Inject lateinit var presenter: P
+    @Inject
+    lateinit var presenter: P
 
     open fun onHandleException(logMsg: String, ex: Exception): Boolean {
         return false

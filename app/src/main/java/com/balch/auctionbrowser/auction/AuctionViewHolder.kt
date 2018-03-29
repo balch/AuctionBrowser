@@ -38,7 +38,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_auction_list.view.*
 
 class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: PublishSubject<Auction>,
-                   private val clickNoteObservable: PublishSubject<Auction>)
+                        private val clickNoteObservable: PublishSubject<Auction>)
     : RecyclerView.ViewHolder(parent.inflate(R.layout.item_auction_list)) {
 
     // private view layouts
@@ -50,8 +50,8 @@ class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: P
 
     fun bind(auction: Auction, note: Note?) {
 
-        with (auction) {
-            itemImageView.loadUrl(imageUrl) {it.centerCrop()}
+        with(auction) {
+            itemImageView.loadUrl(imageUrl) { it.centerCrop() }
             titleTextView.value = title
 
             priceTextView.value = currentPrice.getFormatted(2)

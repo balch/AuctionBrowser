@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.util
 
-class StopWatch (startRunning: Boolean = true){
+class StopWatch(startRunning: Boolean = true) {
     private var startTime: Long = 0
     private var stopTime: Long = 0
     private var running = false

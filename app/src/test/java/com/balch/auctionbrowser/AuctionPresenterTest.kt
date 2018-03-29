@@ -47,11 +47,16 @@ import org.mockito.MockitoAnnotations.initMocks
 
 class AuctionPresenterTest : BaseTest() {
 
-    @Mock private lateinit var mockView: AuctionView
-    @Mock private lateinit var lifecycleOwner: LifecycleOwner
-    @Mock private lateinit var bridge: AuctionPresenter.ActivityBridge
-    @Mock private lateinit var ebayModel: EBayModel
-    @Mock private lateinit var notesModel: NotesModel
+    @Mock
+    private lateinit var mockView: AuctionView
+    @Mock
+    private lateinit var lifecycleOwner: LifecycleOwner
+    @Mock
+    private lateinit var bridge: AuctionPresenter.ActivityBridge
+    @Mock
+    private lateinit var ebayModel: EBayModel
+    @Mock
+    private lateinit var notesModel: NotesModel
 
     lateinit var auctionAdapter: AuctionAdapter
     lateinit var auctionViewModel: AuctionViewModel

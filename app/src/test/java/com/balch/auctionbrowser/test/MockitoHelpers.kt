@@ -12,14 +12,14 @@ data class CaptorResult<out T>(val verifier: T, val captors: List<ArgumentCaptor
  *
  * Adapted from https://stackoverflow.com/a/35366060
  */
-fun <T> makeCaptor(mock: T, vararg clazzes: Class<*> ): CaptorResult<T> {
+fun <T> makeCaptor(mock: T, vararg clazzes: Class<*>): CaptorResult<T> {
 
     val captors: List<ArgumentCaptor<*>> = List(clazzes.size,
             { idx -> ArgumentCaptor.forClass(clazzes[idx]) })
 
     val verifier = Mockito.verify(mock)
 
-    captors.forEach( { it.capture() })
+    captors.forEach({ it.capture() })
 
     return CaptorResult(verifier, captors)
 }

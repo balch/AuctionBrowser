@@ -40,7 +40,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_auction_detai.*
 
-class AuctionDetailDialog: DialogFragment() {
+class AuctionDetailDialog : DialogFragment() {
     companion object {
         private val ARG_NOTE = "ARG_NOTE"
         private val ARG_AUCTION = "ARG_AUCTION"
@@ -78,7 +78,7 @@ class AuctionDetailDialog: DialogFragment() {
     override fun onStart() {
         super.onStart()
 
-        with (dialog as AlertDialog) {
+        with(dialog as AlertDialog) {
             getButton(BUTTON_NEGATIVE).isEnabled = false
             getButton(BUTTON_POSITIVE).isEnabled = false
         }
@@ -95,9 +95,9 @@ class AuctionDetailDialog: DialogFragment() {
 
             enableSaveButtons = auction.itemId != -1L
 
-            with (auction) {
+            with(auction) {
                 dialog.auction_detail_title.text = title
-                dialog.auction_detail_item_img.loadUrl(imageUrl) {it.centerCrop()}
+                dialog.auction_detail_item_img.loadUrl(imageUrl) { it.centerCrop() }
                 dialog.auction_detail_end_time.value = endTime.toLongDateTimeString()
                 dialog.auction_detail_price.value = currentPrice.getFormatted(2)
                 dialog.auction_detail_location.value = location

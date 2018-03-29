@@ -33,8 +33,8 @@ import com.balch.auctionbrowser.ext.inflate
 import kotlinx.android.synthetic.main.view_label_text.view.*
 
 class LabelTextView : LinearLayout {
-    private val labelTextView: TextView by lazy {label_text_view_label}
-    private val valueTextView: TextView by lazy {label_text_view_value}
+    private val labelTextView: TextView by lazy { label_text_view_label }
+    private val valueTextView: TextView by lazy { label_text_view_value }
 
     var value: String
         get() = valueTextView.text.toString()

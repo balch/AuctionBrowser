@@ -33,8 +33,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class EBayModel
-    @Inject constructor(@Named(ApplicationModule.EBAY_APP_ID) private val eBayApiKey: String,
-                        private val ebayApi: EBayApi) {
+@Inject constructor(@Named(ApplicationModule.EBAY_APP_ID) private val eBayApiKey: String,
+                    private val ebayApi: EBayApi) {
 
     enum class SortColumn constructor(internal val sortTerm: String) {
         BEST_MATCH("BestMatch"),
@@ -46,6 +46,6 @@ class EBayModel
                     count: Int, sortColumn: SortColumn): Single<AuctionData> {
         return if (keyword.isNotEmpty())
             ebayApi.findItemsByKeywords(keyword, start + 1, count, sortColumn.sortTerm, eBayApiKey)
-            else Single.just(AuctionData())
+        else Single.just(AuctionData())
     }
 }
