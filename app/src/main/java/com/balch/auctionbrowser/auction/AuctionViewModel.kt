@@ -80,6 +80,7 @@ class AuctionViewModel(val auctionAdapter: AuctionAdapter,
         this.currentPage = 1
         this.searchText = searchText ?: this.searchText ?: ""
         this.sortColumn = sortColumn ?: this.sortColumn
+        this.auctionAdapter.clearAuctions()
         getAuctionsAsync()
     }
 
