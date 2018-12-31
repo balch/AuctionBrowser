@@ -72,7 +72,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    internal fun providesOkHttpClinet(interceptors: MutableList<Interceptor>): OkHttpClient {
+    internal fun providesOkHttpClient(interceptors: MutableList<Interceptor>): OkHttpClient {
         val builder = OkHttpClient.Builder()
         interceptors.forEach { builder.addInterceptor(it) }
         return builder.build()

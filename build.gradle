@@ -1,31 +1,30 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.compileSdkVersion=26
-    ext.buildToolsVersion="26.0.2"
+    ext.compileSdkVersion=28
     ext.applicationId="com.balch.auctionbrowser"
     ext.minSdkVersion=21
-    ext.targetSdkVersion=26
+    ext.targetSdkVersion=28
     ext.versionCode=1
     ext.versionName="1.1"
 
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.71'
     ext.android_arch="1.1.1"
-    ext.room="1.0.0"
+    ext.room="1.1.1"
     ext.gson="2.8.0"
     ext.okhttp_logging_xcepter="3.8.0"
     ext.retrofit="2.3.0"
     ext.rxjava2="2.1.0"
-    ext.rxandroid="2.0.2"
-    ext.support="27.1.0"
-    ext.glide="3.8.0"
+    ext.rxandroid="2.1.0"
+    ext.support="28.0.0"
+    ext.glide="4.8.0"
     ext.joda="2.9.9"
     ext.support_test="0.5"
     ext.junit="4.12"
     ext.mockito="2.7.22"
-    ext.timber="4.6.0"
+    ext.timber="4.7.1"
     ext.assertj="3.5.2"
-    ext.contraint_layout="1.0.2"
-    ext.dagger2="2.15"
+    ext.contraint_layout="1.1.3"
+    ext.dagger2="2.18"
 
     repositories {
         jcenter()
@@ -33,7 +32,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong

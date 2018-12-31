@@ -34,6 +34,7 @@ import com.balch.auctionbrowser.ext.loadUrl
 import com.balch.auctionbrowser.ext.toLongDateTimeString
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.LabelTextView
+import com.bumptech.glide.request.RequestOptions
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_auction_list.view.*
 
@@ -51,7 +52,7 @@ class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: P
     fun bind(auction: Auction, note: Note?) {
 
         with(auction) {
-            itemImageView.loadUrl(imageUrl) { it.centerCrop() }
+            itemImageView.loadUrl(imageUrl) { it.apply(RequestOptions.centerCropTransform()) }
             titleTextView.value = title
 
             priceTextView.value = currentPrice.getFormatted(2)

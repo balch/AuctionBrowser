@@ -37,7 +37,7 @@ abstract class BasePresenter : LifecycleObserver {
     fun onSaveInstanceState(outState: Bundle) {}
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy() {
+    fun onDestroy() {
         cleanup()
     }
 

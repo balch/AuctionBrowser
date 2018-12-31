@@ -22,13 +22,13 @@
 
 package com.balch.auctionbrowser.ext
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.bumptech.glide.DrawableRequestBuilder
-import com.bumptech.glide.DrawableTypeRequest
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
@@ -39,6 +39,6 @@ fun ImageView.loadUrl(url: String) {
 }
 
 inline fun ImageView.loadUrl(url: String,
-                             request: (DrawableTypeRequest<String>) -> DrawableRequestBuilder<String>) {
+                             request: (RequestBuilder<Drawable>) -> RequestBuilder<Drawable>) {
     request(Glide.with(context).load(url)).into(this)
 }

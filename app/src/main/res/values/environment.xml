@@ -21,5 +21,5 @@
   -->
 
 <resources>
-    <string name="url_ebay_api">http://svcs.ebay.com/</string>
+    <string name="url_ebay_api">https://svcs.ebay.com/</string>
 </resources>

@@ -36,6 +36,7 @@ import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.ext.loadUrl
 import com.balch.auctionbrowser.ext.toLongDateTimeString
 import com.balch.auctionbrowser.note.Note
+import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_auction_detai.*
@@ -97,7 +98,7 @@ class AuctionDetailDialog : DialogFragment() {
 
             with(auction) {
                 dialog.auction_detail_title.text = title
-                dialog.auction_detail_item_img.loadUrl(imageUrl) { it.centerCrop() }
+                dialog.auction_detail_item_img.loadUrl(imageUrl) { it.apply(RequestOptions.centerCropTransform())}
                 dialog.auction_detail_end_time.value = endTime.toLongDateTimeString()
                 dialog.auction_detail_price.value = currentPrice.getFormatted(2)
                 dialog.auction_detail_location.value = location

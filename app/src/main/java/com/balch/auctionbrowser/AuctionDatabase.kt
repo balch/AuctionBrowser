@@ -28,7 +28,7 @@ import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NoteDao
 
 
-@Database(entities = arrayOf(Note::class), version = 2)
+@Database(entities = arrayOf(Note::class), version = 2, exportSchema = false)
 abstract class AuctionDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
 }
