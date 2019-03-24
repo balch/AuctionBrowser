@@ -35,16 +35,6 @@ open class TestAuctionApplication : AuctionApplication() {
         return DaggerTestApplicationComponent.builder().create(this)
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        mockServer.start()
-    }
-
-    override fun onTerminate() {
-        super.onTerminate()
-        mockServer.shutdown()
-    }
-
     override fun setStrictMode() {
         // no-op
     }

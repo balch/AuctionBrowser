@@ -22,9 +22,8 @@
 
 package com.balch.auctionbrowser.dagger
 
-import android.content.Context
 import com.balch.auctionbrowser.BuildConfig
-import com.balch.auctionbrowser.R
+import com.balch.auctionbrowser.TestAuctionApplication
 import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
 import com.balch.auctionbrowser.auction.model.EBayApi
@@ -35,6 +34,7 @@ import dagger.Provides
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.mockwebserver.MockWebServer
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -46,6 +46,13 @@ open class TestNetworkModule {
 
     companion object {
         private const val EBAY_URL = "ebay_url"
+    }
+
+    @Provides
+    @Singleton
+    internal fun providesMockWebServer(app: TestAuctionApplication): MockWebServer {
+        app.mockServer.start()
+        return app.mockServer
     }
 
     @Provides
@@ -81,8 +88,8 @@ open class TestNetworkModule {
     @Provides
     @Singleton
     @Named(EBAY_URL)
-    internal fun providesEbayApiUrl(@Named(ApplicationModule.APP_CONTEXT) context: Context): String {
-        return context.getString(R.string.url_ebay_api)
+    internal fun providesEbayApiUrl(mockWebServer: MockWebServer): String {
+        return mockWebServer.url("").toString()
     }
 
     @Provides
