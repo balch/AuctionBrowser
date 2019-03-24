@@ -22,87 +22,21 @@
 
 package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.AuctionApplication
-import com.balch.auctionbrowser.BuildConfig
-import com.balch.auctionbrowser.auction.AuctionModule
-import com.balch.auctionbrowser.auction.model.AuctionData
-import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
-import com.balch.auctionbrowser.auction.model.EBayApi
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import android.content.Context
+import com.balch.auctionbrowser.R
 import dagger.Module
 import dagger.Provides
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module(includes = arrayOf(AuctionModule::class))
-class NetworkModule {
-
-    companion object {
-        private const val EBAY_URL = "ebay_url"
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesOkHttpInterceptors(): MutableList<Interceptor> {
-
-        val interceptors = mutableListOf<Interceptor>()
-        if (BuildConfig.DEBUG) {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            interceptors.add(interceptor)
-        }
-        return interceptors
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesGson(): Gson {
-        return GsonBuilder()
-                .registerTypeAdapter(AuctionData::class.java, AuctionDataTypeAdapter())
-                .create()
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesOkHttpClient(interceptors: MutableList<Interceptor>): OkHttpClient {
-        val builder = OkHttpClient.Builder()
-        interceptors.forEach { builder.addInterceptor(it) }
-        return builder.build()
-    }
-
+@Module
+open class NetworkModule : BaseNetworkModule() {
 
     @Provides
     @Singleton
     @Named(EBAY_URL)
-    internal fun providesEbayApiUrl(application: AuctionApplication): String {
-        return application.getEbayUrl()
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesEbayApi(@Named(EBAY_URL) baseUrl: String,
-                                 okHttpClient: OkHttpClient,
-                                 gson: Gson): EBayApi {
-        return getRetrofitService(baseUrl, okHttpClient, gson).create(EBayApi::class.java)
-    }
-
-    private fun getRetrofitService(baseUrl: String,
-                                   okHttpClient: OkHttpClient,
-                                   gson: Gson): Retrofit {
-
-        return Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(okHttpClient)
-                .build()
+    internal fun providesEbayApiUrl(@Named(BaseApplicationModule.APP_CONTEXT) context: Context): String {
+        return context.getString(R.string.url_ebay_api)
     }
 
 }

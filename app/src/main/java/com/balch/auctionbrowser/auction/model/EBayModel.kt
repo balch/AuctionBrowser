@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.auction.model
 
-import com.balch.auctionbrowser.dagger.ApplicationModule
+import com.balch.auctionbrowser.dagger.BaseApplicationModule
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Named
@@ -33,7 +33,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class EBayModel
-@Inject constructor(@Named(ApplicationModule.EBAY_APP_ID) private val eBayApiKey: String,
+@Inject constructor(@Named(BaseApplicationModule.EBAY_APP_ID) private val eBayApiKey: String,
                     private val ebayApi: EBayApi) {
 
     enum class SortColumn constructor(internal val sortTerm: String) {

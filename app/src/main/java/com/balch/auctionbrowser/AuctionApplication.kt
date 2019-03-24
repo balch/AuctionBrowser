@@ -50,10 +50,6 @@ open class AuctionApplication : DaggerApplication() {
         JodaTimeAndroid.init(this)
     }
 
-    open fun getEbayUrl(): String {
-        return getString(R.string.url_ebay_api)
-    }
-
     open fun setStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()

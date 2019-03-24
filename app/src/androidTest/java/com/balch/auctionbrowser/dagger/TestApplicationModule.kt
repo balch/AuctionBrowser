@@ -16,24 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
 package com.balch.auctionbrowser.dagger
 
 import android.app.Application
-import com.balch.auctionbrowser.AuctionApplication
+import com.balch.auctionbrowser.TestAuctionApplication
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule : BaseApplicationModule () {
+class TestApplicationModule : BaseApplicationModule() {
 
     @Provides
     @Singleton
-    internal fun providesApplicationContext(app: AuctionApplication): Application {
+    internal fun providesApplicationContext(app: TestAuctionApplication): Application {
         return app
     }
 

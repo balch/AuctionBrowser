@@ -16,25 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
 package com.balch.auctionbrowser.dagger
 
-import android.app.Application
-import com.balch.auctionbrowser.AuctionApplication
+import com.balch.auctionbrowser.TestAuctionApplication
 import dagger.Module
 import dagger.Provides
+import okhttp3.mockwebserver.MockWebServer
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule : BaseApplicationModule () {
+open class TestNetworkModule : BaseNetworkModule() {
+
+    companion object {
+        private const val EBAY_URL = "ebay_url"
+    }
 
     @Provides
     @Singleton
-    internal fun providesApplicationContext(app: AuctionApplication): Application {
-        return app
+    internal fun providesMockWebServer(app: TestAuctionApplication): MockWebServer {
+        app.mockServer.start()
+        return app.mockServer
+    }
+
+    @Provides
+    @Singleton
+    @Named(EBAY_URL)
+    internal fun providesEbayApiUrl(mockWebServer: MockWebServer): String {
+        return mockWebServer.url("").toString()
     }
 
 }

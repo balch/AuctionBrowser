@@ -30,10 +30,10 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [AndroidSupportInjectionModule::class,
+    NetworkModule::class,
     ActivityBindingModule::class,
     ApplicationModule::class])
 interface ApplicationComponent : AndroidInjector<AuctionApplication> {
-
 
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<AuctionApplication>()
