@@ -51,9 +51,9 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.squareup.rx2.idler.Rx2Idler
-import io.reactivex.plugins.RxJavaPlugins
-import org.junit.Before
+import androidx.test.platform.app.InstrumentationRegistry
+import com.balch.auctionbrowser.rule.JsonLoaderRule
+import okhttp3.mockwebserver.MockResponse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,16 +61,23 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
 
+    val app by lazy { InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestAuctionApplication }
+
     @get:Rule
     var activityScenarioRule = activityScenarioRule<MainActivity>()
 
-    @Before
-    fun setup() {
-        RxJavaPlugins.setInitIoSchedulerHandler(
-                Rx2Idler.create("RxJava 2.x Computation Scheduler"));    }
+    @get:Rule
+    var ebayJson = JsonLoaderRule("json/ebay_rc_response.json")
 
     @Test
     fun testAuctionSearch() {
+
+        val response = MockResponse()
+                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .addHeader("Cache-Control", "no-cache")
+                .setBody(ebayJson.json)
+
+        app.mockServer.enqueue(response)
 
         // preform Auction Search for RC
         onView(withId(R.id.menu_search)).perform(click())

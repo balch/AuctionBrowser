@@ -22,9 +22,8 @@
 
 package com.balch.auctionbrowser.dagger
 
-import android.content.Context
+import com.balch.auctionbrowser.AuctionApplication
 import com.balch.auctionbrowser.BuildConfig
-import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.AuctionModule
 import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
@@ -82,8 +81,8 @@ class NetworkModule {
     @Provides
     @Singleton
     @Named(EBAY_URL)
-    internal fun providesEbayApiUrl(@Named(ApplicationModule.APP_CONTEXT) context: Context): String {
-        return context.getString(R.string.url_ebay_api)
+    internal fun providesEbayApiUrl(application: AuctionApplication): String {
+        return application.getEbayUrl()
     }
 
     @Provides

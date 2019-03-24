@@ -20,29 +20,27 @@
  *
  */
 
-package com.balch.auctionbrowser
+package com.balch.auctionbrowser.rule
 
-import okhttp3.mockwebserver.MockWebServer
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.rules.MethodRule
+import org.junit.runners.model.FrameworkMethod
+import org.junit.runners.model.Statement
 
 
-open class TestAuctionApplication : AuctionApplication() {
-    val mockServer = MockWebServer()
+class JsonLoaderRule(val jsonFile : String) : MethodRule {
 
-    override fun onCreate() {
-        super.onCreate()
-        mockServer.start()
-    }
+    lateinit var json: String
 
-    override fun onTerminate() {
-        super.onTerminate()
-        mockServer.shutdown()
-    }
-
-    override fun getEbayUrl(): String {
-        return mockServer.url("").toString()
-    }
-
-    override fun setStrictMode() {
-        // no-op
+    override fun apply(base: Statement, method: FrameworkMethod?, target: Any?): Statement {
+        return object : Statement() {
+            @Throws(Throwable::class)
+            override fun evaluate() {
+                val ctx = InstrumentationRegistry.getInstrumentation().context
+                val stream = ctx.assets.open(jsonFile)
+                json =  String(stream.readBytes())
+                base.evaluate()
+            }
+        }
     }
 }
