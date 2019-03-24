@@ -12,7 +12,7 @@ buildscript {
     ext.android_arch= '2.0.0'
     ext.room= '2.0.0'
     ext.gson="2.8.0"
-    ext.okhttp_logging_xcepter="3.8.0"
+    ext.okhttp_logging_xcepter="3.12.1"
     ext.retrofit="2.3.0"
     ext.rxjava2="2.1.0"
     ext.rxandroid="2.1.0"
@@ -33,6 +33,7 @@ buildscript {
     ext.runnerVersion = "1.1.1"
     ext.rulesVersion = "1.1.1"
     ext.rxidler = "0.9.1"
+    ext.mockwebserver = "3.12.1"
 
     repositories {
         jcenter()

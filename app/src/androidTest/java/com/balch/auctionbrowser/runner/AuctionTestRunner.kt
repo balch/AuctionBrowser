@@ -16,26 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
-package com.balch.auctionbrowser.dagger
+package com.balch.auctionbrowser.runner
 
-import com.balch.auctionbrowser.AuctionApplication
-import dagger.Component
-import dagger.android.AndroidInjector
-import dagger.android.support.AndroidSupportInjectionModule
-import javax.inject.Singleton
-
-@Singleton
-@Component(modules = [AndroidSupportInjectionModule::class,
-    ActivityBindingModule::class,
-    ApplicationModule::class])
-interface ApplicationComponent : AndroidInjector<AuctionApplication> {
+import android.app.Application
+import android.content.Context
+import androidx.test.runner.AndroidJUnitRunner
+import com.balch.auctionbrowser.TestAuctionApplication
+import kotlin.reflect.jvm.jvmName
 
 
-    @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<AuctionApplication>()
-
+class AuctionTestRunner : AndroidJUnitRunner() {
+    override fun newApplication(cl: ClassLoader?, className: String?,   context: Context?): Application {
+        return super.newApplication(cl, TestAuctionApplication::class.jvmName, context)
+    }
 }
