@@ -22,11 +22,18 @@
 
 package com.balch.auctionbrowser
 
+import com.balch.auctionbrowser.dagger.DaggerTestApplicationComponent
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 import okhttp3.mockwebserver.MockWebServer
 
 
 open class TestAuctionApplication : AuctionApplication() {
     val mockServer = MockWebServer()
+
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerTestApplicationComponent.builder().create(this)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -36,10 +43,6 @@ open class TestAuctionApplication : AuctionApplication() {
     override fun onTerminate() {
         super.onTerminate()
         mockServer.shutdown()
-    }
-
-    override fun getEbayUrl(): String {
-        return mockServer.url("").toString()
     }
 
     override fun setStrictMode() {

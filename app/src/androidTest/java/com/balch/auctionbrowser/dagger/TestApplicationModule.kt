@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
@@ -27,6 +27,7 @@ import androidx.room.Room
 import com.balch.auctionbrowser.AuctionApplication
 import com.balch.auctionbrowser.AuctionDatabase
 import com.balch.auctionbrowser.R
+import com.balch.auctionbrowser.TestAuctionApplication
 import com.balch.auctionbrowser.note.NoteDao
 import dagger.Module
 import dagger.Provides
@@ -34,7 +35,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule {
+class TestApplicationModule {
 
     companion object {
         const val EBAY_APP_ID = "ebayAppId"
@@ -44,7 +45,7 @@ class ApplicationModule {
     @Provides
     @Singleton
     @Named(APP_CONTEXT)
-    internal fun providesApplicationContext(app: AuctionApplication): Context {
+    internal fun providesApplicationContext(app: TestAuctionApplication): Context {
         return app
     }
 

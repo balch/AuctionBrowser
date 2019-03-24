@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
 package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.AuctionApplication
+import com.balch.auctionbrowser.TestAuctionApplication
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
@@ -30,12 +30,12 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [AndroidSupportInjectionModule::class,
-    NetworkModule::class,
+    TestNetworkModule::class,
     ActivityBindingModule::class,
-    ApplicationModule::class])
-interface ApplicationComponent : AndroidInjector<AuctionApplication> {
+    TestApplicationModule::class])
+interface TestApplicationComponent : AndroidInjector<TestAuctionApplication> {
 
     @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<AuctionApplication>()
+    abstract class Builder : AndroidInjector.Builder<TestAuctionApplication>()
 
 }

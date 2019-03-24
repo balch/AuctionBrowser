@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
@@ -42,7 +42,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-open class NetworkModule {
+open class TestNetworkModule {
 
     companion object {
         private const val EBAY_URL = "ebay_url"

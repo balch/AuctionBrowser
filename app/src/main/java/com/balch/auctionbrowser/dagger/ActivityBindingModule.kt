@@ -27,11 +27,11 @@ import com.balch.auctionbrowser.auction.AuctionModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
-@Module(includes = arrayOf(NetworkModule::class))
+@Module
 abstract class ActivityBindingModule {
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = arrayOf(AuctionModule::class))
+    @ContributesAndroidInjector(modules = [AuctionModule::class])
     internal abstract fun mainActivity(): MainActivity
 
 }
