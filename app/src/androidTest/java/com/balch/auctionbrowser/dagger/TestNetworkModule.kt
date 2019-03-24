@@ -22,27 +22,15 @@
 
 package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.BuildConfig
 import com.balch.auctionbrowser.TestAuctionApplication
-import com.balch.auctionbrowser.auction.model.AuctionData
-import com.balch.auctionbrowser.auction.model.AuctionDataTypeAdapter
-import com.balch.auctionbrowser.auction.model.EBayApi
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.mockwebserver.MockWebServer
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-open class TestNetworkModule {
+open class TestNetworkModule : BaseNetworkModule() {
 
     companion object {
         private const val EBAY_URL = "ebay_url"
@@ -57,59 +45,9 @@ open class TestNetworkModule {
 
     @Provides
     @Singleton
-    internal fun providesOkHttpInterceptors(): MutableList<Interceptor> {
-
-        val interceptors = mutableListOf<Interceptor>()
-        if (BuildConfig.DEBUG) {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            interceptors.add(interceptor)
-        }
-        return interceptors
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesGson(): Gson {
-        return GsonBuilder()
-                .registerTypeAdapter(AuctionData::class.java, AuctionDataTypeAdapter())
-                .create()
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesOkHttpClient(interceptors: MutableList<Interceptor>): OkHttpClient {
-        val builder = OkHttpClient.Builder()
-        interceptors.forEach { builder.addInterceptor(it) }
-        return builder.build()
-    }
-
-
-    @Provides
-    @Singleton
     @Named(EBAY_URL)
     internal fun providesEbayApiUrl(mockWebServer: MockWebServer): String {
         return mockWebServer.url("").toString()
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesEbayApi(@Named(EBAY_URL) baseUrl: String,
-                                 okHttpClient: OkHttpClient,
-                                 gson: Gson): EBayApi {
-        return getRetrofitService(baseUrl, okHttpClient, gson).create(EBayApi::class.java)
-    }
-
-    private fun getRetrofitService(baseUrl: String,
-                                   okHttpClient: OkHttpClient,
-                                   gson: Gson): Retrofit {
-
-        return Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(okHttpClient)
-                .build()
     }
 
 }

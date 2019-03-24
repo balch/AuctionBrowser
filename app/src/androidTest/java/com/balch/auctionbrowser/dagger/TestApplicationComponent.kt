@@ -22,7 +22,6 @@
 
 package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.MainActivityTest
 import com.balch.auctionbrowser.TestAuctionApplication
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -35,8 +34,6 @@ import javax.inject.Singleton
     ActivityBindingModule::class,
     TestApplicationModule::class])
 interface TestApplicationComponent : AndroidInjector<TestAuctionApplication> {
-
-    fun inject(test: MainActivityTest)
 
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<TestAuctionApplication>()
