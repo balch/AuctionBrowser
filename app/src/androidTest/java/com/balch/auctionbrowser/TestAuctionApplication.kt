@@ -16,26 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
-package com.balch.auctionbrowser.dagger
+package com.balch.auctionbrowser
 
-import com.balch.auctionbrowser.AuctionApplication
-import dagger.Component
-import dagger.android.AndroidInjector
-import dagger.android.support.AndroidSupportInjectionModule
-import javax.inject.Singleton
-
-@Singleton
-@Component(modules = [AndroidSupportInjectionModule::class,
-    ActivityBindingModule::class,
-    ApplicationModule::class])
-interface ApplicationComponent : AndroidInjector<AuctionApplication> {
+import okhttp3.mockwebserver.MockWebServer
 
 
-    @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<AuctionApplication>()
+open class TestAuctionApplication : AuctionApplication() {
+    val mockServer = MockWebServer()
 
+    override fun onCreate() {
+        super.onCreate()
+        mockServer.start()
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        mockServer.shutdown()
+    }
+
+    override fun getEbayUrl(): String {
+        return mockServer.url("").toString()
+    }
+
+    override fun setStrictMode() {
+        // no-op
+    }
 }

@@ -24,22 +24,21 @@ package com.balch.auctionbrowser
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
-import androidx.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.VisibleForTesting
-import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.FragmentManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LifecycleOwner
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
 import com.balch.auctionbrowser.auction.AuctionPresenter
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.PresenterActivity
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.ActivityBridge {
 

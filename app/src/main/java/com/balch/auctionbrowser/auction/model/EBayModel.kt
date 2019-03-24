@@ -45,7 +45,7 @@ class EBayModel
     fun getAuctions(keyword: String, start: Long,
                     count: Int, sortColumn: SortColumn): Single<AuctionData> {
         return if (keyword.isNotEmpty())
-            ebayApi.findItemsByKeywords(keyword, start + 1, count, sortColumn.sortTerm, eBayApiKey)
+            ebayApi.findItemsByKeywords(keyword, start, count, sortColumn.sortTerm, eBayApiKey)
         else Single.just(AuctionData())
     }
 }

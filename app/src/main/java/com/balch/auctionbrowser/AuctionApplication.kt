@@ -45,6 +45,16 @@ open class AuctionApplication : DaggerApplication() {
 
         Timber.plant(DebugTree())
 
+        setStrictMode()
+
+        JodaTimeAndroid.init(this)
+    }
+
+    open fun getEbayUrl(): String {
+        return getString(R.string.url_ebay_api)
+    }
+
+    open fun setStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -55,8 +65,5 @@ open class AuctionApplication : DaggerApplication() {
                     .penaltyLog()
                     .build())
         }
-
-        JodaTimeAndroid.init(this)
     }
-
 }

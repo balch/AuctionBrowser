@@ -22,10 +22,10 @@
 
 package com.balch.auctionbrowser.auction
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.annotation.VisibleForTesting
 import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
@@ -116,11 +116,11 @@ class AuctionViewModel(val auctionAdapter: AuctionAdapter,
                     totalPages = auctionData.totalPages.toLong()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(auctionDataLive::setValue,
+                .subscribe(auctionDataLive::setValue)
                         { throwable ->
                             Timber.e(throwable, "Error in .getAuctions()")
                             auctionDataLive.setValue(null)
-                        })
+                        }
     }
 
     private fun disposeGetAuctionDisposable() {
