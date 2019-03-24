@@ -35,7 +35,7 @@ open class NetworkModule : BaseNetworkModule() {
     @Provides
     @Singleton
     @Named(EBAY_URL)
-    internal fun providesEbayApiUrl(@Named(ApplicationModule.APP_CONTEXT) context: Context): String {
+    internal fun providesEbayApiUrl(@Named(BaseApplicationModule.APP_CONTEXT) context: Context): String {
         return context.getString(R.string.url_ebay_api)
     }
 

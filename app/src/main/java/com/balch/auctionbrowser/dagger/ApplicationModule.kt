@@ -22,49 +22,19 @@
 
 package com.balch.auctionbrowser.dagger
 
-import android.content.Context
-import androidx.room.Room
+import android.app.Application
 import com.balch.auctionbrowser.AuctionApplication
-import com.balch.auctionbrowser.AuctionDatabase
-import com.balch.auctionbrowser.R
-import com.balch.auctionbrowser.note.NoteDao
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule {
-
-    companion object {
-        const val EBAY_APP_ID = "ebayAppId"
-        const val APP_CONTEXT = "appContext"
-    }
+class ApplicationModule : BaseApplicationModule () {
 
     @Provides
     @Singleton
-    @Named(APP_CONTEXT)
-    internal fun providesApplicationContext(app: AuctionApplication): Context {
+    internal fun providesApplicationContext(app: AuctionApplication): Application {
         return app
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesAuctionDatabase(@Named(APP_CONTEXT) context: Context): AuctionDatabase {
-        return Room.databaseBuilder(context, AuctionDatabase::class.java, AuctionApplication.DATABASE_NAME).build()
-    }
-
-    @Singleton
-    @Provides
-    internal fun providesNoteDao(database: AuctionDatabase): NoteDao {
-        return database.noteDao()
-    }
-
-    @Provides
-    @Singleton
-    @Named(EBAY_APP_ID)
-    internal fun providesEbayAppId(@Named(APP_CONTEXT) context: Context): String {
-        return context.getString(R.string.ebay_app_id)
     }
 
 }
