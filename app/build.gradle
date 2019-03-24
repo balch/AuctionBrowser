@@ -13,6 +13,9 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.versionCode
         versionName rootProject.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -37,6 +40,16 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    testOptions {
+        animationsDisabled = true
+    }
+
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -86,6 +99,17 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$mockito"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.assertj:assertj-core:$assertj"
+
+    // Testing-only dependencies
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    androidTestImplementation "androidx.test:core:$coreVersion"
+    androidTestImplementation "androidx.test:core-ktx:$coreVersion"
+    androidTestImplementation "androidx.test.ext:junit:$extJUnitVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$extJUnitVersion"
+    androidTestImplementation "androidx.test:runner:$runnerVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso"
+    androidTestImplementation "com.squareup.rx.idler:rx2-idler:$rxidler"
 
 }
 repositories {
