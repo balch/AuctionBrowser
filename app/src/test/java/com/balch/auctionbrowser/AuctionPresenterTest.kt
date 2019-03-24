@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser
 
-import android.arch.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionPresenter
 import com.balch.auctionbrowser.auction.AuctionView

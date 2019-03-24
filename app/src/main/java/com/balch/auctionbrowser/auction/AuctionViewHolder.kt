@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.auction
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -40,7 +40,7 @@ import kotlinx.android.synthetic.main.item_auction_list.view.*
 
 class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: PublishSubject<Auction>,
                         private val clickNoteObservable: PublishSubject<Auction>)
-    : RecyclerView.ViewHolder(parent.inflate(R.layout.item_auction_list)) {
+    : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_auction_list)) {
 
     // private view layouts
     private val itemImageView: ImageView by lazy { itemView.list_item_auction_img }

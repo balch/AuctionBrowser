@@ -23,12 +23,12 @@
 package com.balch.auctionbrowser.auction
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.annotation.VisibleForTesting
-import android.support.v4.app.FragmentManager
+import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
+import androidx.fragment.app.FragmentManager
 import android.view.View
 import android.widget.SearchView
 import com.balch.auctionbrowser.R
@@ -54,7 +54,7 @@ class AuctionPresenter
                     private val activityBridge: ActivityBridge) : BasePresenter() {
 
     interface ActivityBridge {
-        val fragmentManager: FragmentManager
+        val fragmentManager: androidx.fragment.app.FragmentManager
         val lifecycleOwner: LifecycleOwner
         fun showSnackBar(view: View, @StringRes msg: Int)
     }

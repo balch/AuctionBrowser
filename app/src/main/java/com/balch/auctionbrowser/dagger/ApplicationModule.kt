@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.dagger
 
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import android.content.Context
 import com.balch.auctionbrowser.AuctionApplication
 import com.balch.auctionbrowser.AuctionDatabase

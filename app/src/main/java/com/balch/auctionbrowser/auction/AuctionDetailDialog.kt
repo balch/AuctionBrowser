@@ -26,8 +26,8 @@ import android.app.Dialog
 import android.content.DialogInterface.BUTTON_NEGATIVE
 import android.content.DialogInterface.BUTTON_POSITIVE
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.appcompat.app.AlertDialog
 import android.view.View
 import android.widget.EditText
 import com.balch.auctionbrowser.R.layout.dialog_auction_detai
@@ -41,7 +41,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_auction_detai.*
 
-class AuctionDetailDialog : DialogFragment() {
+class AuctionDetailDialog : androidx.fragment.app.DialogFragment() {
     companion object {
         private val ARG_NOTE = "ARG_NOTE"
         private val ARG_AUCTION = "ARG_AUCTION"

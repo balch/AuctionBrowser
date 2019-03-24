@@ -24,13 +24,13 @@ package com.balch.auctionbrowser
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
-import android.arch.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.VisibleForTesting
-import android.support.design.widget.Snackbar
-import android.support.v4.app.FragmentManager
+import androidx.annotation.VisibleForTesting
+import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.FragmentManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -119,7 +119,7 @@ class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.Act
         return handled || super.onOptionsItemSelected(item)
     }
 
-    override val fragmentManager: FragmentManager
+    override val fragmentManager: androidx.fragment.app.FragmentManager
         get() = supportFragmentManager
     override val lifecycleOwner: LifecycleOwner
         get() = this

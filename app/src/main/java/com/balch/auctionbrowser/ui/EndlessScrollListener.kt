@@ -22,14 +22,14 @@
 
 package com.balch.auctionbrowser.ui
 
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-class EndlessScrollListener(private val linearLayoutManager: LinearLayoutManager,
+class EndlessScrollListener(private val linearLayoutManager: androidx.recyclerview.widget.LinearLayoutManager,
                             private val triggerPosition: Int = 10) :
-        RecyclerView.OnScrollListener() {
+        androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
 
     val onLoadMore: Observable<Unit>
         get() = loadMoreSubject
@@ -49,7 +49,7 @@ class EndlessScrollListener(private val linearLayoutManager: LinearLayoutManager
         loading = false
     }
 
-    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+    override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
         if (hasMore && !loading) {

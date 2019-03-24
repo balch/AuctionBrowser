@@ -22,10 +22,10 @@
 
 package com.balch.auctionbrowser.ext
 
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.view.View
 
-fun DialogFragment.inflate(layoutId: Int): View {
+fun androidx.fragment.app.DialogFragment.inflate(layoutId: Int): View {
     return activity!!.layoutInflater.inflate(layoutId, null)
 }
 

@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.auction
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.balch.auctionbrowser.MainActivity
 import com.balch.auctionbrowser.dagger.ActivityScope
 import dagger.Module

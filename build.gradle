@@ -8,22 +8,23 @@ buildscript {
     ext.versionName="1.1"
 
     ext.kotlin_version = '1.3.21'
-    ext.android_arch="1.1.1"
-    ext.room="1.1.1"
+    ext.android_arch= '2.0.0'
+    ext.room= '2.0.0'
     ext.gson="2.8.0"
     ext.okhttp_logging_xcepter="3.8.0"
     ext.retrofit="2.3.0"
     ext.rxjava2="2.1.0"
     ext.rxandroid="2.1.0"
-    ext.support="28.0.0"
+    ext.androidx_core= '1.0.0'
+    ext.androidx_appcompat= '1.0.2'
     ext.glide="4.8.0"
-    ext.joda="2.9.9"
+    ext.joda="2.10.1.1"
     ext.support_test="0.5"
     ext.junit="4.12"
     ext.mockito="2.7.22"
     ext.timber="4.7.1"
     ext.assertj="3.5.2"
-    ext.contraint_layout="1.1.3"
+    ext.contraint_layout= '1.1.3'
     ext.dagger2="2.18"
 
     repositories {
@@ -45,6 +46,7 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url 'https://maven.google.com' }
+        google()
     }
 }
 

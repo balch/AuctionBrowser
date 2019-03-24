@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.auction
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.dagger.ActivityScope
@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 @ActivityScope
 class AuctionAdapter @Inject constructor() :
-        RecyclerView.Adapter<AuctionViewHolder>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<AuctionViewHolder>() {
 
     // public properties
     val onClickAuction: Observable<Auction>

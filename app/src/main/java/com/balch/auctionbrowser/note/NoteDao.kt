@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser.note
 
-import android.arch.persistence.room.*
+import androidx.room.*
 
 @Dao
 interface NoteDao {

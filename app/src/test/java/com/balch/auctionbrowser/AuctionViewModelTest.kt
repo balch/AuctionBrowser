@@ -22,7 +22,7 @@
 
 package com.balch.auctionbrowser
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionViewModel
 import com.balch.auctionbrowser.auction.model.Auction

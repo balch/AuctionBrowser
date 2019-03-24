@@ -22,8 +22,8 @@
 
 package com.balch.auctionbrowser
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NoteDao
 

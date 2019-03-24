@@ -22,9 +22,9 @@
 
 package com.balch.auctionbrowser.note
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
 @Entity
 data class Note @Ignore constructor(@PrimaryKey var itemId: Long = 0, var noteText: String = "") {

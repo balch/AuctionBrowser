@@ -23,8 +23,8 @@
 package com.balch.auctionbrowser.auction
 
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -52,7 +52,7 @@ class AuctionView : FrameLayout {
 
     // private view layouts
     private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
-    private val recyclerView: RecyclerView by lazy { action_view_recycler }
+    private val recyclerView: androidx.recyclerview.widget.RecyclerView by lazy { action_view_recycler }
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -71,7 +71,7 @@ class AuctionView : FrameLayout {
 
         id = View.generateViewId()
 
-        val layoutManager = LinearLayoutManager(context)
+        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         recyclerOnScrollListener = EndlessScrollListener(layoutManager)
 
         recyclerView.layoutManager = layoutManager

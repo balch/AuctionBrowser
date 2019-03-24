@@ -44,7 +44,7 @@
 
 package com.balch.auctionbrowser.test
 
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import org.junit.After
 
 open class BaseTest {
