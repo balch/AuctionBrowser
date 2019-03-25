@@ -46,28 +46,26 @@ package com.balch.auctionbrowser
 
 import android.widget.EditText
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.pressImeActionButton
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.balch.auctionbrowser.rule.JsonLoaderRule
 import okhttp3.mockwebserver.MockResponse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MainActivityTest {
+class MainActivityTest : BaseTest() {
 
     val app by lazy { InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestAuctionApplication }
 
     @get:Rule
     var activityScenarioRule = activityScenarioRule<MainActivity>()
-
-    @get:Rule
-    var ebayJson = JsonLoaderRule("json/ebay_rc_response.json")
 
     @Test
     fun testAuctionSearch() {
@@ -75,22 +73,18 @@ class MainActivityTest {
         val response = MockResponse()
                 .addHeader("Content-Type", "application/json; charset=utf-8")
                 .addHeader("Cache-Control", "no-cache")
-                .setBody(ebayJson.json)
+                .setBody(getJson("json/ebay_rc_response.json"))
 
         app.mockServer.enqueue(response)
 
         // preform Auction Search for RC
-        onView(withId(R.id.menu_search)).perform(click())
-
         onView(isAssignableFrom(EditText::class.java))
                 .perform(typeText("RC"),
                         pressImeActionButton())
 
-
         // Check that the text was changed.
         onView(isAssignableFrom(EditText::class.java))
             .check(matches(withText("RC")))
-
     }
 
 }

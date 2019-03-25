@@ -20,27 +20,16 @@
  *
  */
 
-package com.balch.auctionbrowser.rule
+package com.balch.auctionbrowser
 
 import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.rules.MethodRule
-import org.junit.runners.model.FrameworkMethod
-import org.junit.runners.model.Statement
 
+open class BaseTest {
 
-class JsonLoaderRule(val jsonFile : String) : MethodRule {
-
-    lateinit var json: String
-
-    override fun apply(base: Statement, method: FrameworkMethod?, target: Any?): Statement {
-        return object : Statement() {
-            @Throws(Throwable::class)
-            override fun evaluate() {
-                val ctx = InstrumentationRegistry.getInstrumentation().context
-                val stream = ctx.assets.open(jsonFile)
-                json =  String(stream.readBytes())
-                base.evaluate()
-            }
-        }
+    fun getJson(jsonFile : String) : String {
+        val ctx = InstrumentationRegistry.getInstrumentation().context
+        ctx.assets.open(jsonFile).use {
+            s -> return String(s.readBytes()) }
     }
+
 }
