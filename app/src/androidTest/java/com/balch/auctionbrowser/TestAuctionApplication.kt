@@ -22,20 +22,25 @@
 
 package com.balch.auctionbrowser
 
+import android.os.StrictMode
 import com.balch.auctionbrowser.dagger.DaggerTestApplicationComponent
+import com.balch.auctionbrowser.dagger.TestApplicationComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
-import okhttp3.mockwebserver.MockWebServer
 
 
 open class TestAuctionApplication : AuctionApplication() {
-    val mockServer = MockWebServer()
+
+    lateinit var component: TestApplicationComponent
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerTestApplicationComponent.builder().create(this)
+        component = DaggerTestApplicationComponent.builder().create(this) as TestApplicationComponent
+        return component
     }
 
     override fun setStrictMode() {
-        // no-op
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
+                .permitAll()
+                .build())
     }
 }

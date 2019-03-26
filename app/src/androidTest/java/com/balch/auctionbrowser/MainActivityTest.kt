@@ -55,17 +55,28 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest : BaseTest() {
 
     val app by lazy { InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestAuctionApplication }
 
+    @Inject
+    lateinit var mockWebServer: MockWebServer
+
     @get:Rule
     var activityScenarioRule = activityScenarioRule<MainActivity>()
+
+    @Before
+    fun setup() {
+        app.component.inject(this)
+    }
 
     @Test
     fun testAuctionSearch() {
@@ -75,7 +86,7 @@ class MainActivityTest : BaseTest() {
                 .addHeader("Cache-Control", "no-cache")
                 .setBody(getJson("json/ebay_rc_response.json"))
 
-        app.mockServer.enqueue(response)
+        mockWebServer.enqueue(response)
 
         // preform Auction Search for RC
         onView(isAssignableFrom(EditText::class.java))

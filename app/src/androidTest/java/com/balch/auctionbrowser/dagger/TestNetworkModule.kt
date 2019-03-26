@@ -39,8 +39,9 @@ open class TestNetworkModule : BaseNetworkModule() {
     @Provides
     @Singleton
     internal fun providesMockWebServer(app: TestAuctionApplication): MockWebServer {
-        app.mockServer.start()
-        return app.mockServer
+        val mockWebServer = MockWebServer()
+        mockWebServer.start()
+        return mockWebServer
     }
 
     @Provides
