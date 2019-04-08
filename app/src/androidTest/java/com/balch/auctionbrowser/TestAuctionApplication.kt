@@ -30,7 +30,9 @@ import dagger.android.support.DaggerApplication
 open class TestAuctionApplication : AuctionApplication() {
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
-            (DaggerTestApplicationComponent.builder().create(this))
+            (DaggerTestApplicationComponent.builder()
+                    .application(this)
+                    .build())
                     .also { component = it }
 
     override fun setStrictMode() {
