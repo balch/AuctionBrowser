@@ -25,6 +25,7 @@ package com.balch.auctionbrowser.auction.model
 import com.balch.auctionbrowser.types.Money
 import com.google.gson.*
 import org.joda.time.DateTime
+import java.io.InvalidObjectException
 import java.lang.reflect.Type
 import java.text.ParseException
 import java.util.*
@@ -39,21 +40,16 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
         val items = json.asJsonObject
                 .getAsJsonArray("findItemsByKeywordsResponse").get(0)
                 .asJsonObject
-        val success = validateResponse(items)
+        validateResponse(items)
 
-        return if (success)
-            AuctionData().apply {
+        return AuctionData(parseAuctions(items)).apply {
                 totalPages = getTotalPages(items)
-                auctions = parseAuctions(items)
-            }
-        else
-            AuctionData().apply {
-                hasError = true
             }
     }
 
-    private fun validateResponse(json: JsonObject?): Boolean {
-        return json != null && json.getAsJsonArray("ack").get(0).asString == "Success"
+    private fun validateResponse(json: JsonObject?) {
+        val isValied = json != null && json.getAsJsonArray("ack").get(0).asString == "Success"
+        if (!isValied) throw InvalidObjectException("Bad data: ")
     }
 
     private fun getTotalPages(json: JsonObject): Int {
@@ -95,8 +91,8 @@ class AuctionDataTypeAdapter : JsonDeserializer<AuctionData> {
             }
         }
 
-        var isAuction: Boolean = false
-        var isButItNow: Boolean = false
+        var isAuction = false
+        var isButItNow = false
         var startTime = DateTime()
         var endTime = DateTime()
         val listingInfoWrapper = item.getAsJsonArray("listingInfo")

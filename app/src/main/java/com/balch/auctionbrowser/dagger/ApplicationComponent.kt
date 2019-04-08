@@ -23,6 +23,7 @@
 package com.balch.auctionbrowser.dagger
 
 import com.balch.auctionbrowser.AuctionApplication
+import com.balch.auctionbrowser.auction.AuctionDataSource
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
@@ -34,6 +35,8 @@ import javax.inject.Singleton
     ActivityBindingModule::class,
     ApplicationModule::class])
 interface ApplicationComponent : AndroidInjector<AuctionApplication> {
+
+    fun inject(auctionDataSource: AuctionDataSource)
 
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<AuctionApplication>()

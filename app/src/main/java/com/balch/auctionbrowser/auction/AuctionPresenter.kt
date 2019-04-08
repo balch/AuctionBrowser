@@ -23,19 +23,17 @@
 package com.balch.auctionbrowser.auction
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import androidx.annotation.StringRes
+import android.widget.SearchView
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentManager
-import android.view.View
-import android.widget.SearchView
-import com.balch.auctionbrowser.R
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.AuctionData
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.BasePresenter
+import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
 import com.balch.auctionbrowser.note.Note
 import io.reactivex.Single
@@ -51,13 +49,9 @@ import javax.inject.Inject
 class AuctionPresenter
 @Inject constructor(override val view: AuctionView,
                     private val auctionViewModel: AuctionViewModel,
-                    private val activityBridge: ActivityBridge) : BasePresenter() {
-
-    interface ActivityBridge {
-        val fragmentManager: androidx.fragment.app.FragmentManager
-        val lifecycleOwner: LifecycleOwner
-        fun showSnackBar(view: View, @StringRes msg: Int)
-    }
+                    private val fragmentManager: FragmentManager,
+                    private val lifecycleOwner: LifecycleOwner,
+                    private val auctionAdapter: AuctionAdapter) : BasePresenter() {
 
     var searchView: SearchView? = null
         set(value) {
@@ -65,26 +59,24 @@ class AuctionPresenter
             searchView!!.setQuery(auctionViewModel.searchText, false)
         }
 
-    private val lifecycleOwner: LifecycleOwner
-        get() = activityBridge.lifecycleOwner
-
-    private val auctionAdapter: AuctionAdapter
-        get() = auctionViewModel.auctionAdapter
-
     private val disposables = CompositeDisposable()
     private var disposableSaveNote: Disposable? = null
     private var disposableClearNote: Disposable? = null
 
     @SuppressLint("VisibleForTests")
     override fun initialize(savedInstanceState: Bundle?) {
-        auctionViewModel.auctionData.observe(lifecycleOwner, Observer<AuctionData>(this::showAuctions))
 
         view.setAuctionAdapter(auctionAdapter)
 
+        auctionViewModel.auctionData.observe(lifecycleOwner, Observer<PagedList<Auction>> {
+            auctionAdapter.submitList(it)
+        })
+
+        auctionViewModel.networkState.observe(lifecycleOwner, Observer<NetworkState> {
+            view.showBusy = it == NetworkState.LOADING
+        })
+
         disposables.addAll(
-                view.onLoadMore
-                        .subscribe({ onLoadMorePages() },
-                                { throwable -> Timber.e(throwable, "onLoadMorePages error") }),
                 auctionAdapter.onClickAuction
                         .subscribe({ auction -> showDetail(auction) },
                                 { throwable -> Timber.e(throwable, "onClickAuction error") }),
@@ -97,32 +89,22 @@ class AuctionPresenter
     fun doSearch(keyword: String) {
         searchView?.clearFocus()
 
-        view.showBusy = true
-        view.clearAuctions()
-        auctionViewModel.loadAuctions(keyword)
-    }
-
-    @VisibleForTesting
-    fun onLoadMorePages() {
-        view.showBusy = true
-        auctionViewModel.loadAuctionsNextPage()
+        auctionViewModel.loadAuctions(keyword, auctionViewModel.sortColumn)
     }
 
     internal fun sortAuctions(sortColumn: EBayModel.SortColumn) {
-        view.showBusy = true
-        view.clearAuctions()
-        auctionViewModel.loadAuctions(sortColumn = sortColumn)
+        auctionViewModel.loadAuctions(auctionViewModel.searchText, sortColumn)
     }
 
     @SuppressLint("VisibleForTests")
     private fun showDetail(auction: Auction) {
-        val note = auctionAdapter.getNote(auction)
+        val note = auction.note
 
         val dialog = AuctionDetailDialog.newInstance(auction, note)
 
         disposableClearNote?.dispose()
         disposableClearNote = dialog.onClearNote
-                .subscribe({ _ -> clearNote(auction, note) },
+                .subscribe({ clearNote(auction, note) },
                         { throwable -> Timber.e(throwable, "clearNote error") })
 
         disposableSaveNote?.dispose()
@@ -130,7 +112,7 @@ class AuctionPresenter
                 .subscribe({ text -> saveNote(auction, note, text) },
                         { throwable -> Timber.e(throwable, "saveNote error") })
 
-        dialog.show(activityBridge.fragmentManager, "AuctionDetailDialog")
+        dialog.show(fragmentManager, "AuctionDetailDialog")
     }
 
     @VisibleForTesting
@@ -139,15 +121,16 @@ class AuctionPresenter
             disposables.add(
                     Single.just(Note(auction.itemId, text))
                             .subscribeOn(Schedulers.io())
-                            .doOnSuccess { note1 -> auctionViewModel.insertNote(note1) }
+                            .doOnSuccess { note1 -> auctionViewModel.insertNote(note1)}
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ note1 -> auctionAdapter.addNote(auction, note1) },
+                            .subscribe({ note1 -> auction.note = note1
+                                        auctionAdapter.notifyDataSetChanged()},
                                     { throwable -> Timber.e(throwable, "insertNote error") })
             )
         } else {
             note.noteText = text
             disposables.add(
-                    CompletableFromAction({ auctionViewModel.updateNote(note) })
+                    CompletableFromAction { auctionViewModel.updateNote(note) }
                             .subscribeOn(Schedulers.io())
                             .subscribe({ /* no-op */ },
                                     { throwable -> Timber.e(throwable, "updateNote error") })
@@ -155,29 +138,15 @@ class AuctionPresenter
         }
     }
 
-    @VisibleForTesting
-    fun showAuctions(auctionData: AuctionData?) {
-        view.showBusy = false
-
-        if (auctionData?.hasError == false) {
-            auctionAdapter.addAuctions(auctionData.auctions, auctionData.notes)
-        } else {
-            if (searchView?.query?.isNotEmpty() != false) {
-                activityBridge.showSnackBar(view, R.string.error_auction_get)
-            }
-        }
-
-        view.doneLoading(auctionViewModel.hasMoreAuctionPages)
-
-    }
 
     fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
             disposables.add(
-                    CompletableFromAction({ auctionViewModel.deleteNote(note) })
+                    CompletableFromAction { auctionViewModel.deleteNote(note) }
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ auctionAdapter.clearNote(auction) },
+                            .subscribe({ auction.note = null
+                                         auctionAdapter.notifyDataSetChanged()},
                                     { throwable -> Timber.e(throwable, "deleteNote error") })
             )
         }
@@ -188,8 +157,6 @@ class AuctionPresenter
         disposableSaveNote?.dispose()
         disposableClearNote?.dispose()
         disposables.dispose()
-
-        auctionViewModel.auctionData.removeObservers(lifecycleOwner)
 
         view.cleanup()
     }

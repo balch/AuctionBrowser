@@ -22,18 +22,18 @@
 
 package com.balch.auctionbrowser.auction
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.dagger.ActivityScope
-import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 @ActivityScope
 class AuctionAdapter @Inject constructor() :
-        androidx.recyclerview.widget.RecyclerView.Adapter<AuctionViewHolder>() {
+        PagedListAdapter<Auction, AuctionViewHolder>(diffCallback) {
 
     // public properties
     val onClickAuction: Observable<Auction>
@@ -46,47 +46,23 @@ class AuctionAdapter @Inject constructor() :
     private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
     private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
 
-    // adapter auction data
-    private val auctions = mutableListOf<Auction>()
-    val notes = mutableMapOf<Long, Note>()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
         return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
     }
 
     override fun onBindViewHolder(holder: AuctionViewHolder, position: Int) {
-        val auction = auctions[position]
-        holder.bind(auction, notes[auction.itemId])
+        val auction = getItem(position)!!
+        holder.bind(auction)
     }
 
-    override fun getItemCount(): Int {
-        return auctions.size
-    }
+    companion object {
+        private val diffCallback = object : DiffUtil.ItemCallback<Auction>() {
+            override fun areItemsTheSame(oldItem: Auction, newItem: Auction): Boolean =
+                    oldItem.itemId == newItem.itemId
 
-    fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
-        this.auctions.addAll(auctions)
-        this.notes.putAll(notes)
-        notifyDataSetChanged()
-    }
-
-    fun clearAuctions() {
-        auctions.clear()
-        notes.clear()
-        notifyDataSetChanged()
-    }
-
-    fun getNote(auction: Auction): Note? {
-        return notes[auction.itemId]
-    }
-
-    fun clearNote(auction: Auction) {
-        notes.remove(auction.itemId)
-        notifyDataSetChanged()
-    }
-
-    fun addNote(auction: Auction, note: Note) {
-        notes.put(auction.itemId, note)
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: Auction, newItem: Auction): Boolean =
+                    oldItem == newItem
+        }
     }
 
 }

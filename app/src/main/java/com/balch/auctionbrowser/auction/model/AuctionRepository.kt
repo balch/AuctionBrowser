@@ -16,25 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
-package com.balch.auctionbrowser.dagger
+package com.balch.auctionbrowser.auction.model
 
-import android.app.Application
-import com.balch.auctionbrowser.AuctionApplication
-import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+import com.balch.auctionbrowser.base.Listing
 
-@Module
-class ApplicationModule : BaseApplicationModule () {
-
-    @Provides
-    @Singleton
-    internal fun providesApplicationContext(app: AuctionApplication): Application {
-        return app
-    }
-
+interface AuctionRepository {
+    fun searchAuctions(searchQuery: String, sortColumn: EBayModel.SortColumn, pageSize: Int): Listing<Auction>
 }

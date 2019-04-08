@@ -22,23 +22,24 @@
 
 package com.balch.auctionbrowser
 
-import android.os.StrictMode
-import com.balch.auctionbrowser.dagger.DaggerTestApplicationComponent
-import com.balch.auctionbrowser.dagger.TestApplicationComponent
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
+import android.content.Context
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
+import com.balch.auctionbrowser.auction.AuctionDataSource
+import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.auction.model.EBayModel
 
 
-open class TestAuctionApplication : AuctionApplication() {
+class AuctionDataSourceFactory(
+        private val context: Context,
+        private val searchQuery: String,
+        private val sortColumn: EBayModel.SortColumn) : DataSource.Factory<Long, Auction>() {
 
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        component = DaggerTestApplicationComponent.builder().create(this) as TestApplicationComponent
-        return component
-    }
+    val source = MutableLiveData<AuctionDataSource>()
 
-    override fun setStrictMode() {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
-                .permitAll()
-                .build())
+    override fun create(): DataSource<Long, Auction> {
+        val source = AuctionDataSource(context, searchQuery, sortColumn)
+        this.source.postValue(source)
+        return source
     }
 }

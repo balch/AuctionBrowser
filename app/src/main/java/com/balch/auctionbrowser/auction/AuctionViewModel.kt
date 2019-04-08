@@ -22,18 +22,15 @@
 
 package com.balch.auctionbrowser.auction
 
-import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations.map
+import androidx.lifecycle.Transformations.switchMap
 import androidx.lifecycle.ViewModel
-import com.balch.auctionbrowser.auction.model.AuctionData
+import com.balch.auctionbrowser.auction.model.AuctionRepository
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+
 
 /**
  * This ViewModel exposes a LiveData object which emits AuctionData objects from the
@@ -46,51 +43,31 @@ import timber.log.Timber
  * The class implements simple dependency injection using the `inject()` method to setter-inject
  * the Adapter and ModelApis.
  */
-class AuctionViewModel(val auctionAdapter: AuctionAdapter,
-                       private val auctionModel: EBayModel,
-                       private val notesModel: NotesModel,
-                       private val auctionDataLive: MutableLiveData<AuctionData> = MutableLiveData()) : ViewModel() {
+class AuctionViewModel(private val repository: AuctionRepository,
+                       private val notesModel: NotesModel) : ViewModel() {
 
-    private val AUCTION_FETCH_COUNT = 30
-
-    // public properties
-    val hasMoreAuctionPages
-        get() = hasMoreAuctionPages(currentPage)
-
-    val auctionData: LiveData<AuctionData>
-        get() = auctionDataLive
-
-    @set:VisibleForTesting
-    var searchText: String? = null
-
-    // paging vars
-    @VisibleForTesting
-    var currentPage: Int = 0
-    @VisibleForTesting
-    var totalPages: Long = 0
-    @VisibleForTesting
-    var sortColumn: EBayModel.SortColumn = EBayModel.SortColumn.BEST_MATCH
-
-
-    // disposables
-    private var disposableGetAuction: Disposable? = null
-
-    fun loadAuctions(searchText: String? = null, sortColumn: EBayModel.SortColumn? = null) {
-        this.totalPages = -1
-        this.currentPage = 1
-        this.searchText = searchText ?: this.searchText ?: ""
-        this.sortColumn = sortColumn ?: this.sortColumn
-        this.auctionAdapter.clearAuctions()
-        getAuctionsAsync()
+    companion object {
+        private const val AUCTION_FETCH_COUNT = 30
     }
 
-    fun loadAuctionsNextPage() {
-        this.currentPage++
-        getAuctionsAsync()
-    }
+    private class SearchData(val searchText: String,
+                             val sortColumn: EBayModel.SortColumn)
 
-    fun hasMoreAuctionPages(page: Int): Boolean {
-        return totalPages == -1L || page < totalPages
+    private val searchQuery = MutableLiveData<SearchData>()
+    private val auctionResult = map(searchQuery) {
+        repository.searchAuctions(it.searchText, it.sortColumn, AUCTION_FETCH_COUNT)
+    }
+    val auctionData = switchMap(auctionResult) { it.pagedList }!!
+    val networkState = switchMap(auctionResult) { it.networkState }!!
+
+    val searchText: String
+        get() = searchQuery.value?.searchText ?: ""
+
+    val sortColumn: EBayModel.SortColumn
+        get() = searchQuery.value?.sortColumn ?: EBayModel.SortColumn.BEST_MATCH
+
+    fun loadAuctions(searchText: String, sortColumn: EBayModel.SortColumn)  {
+        searchQuery.value = SearchData(searchText, sortColumn)
     }
 
     fun insertNote(note: Note) {
@@ -105,32 +82,6 @@ class AuctionViewModel(val auctionAdapter: AuctionAdapter,
         notesModel.delete(note)
     }
 
-    private fun getAuctionsAsync() {
-
-        disposeGetAuctionDisposable()
-        disposableGetAuction = auctionModel
-                .getAuctions(searchText!!, currentPage.toLong(), AUCTION_FETCH_COUNT, sortColumn)
-                .subscribeOn(Schedulers.io())
-                .doOnSuccess { auctionData ->
-                    auctionData.notes = notesModel.getNotes(auctionData.auctions)
-                    totalPages = auctionData.totalPages.toLong()
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(auctionDataLive::setValue)
-                        { throwable ->
-                            Timber.e(throwable, "Error in .getAuctions()")
-                            auctionDataLive.setValue(null)
-                        }
-    }
-
-    private fun disposeGetAuctionDisposable() {
-        disposableGetAuction?.dispose()
-        disposableGetAuction = null
-    }
-
-    override fun onCleared() {
-        disposeGetAuctionDisposable()
-    }
 
 }
 

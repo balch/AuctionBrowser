@@ -76,6 +76,9 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.recyclerview:recyclerview:$androidx_core"
     implementation "androidx.cardview:cardview:$androidx_core"
+    implementation "androidx.paging:paging-common:$androidx_paging"
+    implementation "androidx.paging:paging-runtime:$androidx_paging"
+    implementation "androidx.paging:paging-runtime-ktx:$androidx_paging"
     implementation "com.google.android.material:material:$androidx_core"
 
     implementation "androidx.constraintlayout:constraintlayout:$contraint_layout"
