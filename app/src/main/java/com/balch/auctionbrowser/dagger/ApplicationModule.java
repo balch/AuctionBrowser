@@ -26,14 +26,10 @@ import android.app.Application;
 
 import com.balch.auctionbrowser.AuctionApplication;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import javax.inject.Singleton;
 
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 @Module
 abstract class ApplicationModule extends BaseApplicationModule {
@@ -41,11 +37,5 @@ abstract class ApplicationModule extends BaseApplicationModule {
     @Binds
     @Singleton
     abstract Application providesApplicationContext(AuctionApplication app);
-
-    @Provides
-    @Singleton
-    static Executor providesNetworkExecutor() {
-        return Executors.newFixedThreadPool(5);
-    }
 
 }

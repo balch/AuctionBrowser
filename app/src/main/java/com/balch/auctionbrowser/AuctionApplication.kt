@@ -34,7 +34,7 @@ import timber.log.Timber.DebugTree
 
 open class AuctionApplication : DaggerApplication() {
 
-    lateinit var componet: ApplicationComponent
+    lateinit var component: ApplicationComponent
 
     companion object {
         const val DATABASE_NAME = "auction_browser.db"
@@ -42,7 +42,7 @@ open class AuctionApplication : DaggerApplication() {
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
         return (DaggerApplicationComponent.builder().create(this) as ApplicationComponent)
-                .also { componet = it }
+                .also { component = it }
     }
 
     override fun onCreate() {

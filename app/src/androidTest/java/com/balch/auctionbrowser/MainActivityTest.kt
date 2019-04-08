@@ -54,13 +54,13 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.balch.auctionbrowser.dagger.TestApplicationComponent
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.regex.Pattern.matches
 import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
@@ -76,7 +76,7 @@ class MainActivityTest : BaseTest() {
 
     @Before
     fun setup() {
-        app.component.inject(this)
+        (app.component as TestApplicationComponent).inject(this)
     }
 
     @Test

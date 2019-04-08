@@ -24,17 +24,14 @@ package com.balch.auctionbrowser
 
 import android.os.StrictMode
 import com.balch.auctionbrowser.dagger.DaggerTestApplicationComponent
-import com.balch.auctionbrowser.dagger.TestApplicationComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 
-
 open class TestAuctionApplication : AuctionApplication() {
 
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        component = DaggerTestApplicationComponent.builder().create(this) as TestApplicationComponent
-        return component
-    }
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
+            (DaggerTestApplicationComponent.builder().create(this))
+                    .also { component = it }
 
     override fun setStrictMode() {
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()

@@ -20,21 +20,20 @@
  *
  */
 
-package com.balch.auctionbrowser.dagger
+package com.balch.auctionbrowser.dagger;
 
-import android.app.Application
-import com.balch.auctionbrowser.TestAuctionApplication
-import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+import android.app.Application;
+
+import com.balch.auctionbrowser.TestAuctionApplication;
+
+import javax.inject.Singleton;
+
+import dagger.Binds;
+import dagger.Module;
 
 @Module
-class TestApplicationModule : BaseApplicationModule() {
-
-    @Provides
+abstract class TestApplicationModule extends BaseApplicationModule {
+    @Binds
     @Singleton
-    internal fun providesApplicationContext(app: TestAuctionApplication): Application {
-        return app
-    }
-
+    abstract Application bindsApplicationContext(TestAuctionApplication app);
 }

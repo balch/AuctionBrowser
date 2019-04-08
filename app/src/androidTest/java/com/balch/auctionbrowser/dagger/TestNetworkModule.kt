@@ -22,7 +22,6 @@
 
 package com.balch.auctionbrowser.dagger
 
-import com.balch.auctionbrowser.TestAuctionApplication
 import dagger.Module
 import dagger.Provides
 import okhttp3.mockwebserver.MockWebServer
@@ -38,7 +37,7 @@ open class TestNetworkModule : BaseNetworkModule() {
 
     @Provides
     @Singleton
-    internal fun providesMockWebServer(app: TestAuctionApplication): MockWebServer {
+    internal fun providesMockWebServer(): MockWebServer {
         val mockWebServer = MockWebServer()
         mockWebServer.start()
         return mockWebServer

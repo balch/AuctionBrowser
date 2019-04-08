@@ -28,4 +28,4 @@ import com.balch.auctionbrowser.dagger.ApplicationComponent
 
 
 inline val Context.component: ApplicationComponent
-    get() = (this.applicationContext as AuctionApplication).componet
+    get() = (this.applicationContext as AuctionApplication).component
