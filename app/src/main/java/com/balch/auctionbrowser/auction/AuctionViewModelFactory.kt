@@ -22,20 +22,24 @@
 
 package com.balch.auctionbrowser.auction
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.balch.auctionbrowser.auction.model.AuctionRepository
+import com.balch.auctionbrowser.dagger.BaseApplicationModule
 import com.balch.auctionbrowser.note.NotesModel
+import java.util.concurrent.Executor
 import javax.inject.Inject
+import javax.inject.Named
 
 @Suppress("UNCHECKED_CAST")
 internal class AuctionViewModelFactory
-@Inject constructor(private val auctionRepository: AuctionRepository,
+@Inject constructor(@Named(BaseApplicationModule.APP_CONTEXT) private val context: Context,
+                    private val networkExecutor: Executor,
                     private val notesModel: NotesModel) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuctionViewModel::class.java)) {
-            return AuctionViewModel(auctionRepository, notesModel) as T
+            return AuctionViewModel(context, notesModel, networkExecutor) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

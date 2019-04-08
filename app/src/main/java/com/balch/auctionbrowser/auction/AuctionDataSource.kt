@@ -87,16 +87,13 @@ class AuctionDataSource constructor(
                         val notes = notesModel.getNotes(auctionData.auctions)
                         auctionData.auctions.forEach{it.note = notes[it.itemId]}
                     }
-                    .doOnError { t: Throwable? ->
-                        Timber.e(t, "Error in .getAuctions()")
-                        networkState.postValue(NetworkState(NetworkState.Status.FAILED, "Error"))
-                    }
                     .blockingGet()
 
             callback(auctionData)
             networkState.postValue(NetworkState.LOADED)
         } catch (ex: Throwable) {
-            //no-op - error logged and handled in .doOnError
+            Timber.e(ex, "Error in .getAuctions()")
+            networkState.postValue(NetworkState(NetworkState.Status.FAILED, "Error"))
         }
     }
 

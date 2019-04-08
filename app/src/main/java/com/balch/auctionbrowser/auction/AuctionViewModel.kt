@@ -22,29 +22,33 @@
 
 package com.balch.auctionbrowser.auction
 
+import android.content.Context
+import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.Transformations.switchMap
 import androidx.lifecycle.ViewModel
-import com.balch.auctionbrowser.auction.model.AuctionRepository
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import com.balch.auctionbrowser.AuctionDataSourceFactory
+import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.base.Listing
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
+import java.util.concurrent.Executor
 
 
 /**
  * This ViewModel exposes a LiveData object which emits AuctionData objects from the
  * EBay API. An AuctionData object contains the current page of found Auctions.
  *
- * The ViewModel also stores state data that should survive a ConfigChange operation. This
- * includes the AuctionAdapter that contains the entire Auction list and the info necessary
- * to retrieve the next page of Auctions.
- *
  * The class implements simple dependency injection using the `inject()` method to setter-inject
  * the Adapter and ModelApis.
  */
-class AuctionViewModel(private val repository: AuctionRepository,
-                       private val notesModel: NotesModel) : ViewModel() {
+class AuctionViewModel(private val context: Context,
+                       private val notesModel: NotesModel,
+                       private val networkExecutor: Executor) : ViewModel() {
 
     companion object {
         private const val AUCTION_FETCH_COUNT = 30
@@ -55,7 +59,7 @@ class AuctionViewModel(private val repository: AuctionRepository,
 
     private val searchQuery = MutableLiveData<SearchData>()
     private val auctionResult = map(searchQuery) {
-        repository.searchAuctions(it.searchText, it.sortColumn, AUCTION_FETCH_COUNT)
+        searchAuctions(it.searchText, it.sortColumn, AUCTION_FETCH_COUNT)
     }
     val auctionData = switchMap(auctionResult) { it.pagedList }!!
     val networkState = switchMap(auctionResult) { it.networkState }!!
@@ -80,6 +84,33 @@ class AuctionViewModel(private val repository: AuctionRepository,
 
     fun deleteNote(note: Note) {
         notesModel.delete(note)
+    }
+
+    @MainThread
+    private fun searchAuctions(searchQuery: String, sortColumn: EBayModel.SortColumn, pageSize: Int): Listing<Auction> {
+        val factory = auctionDataSourceFactory(searchQuery, sortColumn)
+
+        val config = pagedListConfig(pageSize)
+
+        val livePagedList = LivePagedListBuilder(factory, config)
+                .setFetchExecutor(networkExecutor)
+                .build()
+
+        return Listing(
+                pagedList = livePagedList,
+                networkState = switchMap(factory.source) { it.networkState })
+    }
+
+    private fun auctionDataSourceFactory(searchQuery: String, sortColumn: EBayModel.SortColumn): AuctionDataSourceFactory {
+        return AuctionDataSourceFactory(context,  searchQuery, sortColumn)
+    }
+
+    private fun pagedListConfig(pageSize: Int): PagedList.Config {
+        return PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(pageSize * 2)
+                .setPageSize(pageSize)
+                .build()
     }
 
 

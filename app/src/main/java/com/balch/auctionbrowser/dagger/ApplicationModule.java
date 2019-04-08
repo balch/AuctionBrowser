@@ -25,8 +25,6 @@ package com.balch.auctionbrowser.dagger;
 import android.app.Application;
 
 import com.balch.auctionbrowser.AuctionApplication;
-import com.balch.auctionbrowser.auction.model.AuctionRepository;
-import com.balch.auctionbrowser.auction.model.EBayRepository;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -39,10 +37,6 @@ import dagger.Provides;
 
 @Module
 abstract class ApplicationModule extends BaseApplicationModule {
-
-    @Binds
-    @Singleton
-    abstract AuctionRepository bindsAuctionRepository(EBayRepository repository);
 
     @Binds
     @Singleton
