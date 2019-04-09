@@ -71,7 +71,7 @@ class AuctionPresenter
         })
 
         auctionViewModel.networkState.observe(lifecycleOwner, Observer<NetworkState> {
-            view.showBusy = it == NetworkState.LOADING
+            auctionAdapter.setNetworkState(it)
         })
 
         auctionAdapter.onClickAuction

@@ -93,7 +93,8 @@ class AuctionDataSource constructor(
             networkState.postValue(NetworkState.LOADED)
         } catch (ex: Throwable) {
             Timber.e(ex, "Error in .getAuctions()")
-            networkState.postValue(NetworkState(NetworkState.Status.FAILED, "Error"))
+            networkState.postValue(NetworkState(NetworkState.Status.FAILED,
+                    ex.message ?: "Unknown Error"))
         }
     }
 

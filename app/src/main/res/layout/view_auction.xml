@@ -15,15 +15,4 @@
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-    <ProgressBar
-        android:id="@+id/auction_view_progress_bar"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_gravity="top"
-        android:layout_marginTop="20dp"
-        android:indeterminate="true"
-        android:indeterminateTint="?attr/colorPrimary"
-        android:visibility="gone" />
-
 </merge>

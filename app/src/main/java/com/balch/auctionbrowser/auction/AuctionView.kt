@@ -24,9 +24,7 @@ package com.balch.auctionbrowser.auction
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.FrameLayout
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.ext.inflate
@@ -34,14 +32,7 @@ import kotlinx.android.synthetic.main.view_auction.view.*
 
 class AuctionView : FrameLayout {
 
-    var showBusy: Boolean
-        get() = progressBar.visibility == View.VISIBLE
-        set(value) {
-            progressBar.visibility = if (value) View.VISIBLE else View.GONE
-        }
-
     // private view layouts
-    private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
     private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
     constructor(context: Context) : super(context) {

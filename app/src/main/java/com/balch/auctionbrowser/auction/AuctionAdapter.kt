@@ -25,7 +25,10 @@ package com.balch.auctionbrowser.auction
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -33,7 +36,7 @@ import javax.inject.Inject
 
 @ActivityScope
 class AuctionAdapter @Inject constructor() :
-        PagedListAdapter<Auction, AuctionViewHolder>(diffCallback) {
+        PagedListAdapter<Auction, RecyclerView.ViewHolder>(diffCallback) {
 
     // public properties
     val onClickAuction: Observable<Auction>
@@ -46,15 +49,53 @@ class AuctionAdapter @Inject constructor() :
     private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
     private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
-        return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
+    private var networkState: NetworkState? = null
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.item_auction_list -> AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
+            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent)
+            else -> throw IllegalArgumentException("unknown view type $viewType")
+        }
     }
 
-    override fun onBindViewHolder(holder: AuctionViewHolder, position: Int) {
-        val auction = getItem(position)!!
-        holder.bind(auction)
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (getItemViewType(position)) {
+            R.layout.item_auction_list -> (holder as AuctionViewHolder).bind(getItem(position)!!)
+            R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bind(networkState)
+        }
     }
 
+    private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
+
+    override fun getItemViewType(position: Int): Int {
+        return if (hasExtraRow() && position == itemCount - 1) {
+            R.layout.network_state_item
+        } else {
+            R.layout.item_auction_list
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return super.getItemCount() + if (hasExtraRow()) 1 else 0
+    }
+
+    fun setNetworkState(newNetworkState: NetworkState?) {
+        val previousState = this.networkState
+        val hadExtraRow = hasExtraRow()
+        this.networkState = newNetworkState
+        val hasExtraRow = hasExtraRow()
+        if (hadExtraRow != hasExtraRow) {
+            if (hadExtraRow) {
+                notifyItemRemoved(super.getItemCount())
+            } else {
+                notifyItemInserted(super.getItemCount())
+            }
+        } else if (hasExtraRow && previousState != newNetworkState) {
+            notifyItemChanged(itemCount - 1)
+        }
+    }
     companion object {
         private val diffCallback = object : DiffUtil.ItemCallback<Auction>() {
             override fun areItemsTheSame(oldItem: Auction, newItem: Auction): Boolean =
