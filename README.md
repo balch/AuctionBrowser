@@ -1,10 +1,11 @@
 # EBay Auction Browser
 
 ### Architecture Highlights
+* **androidx**
 * 100% **Kotlin**
 * Uses **ViewModel**, **LiveData** and  **Room** from [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/index.html)
 * Uses **Retrofit2**/**RxJava2**/**Gson** to query [EBay API](http://developer.ebay.com/Devzone/finding/CallRef/findItemsByKeywords.html)
-* **RecyclerView** with endless scrolling pattern
+* **RecyclerView** with **PagedListAdapter**
 * Local **SQLite**  using **Room** database for user attached note
 
 ### Getting Started

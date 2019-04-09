@@ -29,18 +29,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.SearchView
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LifecycleOwner
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
 import com.balch.auctionbrowser.auction.AuctionPresenter
 import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.base.PresenterActivity
-import com.google.android.material.snackbar.Snackbar
 
-class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.ActivityBridge {
+class MainActivity : PresenterActivity<AuctionPresenter>() {
 
     @SuppressLint("VisibleForTests")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,15 +113,6 @@ class MainActivity : PresenterActivity<AuctionPresenter>(), AuctionPresenter.Act
         }
 
         return handled || super.onOptionsItemSelected(item)
-    }
-
-    override val fragmentManager: androidx.fragment.app.FragmentManager
-        get() = supportFragmentManager
-    override val lifecycleOwner: LifecycleOwner
-        get() = this
-
-    override fun showSnackBar(view: View, msg: Int) {
-        getSnackbar(view, getString(msg), Snackbar.LENGTH_LONG).show()
     }
 
 

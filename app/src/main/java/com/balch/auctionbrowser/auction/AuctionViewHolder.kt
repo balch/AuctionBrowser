@@ -22,17 +22,16 @@
 
 package com.balch.auctionbrowser.auction
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.inflate
 import com.balch.auctionbrowser.ext.loadUrl
 import com.balch.auctionbrowser.ext.toLongDateTimeString
-import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.ui.LabelTextView
 import com.bumptech.glide.request.RequestOptions
 import io.reactivex.subjects.PublishSubject
@@ -40,7 +39,7 @@ import kotlinx.android.synthetic.main.item_auction_list.view.*
 
 class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: PublishSubject<Auction>,
                         private val clickNoteObservable: PublishSubject<Auction>)
-    : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_auction_list)) {
+    : RecyclerView.ViewHolder(parent.inflate(R.layout.item_auction_list)) {
 
     // private view layouts
     private val itemImageView: ImageView by lazy { itemView.list_item_auction_img }
@@ -49,7 +48,7 @@ class AuctionViewHolder(parent: ViewGroup, private val clickAuctionObservable: P
     private val endTimeTextView: LabelTextView by lazy { itemView.list_item_auction_end_time }
     private val noteEditButton: Button by lazy { itemView.list_item_auction_button_note }
 
-    fun bind(auction: Auction, note: Note?) {
+    fun bind(auction: Auction) {
 
         with(auction) {
             itemImageView.loadUrl(imageUrl) { it.apply(RequestOptions.centerCropTransform()) }

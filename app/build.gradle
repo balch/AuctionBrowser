@@ -76,6 +76,9 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.recyclerview:recyclerview:$androidx_core"
     implementation "androidx.cardview:cardview:$androidx_core"
+    implementation "androidx.paging:paging-common:$androidx_paging"
+    implementation "androidx.paging:paging-runtime:$androidx_paging"
+    implementation "androidx.paging:paging-runtime-ktx:$androidx_paging"
     implementation "com.google.android.material:material:$androidx_core"
 
     implementation "androidx.constraintlayout:constraintlayout:$contraint_layout"
@@ -101,6 +104,12 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.assertj:assertj-core:$assertj"
 
+    implementation "com.uber.autodispose:autodispose-android:$uber_autodispose"
+    implementation "com.uber.autodispose:autodispose-lifecycle:$uber_autodispose"
+    implementation "com.uber.autodispose:autodispose-lifecycle-jdk8:$uber_autodispose"
+    implementation "com.uber.autodispose:autodispose-lifecycle-ktx:$uber_autodispose"
+    implementation "com.uber.autodispose:autodispose-android-archcomponents:$uber_autodispose"
+
     // Testing-only dependencies
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     androidTestImplementation "androidx.test:core:$coreVersion"
@@ -110,6 +119,8 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$runnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:3.1.1"
+
     androidTestImplementation "com.squareup.rx.idler:rx2-idler:$rxidler"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:1.3.21"

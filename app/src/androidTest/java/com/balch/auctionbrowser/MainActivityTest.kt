@@ -54,6 +54,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.balch.auctionbrowser.dagger.TestApplicationComponent
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Before
@@ -75,7 +76,7 @@ class MainActivityTest : BaseTest() {
 
     @Before
     fun setup() {
-        app.component.inject(this)
+        (app.component as TestApplicationComponent).inject(this)
     }
 
     @Test

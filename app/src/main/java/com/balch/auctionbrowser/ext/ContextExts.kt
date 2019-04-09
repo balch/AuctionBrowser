@@ -20,10 +20,12 @@
  *
  */
 
-package com.balch.auctionbrowser.auction.model
+package com.balch.auctionbrowser.ext
 
-import java.util.*
+import android.content.Context
+import com.balch.auctionbrowser.AuctionApplication
+import com.balch.auctionbrowser.dagger.ApplicationComponent
 
-class AuctionData(var auctions: List<Auction> = Collections.emptyList()) {
-    var totalPages: Int = 0
-}
+
+inline val Context.component: ApplicationComponent
+    get() = (this.applicationContext as AuctionApplication).component

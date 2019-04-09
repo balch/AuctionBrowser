@@ -22,27 +22,28 @@
 
 package com.balch.auctionbrowser
 
+import android.content.Context
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.balch.auctionbrowser.auction.AuctionAdapter
 import com.balch.auctionbrowser.auction.AuctionPresenter
 import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.AuctionViewModel
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.AuctionData
-import com.balch.auctionbrowser.auction.model.EBayModel
 import com.balch.auctionbrowser.note.Note
 import com.balch.auctionbrowser.note.NotesModel
 import com.balch.auctionbrowser.test.BaseTest
 import com.balch.auctionbrowser.test.anyArg
 import com.balch.auctionbrowser.test.makeCaptor
 import com.balch.auctionbrowser.test.uninitialized
-import io.reactivex.Observable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations.initMocks
+import java.util.concurrent.Executor
+import kotlin.test.assertNull
 
 
 class AuctionPresenterTest : BaseTest() {
@@ -50,11 +51,13 @@ class AuctionPresenterTest : BaseTest() {
     @Mock
     private lateinit var mockView: AuctionView
     @Mock
+    private lateinit var fragmentManager: FragmentManager
+    @Mock
     private lateinit var lifecycleOwner: LifecycleOwner
     @Mock
-    private lateinit var bridge: AuctionPresenter.ActivityBridge
+    private lateinit var context: Context
     @Mock
-    private lateinit var ebayModel: EBayModel
+    private lateinit var executor: Executor
     @Mock
     private lateinit var notesModel: NotesModel
 
@@ -68,25 +71,11 @@ class AuctionPresenterTest : BaseTest() {
         initMocks(this)
 
         auctionAdapter = spy(AuctionAdapter())
-        auctionViewModel = spy(AuctionViewModel(auctionAdapter, ebayModel, notesModel))
-        presenter = spy(AuctionPresenter(mockView, auctionViewModel, bridge))
+        auctionViewModel = spy(AuctionViewModel(context, notesModel, executor))
+        presenter = spy(AuctionPresenter(mockView, auctionViewModel, fragmentManager,
+                lifecycleOwner, auctionAdapter))
 
-        doReturn(Observable.just(Unit)).`when`(mockView).onLoadMore
         doNothing().`when`(auctionAdapter).notifyDataSetChanged()
-
-        doReturn(lifecycleOwner).`when`(bridge).lifecycleOwner
-    }
-
-    @Test
-    fun testOnLoadMore() {
-        doNothing().`when`(auctionViewModel).loadAuctionsNextPage()
-
-        //region Execute Test
-        presenter.onLoadMorePages()
-        //endregion
-
-        verify(mockView).showBusy = true
-        verify(auctionViewModel).loadAuctionsNextPage()
     }
 
     @Test
@@ -120,23 +109,7 @@ class AuctionPresenterTest : BaseTest() {
         val note: Note = captors[0].value as Note
         assertThat(note.noteText).isEqualTo(text)
 
-        verify(auctionAdapter).addNote(auction, note)
-    }
-
-    @Test
-    fun testShowAuctions() {
-        val auctionData: AuctionData = AuctionData().apply {
-            auctions = ArrayList()
-            notes = HashMap()
-        }
-
-        //region Execute Test
-        presenter.showAuctions(auctionData)
-        //endregion
-
-        verify(mockView).showBusy = false
-        verify(auctionAdapter).addAuctions(auctionData.auctions, auctionData.notes)
-        verify(mockView).doneLoading(false)
+        verify(auction).note = note
     }
 
     @Test
@@ -150,7 +123,8 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(notesModel).delete(note)
-        verify(auctionAdapter).clearNote(auction)
+
+        assertNull(auction.note)
     }
 
     @Test
@@ -162,6 +136,5 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(notesModel, never()).delete(anyArg())
-        verify(auctionAdapter, never()).clearNote(anyArg())
     }
 }

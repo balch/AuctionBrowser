@@ -23,36 +23,17 @@
 package com.balch.auctionbrowser.auction
 
 import android.content.Context
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
-import android.view.View
 import android.widget.FrameLayout
-import android.widget.ProgressBar
+import androidx.recyclerview.widget.RecyclerView
 import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.ext.inflate
-import com.balch.auctionbrowser.ui.EndlessScrollListener
-import io.reactivex.Observable
 import kotlinx.android.synthetic.main.view_auction.view.*
 
 class AuctionView : FrameLayout {
 
-    // public properties
-    val onLoadMore: Observable<Unit>
-        get() = recyclerOnScrollListener.onLoadMore
-
-    var showBusy: Boolean
-        get() = progressBar.visibility == View.VISIBLE
-        set(value) {
-            progressBar.visibility = if (value) View.VISIBLE else View.GONE
-        }
-
-    // private properties
-    private lateinit var recyclerOnScrollListener: EndlessScrollListener
-
     // private view layouts
-    private val progressBar: ProgressBar by lazy { auction_view_progress_bar }
-    private val recyclerView: androidx.recyclerview.widget.RecyclerView by lazy { action_view_recycler }
+    private val recyclerView: RecyclerView by lazy { action_view_recycler }
 
     constructor(context: Context) : super(context) {
         initializeLayout()
@@ -68,14 +49,6 @@ class AuctionView : FrameLayout {
 
     private fun initializeLayout() {
         inflate(R.layout.view_auction, true)
-
-        id = View.generateViewId()
-
-        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-        recyclerOnScrollListener = EndlessScrollListener(layoutManager)
-
-        recyclerView.layoutManager = layoutManager
-        recyclerView.addOnScrollListener(recyclerOnScrollListener)
     }
 
     fun setAuctionAdapter(auctionAdapter: AuctionAdapter) {
@@ -87,11 +60,4 @@ class AuctionView : FrameLayout {
         recyclerView.adapter = null
     }
 
-    fun clearAuctions() {
-        recyclerOnScrollListener.reset()
-    }
-
-    fun doneLoading(hasMore: Boolean) {
-        recyclerOnScrollListener.doneLoading(hasMore)
-    }
 }

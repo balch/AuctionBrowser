@@ -22,18 +22,21 @@
 
 package com.balch.auctionbrowser.auction
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
+import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
-import com.balch.auctionbrowser.note.Note
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 @ActivityScope
 class AuctionAdapter @Inject constructor() :
-        androidx.recyclerview.widget.RecyclerView.Adapter<AuctionViewHolder>() {
+        PagedListAdapter<Auction, RecyclerView.ViewHolder>(diffCallback) {
 
     // public properties
     val onClickAuction: Observable<Auction>
@@ -46,47 +49,61 @@ class AuctionAdapter @Inject constructor() :
     private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
     private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
 
-    // adapter auction data
-    private val auctions = mutableListOf<Auction>()
-    val notes = mutableMapOf<Long, Note>()
+    private var networkState: NetworkState? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AuctionViewHolder {
-        return AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.item_auction_list -> AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
+            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent)
+            else -> throw IllegalArgumentException("unknown view type $viewType")
+        }
     }
 
-    override fun onBindViewHolder(holder: AuctionViewHolder, position: Int) {
-        val auction = auctions[position]
-        holder.bind(auction, notes[auction.itemId])
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (getItemViewType(position)) {
+            R.layout.item_auction_list -> (holder as AuctionViewHolder).bind(getItem(position)!!)
+            R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bind(networkState)
+        }
+    }
+
+    private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
+
+    override fun getItemViewType(position: Int): Int {
+        return if (hasExtraRow() && position == itemCount - 1) {
+            R.layout.network_state_item
+        } else {
+            R.layout.item_auction_list
+        }
     }
 
     override fun getItemCount(): Int {
-        return auctions.size
+        return super.getItemCount() + if (hasExtraRow()) 1 else 0
     }
 
-    fun addAuctions(auctions: List<Auction>, notes: Map<Long, Note>) {
-        this.auctions.addAll(auctions)
-        this.notes.putAll(notes)
-        notifyDataSetChanged()
+    fun setNetworkState(newNetworkState: NetworkState?) {
+        val previousState = this.networkState
+        val hadExtraRow = hasExtraRow()
+        this.networkState = newNetworkState
+        val hasExtraRow = hasExtraRow()
+        if (hadExtraRow != hasExtraRow) {
+            if (hadExtraRow) {
+                notifyItemRemoved(super.getItemCount())
+            } else {
+                notifyItemInserted(super.getItemCount())
+            }
+        } else if (hasExtraRow && previousState != newNetworkState) {
+            notifyItemChanged(itemCount - 1)
+        }
     }
+    companion object {
+        private val diffCallback = object : DiffUtil.ItemCallback<Auction>() {
+            override fun areItemsTheSame(oldItem: Auction, newItem: Auction): Boolean =
+                    oldItem.itemId == newItem.itemId
 
-    fun clearAuctions() {
-        auctions.clear()
-        notes.clear()
-        notifyDataSetChanged()
-    }
-
-    fun getNote(auction: Auction): Note? {
-        return notes[auction.itemId]
-    }
-
-    fun clearNote(auction: Auction) {
-        notes.remove(auction.itemId)
-        notifyDataSetChanged()
-    }
-
-    fun addNote(auction: Auction, note: Note) {
-        notes.put(auction.itemId, note)
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: Auction, newItem: Auction): Boolean =
+                    oldItem == newItem
+        }
     }
 
 }

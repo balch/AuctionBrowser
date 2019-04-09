@@ -16,25 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with MockTrade.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2018
+ * Copyright (C) 2019
  *
  */
 
-package com.balch.auctionbrowser.dagger
+package com.balch.auctionbrowser.base
 
-import android.app.Application
-import com.balch.auctionbrowser.AuctionApplication
-import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
 
-@Module
-class ApplicationModule : BaseApplicationModule () {
-
-    @Provides
-    @Singleton
-    internal fun providesApplicationContext(app: AuctionApplication): Application {
-        return app
-    }
-
-}
+data class Listing<T>(
+        // the LiveData of paged lists for the UI to observe
+        val pagedList: LiveData<PagedList<T>>,
+        // represents the network request status to show to the user
+        val networkState: LiveData<NetworkState>)

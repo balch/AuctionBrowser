@@ -23,6 +23,7 @@
 package com.balch.auctionbrowser
 
 import android.os.StrictMode
+import com.balch.auctionbrowser.dagger.ApplicationComponent
 import com.balch.auctionbrowser.dagger.DaggerApplicationComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
@@ -32,12 +33,16 @@ import timber.log.Timber.DebugTree
 
 
 open class AuctionApplication : DaggerApplication() {
+
+    lateinit var component: ApplicationComponent
+
     companion object {
-        val DATABASE_NAME = "auction_browser.db"
+        const val DATABASE_NAME = "auction_browser.db"
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerApplicationComponent.builder().create(this)
+        return (DaggerApplicationComponent.builder().create(this) as ApplicationComponent)
+                .also { component = it }
     }
 
     override fun onCreate() {

@@ -18,8 +18,11 @@ buildscript {
     ext.rxandroid="2.1.0"
     ext.androidx_core= '1.0.0'
     ext.androidx_appcompat= '1.0.2'
+    ext.androidx_paging="2.1.0"
     ext.glide="4.8.0"
     ext.joda="2.10.1.1"
+    ext.uber_autodispose="1.2.0"
+
     ext.support_test="0.5"
     ext.junit="4.12"
     ext.mockito="2.7.22"
