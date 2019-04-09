@@ -30,9 +30,6 @@ import com.balch.auctionbrowser.AuctionDatabase;
 import com.balch.auctionbrowser.R;
 import com.balch.auctionbrowser.note.NoteDao;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -69,12 +66,6 @@ public abstract class BaseApplicationModule {
     @Named(EBAY_APP_ID)
     static String providesEbayAppId(@Named(APP_CONTEXT) Context context) {
         return context.getString(R.string.ebay_app_id);
-    }
-
-    @Provides
-    @Singleton
-    static Executor providesNetworkExecutor() {
-        return Executors.newFixedThreadPool(5);
     }
 
 }

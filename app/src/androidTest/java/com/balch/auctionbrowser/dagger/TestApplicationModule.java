@@ -26,14 +26,29 @@ import android.app.Application;
 
 import com.balch.auctionbrowser.TestAuctionApplication;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Singleton;
 
+import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor;
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 
 @Module
 abstract class TestApplicationModule extends BaseApplicationModule {
     @Binds
     @Singleton
     abstract Application bindsApplicationContext(TestAuctionApplication app);
+
+    @Provides
+    @Singleton
+    static Executor providesNetworkExecutor() {
+        return new IdlingThreadPoolExecutor("test", 5, 5, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(), Thread::new);
+    }
+
+
 }
