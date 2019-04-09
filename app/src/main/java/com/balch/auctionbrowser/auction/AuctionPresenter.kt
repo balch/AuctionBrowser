@@ -36,10 +36,10 @@ import com.balch.auctionbrowser.base.BasePresenter
 import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
 import com.balch.auctionbrowser.note.Note
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.lifecycle.autoDisposable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.internal.operators.completable.CompletableFromAction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -59,9 +59,7 @@ class AuctionPresenter
             searchView!!.setQuery(auctionViewModel.searchText, false)
         }
 
-    private val disposables = CompositeDisposable()
-    private var disposableSaveNote: Disposable? = null
-    private var disposableClearNote: Disposable? = null
+    private val scope: AndroidLifecycleScopeProvider by lazy { AndroidLifecycleScopeProvider.from(lifecycleOwner) }
 
     @SuppressLint("VisibleForTests")
     override fun initialize(savedInstanceState: Bundle?) {
@@ -76,14 +74,15 @@ class AuctionPresenter
             view.showBusy = it == NetworkState.LOADING
         })
 
-        disposables.addAll(
-                auctionAdapter.onClickAuction
-                        .subscribe({ auction -> showDetail(auction) },
-                                { throwable -> Timber.e(throwable, "onClickAuction error") }),
-                auctionAdapter.onClickNote
-                        .subscribe({ auction -> showDetail(auction) },
-                                { throwable -> Timber.e(throwable, "onClickNote error") })
-        )
+        auctionAdapter.onClickAuction
+                .autoDisposable(scope)
+                .subscribe({ auction -> showDetail(auction) },
+                        { throwable -> Timber.e(throwable, "onClickAuction error") })
+
+        auctionAdapter.onClickNote
+                .autoDisposable(scope)
+                .subscribe({ auction -> showDetail(auction) },
+                        { throwable -> Timber.e(throwable, "onClickNote error") })
     }
 
     fun doSearch(keyword: String) {
@@ -102,13 +101,13 @@ class AuctionPresenter
 
         val dialog = AuctionDetailDialog.newInstance(auction, note)
 
-        disposableClearNote?.dispose()
-        disposableClearNote = dialog.onClearNote
+        dialog.onClearNote
+                .autoDisposable(scope)
                 .subscribe({ clearNote(auction, note) },
                         { throwable -> Timber.e(throwable, "clearNote error") })
 
-        disposableSaveNote?.dispose()
-        disposableSaveNote = dialog.onSaveNote
+        dialog.onSaveNote
+                .autoDisposable(scope)
                 .subscribe({ text -> saveNote(auction, note, text) },
                         { throwable -> Timber.e(throwable, "saveNote error") })
 
@@ -118,46 +117,38 @@ class AuctionPresenter
     @VisibleForTesting
     fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
-            disposables.add(
-                    Single.just(Note(auction.itemId, text))
-                            .subscribeOn(Schedulers.io())
-                            .doOnSuccess { note1 -> auctionViewModel.insertNote(note1)}
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ note1 -> auction.note = note1
-                                        auctionAdapter.notifyDataSetChanged()},
-                                    { throwable -> Timber.e(throwable, "insertNote error") })
-            )
+                Single.just(Note(auction.itemId, text))
+                        .subscribeOn(Schedulers.io())
+                        .doOnSuccess { note1 -> auctionViewModel.insertNote(note1)}
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .autoDisposable(scope)
+                        .subscribe({ note1 -> auction.note = note1
+                                    auctionAdapter.notifyDataSetChanged()},
+                                { throwable -> Timber.e(throwable, "insertNote error") })
         } else {
             note.noteText = text
-            disposables.add(
-                    CompletableFromAction { auctionViewModel.updateNote(note) }
-                            .subscribeOn(Schedulers.io())
-                            .subscribe({ /* no-op */ },
-                                    { throwable -> Timber.e(throwable, "updateNote error") })
-            )
+            CompletableFromAction { auctionViewModel.updateNote(note) }
+                    .subscribeOn(Schedulers.io())
+                    .autoDisposable(scope)
+                    .subscribe({ /* no-op */ },
+                            { throwable -> Timber.e(throwable, "updateNote error") })
         }
     }
 
 
     fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
-            disposables.add(
-                    CompletableFromAction { auctionViewModel.deleteNote(note) }
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ auction.note = null
-                                         auctionAdapter.notifyDataSetChanged()},
-                                    { throwable -> Timber.e(throwable, "deleteNote error") })
-            )
+            CompletableFromAction { auctionViewModel.deleteNote(note) }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .autoDisposable(scope)
+                    .subscribe({ auction.note = null
+                                 auctionAdapter.notifyDataSetChanged()},
+                            { throwable -> Timber.e(throwable, "deleteNote error") })
         }
     }
 
     override fun cleanup() {
-
-        disposableSaveNote?.dispose()
-        disposableClearNote?.dispose()
-        disposables.dispose()
-
         view.cleanup()
     }
 }

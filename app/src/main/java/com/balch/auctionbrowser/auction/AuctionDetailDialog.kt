@@ -26,10 +26,9 @@ import android.app.Dialog
 import android.content.DialogInterface.BUTTON_NEGATIVE
 import android.content.DialogInterface.BUTTON_POSITIVE
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.appcompat.app.AlertDialog
 import android.view.View
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import com.balch.auctionbrowser.R.layout.dialog_auction_detai
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.inflate
