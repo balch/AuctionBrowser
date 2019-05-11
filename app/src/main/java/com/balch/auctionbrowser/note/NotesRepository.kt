@@ -54,13 +54,13 @@ class NotesRepository @Inject constructor(private val noteDao: NoteDao) {
         }
     }
 
-    fun update(note: Note): Single<Integer> {
+    fun update(note: Note): Single<Int> {
         logTiming("update itemId=${note.itemId}") {
             return noteDao.update(note)
         }
     }
 
-    fun delete(note: Note): Single<Integer> {
+    fun delete(note: Note): Single<Int> {
         logTiming("delete itemId=${note.itemId}") {
             return noteDao.delete(note)
         }

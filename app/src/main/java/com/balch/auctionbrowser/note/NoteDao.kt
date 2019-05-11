@@ -35,8 +35,8 @@ interface NoteDao {
     fun insert(vararg notes: Note): Single<List<Long>>
 
     @Delete
-    fun delete(note: Note): Single<Integer>
+    fun delete(note: Note): Single<Int>
 
     @Update
-    fun update(vararg notes: Note): Single<Integer>
+    fun update(vararg notes: Note): Single<Int>
 }
