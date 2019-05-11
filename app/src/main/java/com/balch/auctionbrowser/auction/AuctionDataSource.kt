@@ -27,21 +27,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.AuctionData
-import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.auction.model.EBayRepository
 import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.ext.component
-import com.balch.auctionbrowser.note.NotesModel
+import com.balch.auctionbrowser.note.Note
+import com.balch.auctionbrowser.note.NotesRepository
+import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import timber.log.Timber
 import javax.inject.Inject
 
 class AuctionDataSource constructor(
         context: Context,
         private val searchText: String,
-        private val sortColumn: EBayModel.SortColumn)
+        private val sortColumn: EBayRepository.SortColumn)
     : PageKeyedDataSource<Long, Auction>() {
 
-    @Inject lateinit var auctionModel: EBayModel
-    @Inject lateinit var notesModel: NotesModel
+    @Inject lateinit var auctionRepository: EBayRepository
+    @Inject lateinit var notesRepository: NotesRepository
     init {
         context.component.inject(this)
     }
@@ -79,16 +82,21 @@ class AuctionDataSource constructor(
         }
     }
 
-    private fun loadAuctions(page:Long, callback:(AuctionData)->Unit) {
+    private fun loadAuctions(page:Long, callback:(AuctionData) -> Unit) {
 
         try {
-            val auctionData = auctionModel.getAuctions(searchText, page, AUCTION_FETCH_COUNT, sortColumn)
-                    .doOnSuccess { auctionData ->
-                        val notes = notesModel.getNotes(auctionData.auctions)
-                        auctionData.auctions.forEach{it.note = notes[it.itemId]}
-                    }
-                    .blockingGet()
-
+            val auctionData = auctionRepository.getAuctions(searchText, page, AUCTION_FETCH_COUNT, sortColumn)
+                .flatMap{ auctionData ->
+                    Single.zip(
+                        Single.just(auctionData),
+                        notesRepository.getNotes(auctionData.auctions).toSingle(mutableMapOf()),
+                        BiFunction<AuctionData, Map<Long, Note>, AuctionData>
+                        { data: AuctionData, notes: Map<Long, Note> ->
+                            data.auctions.forEach{it.note = notes[it.itemId]}
+                            data
+                        })
+                }
+                .blockingGet()
             callback(auctionData)
             networkState.postValue(NetworkState.LOADED)
         } catch (ex: Throwable) {
@@ -97,5 +105,4 @@ class AuctionDataSource constructor(
                     ex.message ?: "Unknown Error"))
         }
     }
-
 }

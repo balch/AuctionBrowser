@@ -32,7 +32,7 @@ import javax.inject.Singleton
  * ModelApi for getting data from the EBayApi repository (EBay Rest Service)
  */
 @Singleton
-class EBayModel
+class EBayRepository
 @Inject constructor(@Named(BaseApplicationModule.EBAY_APP_ID) private val eBayApiKey: String,
                     private val ebayApi: EBayApi) {
 

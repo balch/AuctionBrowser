@@ -31,16 +31,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.auction.model.EBayRepository
 import com.balch.auctionbrowser.base.BasePresenter
 import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
 import com.balch.auctionbrowser.note.Note
-import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.balch.auctionbrowser.note.NotesRepository
+import com.uber.autodispose.lifecycle.LifecycleScopeProvider
 import com.uber.autodispose.lifecycle.autoDisposable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.internal.operators.completable.CompletableFromAction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
@@ -49,17 +48,18 @@ import javax.inject.Inject
 class AuctionPresenter
 @Inject constructor(override val view: AuctionView,
                     private val auctionViewModel: AuctionViewModel,
+                    private val notesRepository: NotesRepository,
                     private val fragmentManager: FragmentManager,
                     private val lifecycleOwner: LifecycleOwner,
-                    private val auctionAdapter: AuctionAdapter) : BasePresenter() {
+                    private val auctionAdapter: AuctionAdapter,
+                    private val scope: LifecycleScopeProvider<*>
+                    ) : BasePresenter() {
 
     var searchView: SearchView? = null
         set(value) {
             field = value
             searchView!!.setQuery(auctionViewModel.searchText, false)
         }
-
-    private val scope: AndroidLifecycleScopeProvider by lazy { AndroidLifecycleScopeProvider.from(lifecycleOwner) }
 
     @SuppressLint("VisibleForTests")
     override fun initialize(savedInstanceState: Bundle?) {
@@ -91,7 +91,7 @@ class AuctionPresenter
         auctionViewModel.loadAuctions(keyword, auctionViewModel.sortColumn)
     }
 
-    internal fun sortAuctions(sortColumn: EBayModel.SortColumn) {
+    internal fun sortAuctions(sortColumn: EBayRepository.SortColumn) {
         auctionViewModel.loadAuctions(auctionViewModel.searchText, sortColumn)
     }
 
@@ -117,28 +117,29 @@ class AuctionPresenter
     @VisibleForTesting
     fun saveNote(auction: Auction, note: Note?, text: String) {
         if (note == null) {
-                Single.just(Note(auction.itemId, text))
-                        .subscribeOn(Schedulers.io())
-                        .doOnSuccess { note1 -> auctionViewModel.insertNote(note1)}
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .autoDisposable(scope)
-                        .subscribe({ note1 -> auction.note = note1
-                                    auctionAdapter.notifyDataSetChanged()},
-                                { throwable -> Timber.e(throwable, "insertNote error") })
+            val newNote = Note(auction.itemId, text)
+            notesRepository.insert(newNote)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .autoDisposable(scope)
+                .subscribe({
+                    auction.note = newNote
+                    auctionAdapter.notifyDataSetChanged()},
+                        { throwable -> Timber.e(throwable, "insertNote error") })
         } else {
             note.noteText = text
-            CompletableFromAction { auctionViewModel.updateNote(note) }
-                    .subscribeOn(Schedulers.io())
-                    .autoDisposable(scope)
-                    .subscribe({ /* no-op */ },
-                            { throwable -> Timber.e(throwable, "updateNote error") })
+            notesRepository.update(note)
+                .subscribeOn(Schedulers.io())
+                .autoDisposable(scope)
+                .subscribe({ /* no-op */ },
+                        { throwable -> Timber.e(throwable, "updateNote error") })
         }
     }
 
 
     fun clearNote(auction: Auction, note: Note?) {
         if (note != null) {
-            CompletableFromAction { auctionViewModel.deleteNote(note) }
+            notesRepository.delete(note)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .autoDisposable(scope)

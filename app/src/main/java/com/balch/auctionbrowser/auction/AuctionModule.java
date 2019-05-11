@@ -22,12 +22,15 @@
 
 package com.balch.auctionbrowser.auction;
 
-import com.balch.auctionbrowser.MainActivity;
-import com.balch.auctionbrowser.dagger.ActivityScope;
-
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.balch.auctionbrowser.MainActivity;
+import com.balch.auctionbrowser.dagger.ActivityScope;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+import com.uber.autodispose.lifecycle.LifecycleScopeProvider;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
@@ -56,6 +59,12 @@ public abstract class AuctionModule {
     static AuctionViewModel providesAuctionViewModel(MainActivity activity,
                                                      AuctionViewModelFactory factory) {
         return ViewModelProviders.of(activity, factory).get(AuctionViewModel.class);
+    }
+
+    @Provides
+    @ActivityScope
+    static LifecycleScopeProvider<?> providesScopeProvider(MainActivity activity) {
+        return AndroidLifecycleScopeProvider.from(activity);
     }
 
 

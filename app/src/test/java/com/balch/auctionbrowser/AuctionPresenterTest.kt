@@ -31,11 +31,14 @@ import com.balch.auctionbrowser.auction.AuctionView
 import com.balch.auctionbrowser.auction.AuctionViewModel
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.note.Note
-import com.balch.auctionbrowser.note.NotesModel
+import com.balch.auctionbrowser.note.NoteDao
+import com.balch.auctionbrowser.note.NotesRepository
 import com.balch.auctionbrowser.test.BaseTest
 import com.balch.auctionbrowser.test.anyArg
 import com.balch.auctionbrowser.test.makeCaptor
 import com.balch.auctionbrowser.test.uninitialized
+import com.uber.autodispose.lifecycle.TestLifecycleScopeProvider
+import io.reactivex.Single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -59,8 +62,9 @@ class AuctionPresenterTest : BaseTest() {
     @Mock
     private lateinit var executor: Executor
     @Mock
-    private lateinit var notesModel: NotesModel
+    private lateinit var noteDao: NoteDao
 
+    lateinit var notesRepository: NotesRepository
     lateinit var auctionAdapter: AuctionAdapter
     lateinit var auctionViewModel: AuctionViewModel
 
@@ -70,12 +74,17 @@ class AuctionPresenterTest : BaseTest() {
     fun setUp() {
         initMocks(this)
 
+        notesRepository = spy(NotesRepository(noteDao))
         auctionAdapter = spy(AuctionAdapter())
-        auctionViewModel = spy(AuctionViewModel(context, notesModel, executor))
-        presenter = spy(AuctionPresenter(mockView, auctionViewModel, fragmentManager,
-                lifecycleOwner, auctionAdapter))
+        auctionViewModel = spy(AuctionViewModel(context, executor))
+        presenter = spy(AuctionPresenter(mockView, auctionViewModel, notesRepository, fragmentManager,
+                lifecycleOwner, auctionAdapter,
+                TestLifecycleScopeProvider.createInitial(TestLifecycleScopeProvider.TestLifecycle.STARTED)))
 
         doNothing().`when`(auctionAdapter).notifyDataSetChanged()
+        doReturn(Single.just(listOf(1))).`when`(noteDao).insert(anyArg())
+        doReturn(Single.just(1)).`when`(noteDao).update(anyArg())
+        doReturn(Single.just(1)).`when`(noteDao).delete(anyArg())
     }
 
     @Test
@@ -90,7 +99,7 @@ class AuctionPresenterTest : BaseTest() {
         //endregion
 
         verify(note).noteText = text
-        verify(notesModel).update(note)
+        verify(notesRepository).update(note)
     }
 
     @Test
@@ -103,7 +112,7 @@ class AuctionPresenterTest : BaseTest() {
         testScheduler.triggerActions()
         //endregion
 
-        val (verifier, captors) = makeCaptor(notesModel, Note::class.java)
+        val (verifier, captors) = makeCaptor(notesRepository, Note::class.java)
         verifier.insert(uninitialized())
 
         val note: Note = captors[0].value as Note
@@ -122,7 +131,7 @@ class AuctionPresenterTest : BaseTest() {
         testScheduler.triggerActions()
         //endregion
 
-        verify(notesModel).delete(note)
+        verify(notesRepository).delete(note)
 
         assertNull(auction.note)
     }
@@ -135,6 +144,6 @@ class AuctionPresenterTest : BaseTest() {
         presenter.clearNote(auction, null)
         //endregion
 
-        verify(notesModel, never()).delete(anyArg())
+        verify(notesRepository, never()).delete(anyArg())
     }
 }

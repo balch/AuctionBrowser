@@ -27,13 +27,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import com.balch.auctionbrowser.auction.AuctionDataSource
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.auction.model.EBayRepository
 
 
 class AuctionDataSourceFactory(
         private val context: Context,
         private val searchQuery: String,
-        private val sortColumn: EBayModel.SortColumn) : DataSource.Factory<Long, Auction>() {
+        private val sortColumn: EBayRepository.SortColumn) : DataSource.Factory<Long, Auction>() {
 
     val source = MutableLiveData<AuctionDataSource>()
 

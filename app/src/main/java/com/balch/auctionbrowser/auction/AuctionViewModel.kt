@@ -32,10 +32,8 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.balch.auctionbrowser.AuctionDataSourceFactory
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.auction.model.EBayRepository
 import com.balch.auctionbrowser.base.Listing
-import com.balch.auctionbrowser.note.Note
-import com.balch.auctionbrowser.note.NotesModel
 import java.util.concurrent.Executor
 
 
@@ -47,7 +45,6 @@ import java.util.concurrent.Executor
  * the Adapter and ModelApis.
  */
 class AuctionViewModel(private val context: Context,
-                       private val notesModel: NotesModel,
                        private val networkExecutor: Executor) : ViewModel() {
 
     companion object {
@@ -55,7 +52,7 @@ class AuctionViewModel(private val context: Context,
     }
 
     private class SearchData(val searchText: String,
-                             val sortColumn: EBayModel.SortColumn)
+                             val sortColumn: EBayRepository.SortColumn)
 
     private val searchQuery = MutableLiveData<SearchData>()
     private val auctionResult = map(searchQuery) {
@@ -67,27 +64,15 @@ class AuctionViewModel(private val context: Context,
     val searchText: String
         get() = searchQuery.value?.searchText ?: ""
 
-    val sortColumn: EBayModel.SortColumn
-        get() = searchQuery.value?.sortColumn ?: EBayModel.SortColumn.BEST_MATCH
+    val sortColumn: EBayRepository.SortColumn
+        get() = searchQuery.value?.sortColumn ?: EBayRepository.SortColumn.BEST_MATCH
 
-    fun loadAuctions(searchText: String, sortColumn: EBayModel.SortColumn)  {
+    fun loadAuctions(searchText: String, sortColumn: EBayRepository.SortColumn)  {
         searchQuery.value = SearchData(searchText, sortColumn)
     }
 
-    fun insertNote(note: Note) {
-        notesModel.insert(note)
-    }
-
-    fun updateNote(note: Note) {
-        notesModel.update(note)
-    }
-
-    fun deleteNote(note: Note) {
-        notesModel.delete(note)
-    }
-
     @MainThread
-    private fun searchAuctions(searchQuery: String, sortColumn: EBayModel.SortColumn, pageSize: Int): Listing<Auction> {
+    private fun searchAuctions(searchQuery: String, sortColumn: EBayRepository.SortColumn, pageSize: Int): Listing<Auction> {
         val factory = auctionDataSourceFactory(searchQuery, sortColumn)
 
         val config = pagedListConfig(pageSize)
@@ -101,7 +86,7 @@ class AuctionViewModel(private val context: Context,
                 networkState = switchMap(factory.source) { it.networkState })
     }
 
-    private fun auctionDataSourceFactory(searchQuery: String, sortColumn: EBayModel.SortColumn): AuctionDataSourceFactory {
+    private fun auctionDataSourceFactory(searchQuery: String, sortColumn: EBayRepository.SortColumn): AuctionDataSourceFactory {
         return AuctionDataSourceFactory(context,  searchQuery, sortColumn)
     }
 

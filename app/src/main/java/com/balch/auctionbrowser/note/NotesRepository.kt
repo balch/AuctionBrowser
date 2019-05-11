@@ -25,6 +25,9 @@ package com.balch.auctionbrowser.note
 import android.annotation.SuppressLint
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.logTiming
+import io.reactivex.Maybe
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,39 +35,34 @@ import javax.inject.Singleton
  * Model API for retrieving/persisting data to the NotesDao repository (Sqlite db)
  */
 @Singleton
-class NotesModel @Inject constructor(private val noteDao: NoteDao) {
+class NotesRepository @Inject constructor(private val noteDao: NoteDao) {
     @SuppressLint("UseSparseArrays")
-    fun getNotes(auctions: List<Auction>): Map<Long, Note> {
-        var noteMap: Map<Long, Note>? = null
-
-        logTiming("getNotes") {
-            if (auctions.isNotEmpty()) {
-
-                val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
-
-                val notes = noteDao.loadAllByIds(itemIdsList.toLongArray())
-                noteMap = notes.associateBy({ it.itemId })
-            }
+    fun getNotes(auctions: List<Auction>): Maybe<Map<Long, Note>> {
+        return if (auctions.isNotEmpty()) {
+            val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
+            noteDao.loadAllByIds(itemIdsList.toLongArray())
+                    .subscribeOn(Schedulers.io())
+                    .map {notes -> notes.associateBy { it.itemId } }
+        } else {
+            Maybe.empty()
         }
-
-        return noteMap ?: mutableMapOf()
     }
 
-    fun insert(note: Note) {
+    fun insert(note: Note): Single<List<Long>> {
         logTiming("insert itemId=${note.itemId}") {
-            noteDao.insert(note)
+            return noteDao.insert(note)
         }
     }
 
-    fun update(note: Note) {
+    fun update(note: Note): Single<Integer> {
         logTiming("update itemId=${note.itemId}") {
-            noteDao.update(note)
+            return noteDao.update(note)
         }
     }
 
-    fun delete(note: Note) {
+    fun delete(note: Note): Single<Integer> {
         logTiming("delete itemId=${note.itemId}") {
-            noteDao.delete(note)
+            return noteDao.delete(note)
         }
     }
 }

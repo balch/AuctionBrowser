@@ -23,18 +23,20 @@
 package com.balch.auctionbrowser.note
 
 import androidx.room.*
+import io.reactivex.Maybe
+import io.reactivex.Single
 
 @Dao
 interface NoteDao {
     @Query("SELECT * FROM note WHERE itemId IN (:itemIds)")
-    fun loadAllByIds(itemIds: LongArray): List<Note>
+    fun loadAllByIds(itemIds: LongArray): Maybe<List<Note>>
 
     @Insert
-    fun insert(vararg notes: Note)
+    fun insert(vararg notes: Note): Single<List<Long>>
 
     @Delete
-    fun delete(note: Note)
+    fun delete(note: Note): Single<Integer>
 
     @Update
-    fun update(vararg notes: Note)
+    fun update(vararg notes: Note): Single<Integer>
 }

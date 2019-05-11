@@ -34,7 +34,7 @@ import androidx.annotation.VisibleForTesting
 import com.balch.auctionbrowser.R.id.*
 import com.balch.auctionbrowser.R.menu.options_menu
 import com.balch.auctionbrowser.auction.AuctionPresenter
-import com.balch.auctionbrowser.auction.model.EBayModel
+import com.balch.auctionbrowser.auction.model.EBayRepository
 import com.balch.auctionbrowser.base.PresenterActivity
 
 class MainActivity : PresenterActivity<AuctionPresenter>() {
@@ -95,17 +95,17 @@ class MainActivity : PresenterActivity<AuctionPresenter>() {
             // Handle item selection
             when (item.itemId) {
                 menu_sort_best_match -> {
-                    presenter.sortAuctions(EBayModel.SortColumn.BEST_MATCH)
+                    presenter.sortAuctions(EBayRepository.SortColumn.BEST_MATCH)
                     item.isChecked = true
                     handled = true
                 }
                 menu_sort_ending_soonest -> {
-                    presenter.sortAuctions(EBayModel.SortColumn.ENDING_SOONEST)
+                    presenter.sortAuctions(EBayRepository.SortColumn.ENDING_SOONEST)
                     item.isChecked = true
                     handled = true
                 }
                 menu_sort_lowest_price -> {
-                    presenter.sortAuctions(EBayModel.SortColumn.LOWEST_PRICE)
+                    presenter.sortAuctions(EBayRepository.SortColumn.LOWEST_PRICE)
                     item.isChecked = true
                     handled = true
                 }
