@@ -24,16 +24,22 @@ package com.balch.auctionbrowser.auction
 
 import android.content.Context
 import androidx.annotation.MainThread
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.Transformations.switchMap
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.balch.auctionbrowser.AuctionDataSourceFactory
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.auction.model.EBayRepository
 import com.balch.auctionbrowser.base.Listing
+import com.balch.auctionbrowser.note.Note
+import com.balch.auctionbrowser.note.NotesRepository
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.Executor
 
 
@@ -45,6 +51,7 @@ import java.util.concurrent.Executor
  * the Adapter and ModelApis.
  */
 class AuctionViewModel(private val context: Context,
+                       private val notesRepository: NotesRepository,
                        private val networkExecutor: Executor) : ViewModel() {
 
     companion object {
@@ -96,6 +103,45 @@ class AuctionViewModel(private val context: Context,
                 .setInitialLoadSizeHint(pageSize * 2)
                 .setPageSize(pageSize)
                 .build()
+    }
+
+    @VisibleForTesting
+    fun saveNote(auction: Auction, note: Note?, text: String, adapter: AuctionAdapter) {
+        if (note == null) {
+            viewModelScope.launch {
+                try {
+                    val newNote = Note(auction.itemId, text)
+                    notesRepository.insert(newNote)
+                    auction.note = newNote
+                    adapter.notifyDataSetChanged()
+                } catch (ex: Exception) {
+                    Timber.e(ex, "insert error")
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                try {
+                    note.noteText = text
+                    notesRepository.update(note)
+                } catch (ex: Exception) {
+                    Timber.e(ex, "update error")
+                }
+            }
+        }
+    }
+
+    fun clearNote(auction: Auction, note: Note?, adapter: AuctionAdapter) {
+        if (note != null) {
+            viewModelScope.launch {
+                try {
+                    notesRepository.delete(note)
+                    auction.note = null
+                    adapter.notifyDataSetChanged()
+                } catch (ex: Exception) {
+                    Timber.e(ex, "delete error")
+                }
+            }
+        }
     }
 
 

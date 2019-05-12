@@ -36,23 +36,15 @@ import com.balch.auctionbrowser.base.BasePresenter
 import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
 import com.balch.auctionbrowser.note.Note
-import com.balch.auctionbrowser.note.NotesRepository
-import com.uber.autodispose.lifecycle.LifecycleScopeProvider
-import com.uber.autodispose.lifecycle.autoDisposable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityScope
 class AuctionPresenter
 @Inject constructor(override val view: AuctionView,
                     private val auctionViewModel: AuctionViewModel,
-                    private val notesRepository: NotesRepository,
                     private val fragmentManager: FragmentManager,
                     private val lifecycleOwner: LifecycleOwner,
-                    private val auctionAdapter: AuctionAdapter,
-                    private val scope: LifecycleScopeProvider<*>
+                    private val auctionAdapter: AuctionAdapter
                     ) : BasePresenter() {
 
     var searchView: SearchView? = null
@@ -74,15 +66,8 @@ class AuctionPresenter
             auctionAdapter.setNetworkState(it)
         })
 
-        auctionAdapter.onClickAuction
-                .autoDisposable(scope)
-                .subscribe({ auction -> showDetail(auction) },
-                        { throwable -> Timber.e(throwable, "onClickAuction error") })
-
-        auctionAdapter.onClickNote
-                .autoDisposable(scope)
-                .subscribe({ auction -> showDetail(auction) },
-                        { throwable -> Timber.e(throwable, "onClickNote error") })
+        auctionAdapter.onClickAuction = this::showDetail
+        auctionAdapter.onClickNote = this::showDetail
     }
 
     fun doSearch(keyword: String) {
@@ -101,52 +86,19 @@ class AuctionPresenter
 
         val dialog = AuctionDetailDialog.newInstance(auction, note)
 
-        dialog.onClearNote
-                .autoDisposable(scope)
-                .subscribe({ clearNote(auction, note) },
-                        { throwable -> Timber.e(throwable, "clearNote error") })
-
-        dialog.onSaveNote
-                .autoDisposable(scope)
-                .subscribe({ text -> saveNote(auction, note, text) },
-                        { throwable -> Timber.e(throwable, "saveNote error") })
+        dialog.onClearNote = {clearNote(auction, note)}
+        dialog.onSaveNote = { text -> saveNote(auction, note, text)}
 
         dialog.show(fragmentManager, "AuctionDetailDialog")
     }
 
     @VisibleForTesting
     fun saveNote(auction: Auction, note: Note?, text: String) {
-        if (note == null) {
-            val newNote = Note(auction.itemId, text)
-            notesRepository.insert(newNote)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .autoDisposable(scope)
-                .subscribe({
-                    auction.note = newNote
-                    auctionAdapter.notifyDataSetChanged()},
-                        { throwable -> Timber.e(throwable, "insertNote error") })
-        } else {
-            note.noteText = text
-            notesRepository.update(note)
-                .subscribeOn(Schedulers.io())
-                .autoDisposable(scope)
-                .subscribe({ /* no-op */ },
-                        { throwable -> Timber.e(throwable, "updateNote error") })
-        }
+        auctionViewModel.saveNote(auction, note, text, auctionAdapter)
     }
 
-
     fun clearNote(auction: Auction, note: Note?) {
-        if (note != null) {
-            notesRepository.delete(note)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .autoDisposable(scope)
-                    .subscribe({ auction.note = null
-                                 auctionAdapter.notifyDataSetChanged()},
-                            { throwable -> Timber.e(throwable, "deleteNote error") })
-        }
+        auctionViewModel.clearNote(auction, note, auctionAdapter)
     }
 
     override fun cleanup() {

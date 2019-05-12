@@ -24,22 +24,11 @@ package com.balch.auctionbrowser.runner
 
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
 import com.balch.auctionbrowser.TestAuctionApplication
-import com.squareup.rx2.idler.Rx2Idler
-import io.reactivex.plugins.RxJavaPlugins
 import kotlin.reflect.jvm.jvmName
 
 class AuctionTestRunner : AndroidJUnitRunner() {
-
-    override fun onCreate(arguments: Bundle) {
-        super.onCreate(arguments)
-
-        RxJavaPlugins.setInitIoSchedulerHandler(
-                Rx2Idler.create("RxJava 2.x Computation Scheduler"))
-
-    }
 
     override fun newApplication(cl: ClassLoader?, className: String?,   context: Context?): Application {
         return super.newApplication(cl, TestAuctionApplication::class.jvmName, context)

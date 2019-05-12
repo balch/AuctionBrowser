@@ -25,9 +25,6 @@ package com.balch.auctionbrowser.note
 import android.annotation.SuppressLint
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.ext.logTiming
-import io.reactivex.Maybe
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,30 +34,29 @@ import javax.inject.Singleton
 @Singleton
 class NotesRepository @Inject constructor(private val noteDao: NoteDao) {
     @SuppressLint("UseSparseArrays")
-    fun getNotes(auctions: List<Auction>): Maybe<Map<Long, Note>> {
+    suspend fun getNotes(auctions: List<Auction>): Map<Long, Note> {
         return if (auctions.isNotEmpty()) {
             val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
-            noteDao.loadAllByIds(itemIdsList.toLongArray())
-                    .subscribeOn(Schedulers.io())
-                    .map {notes -> notes.associateBy { it.itemId } }
+            val notes:List<Note> = noteDao.loadAllByIds(itemIdsList.toLongArray())
+            return notes.associateBy { it.itemId }
         } else {
-            Maybe.empty()
+            mutableMapOf()
         }
     }
 
-    fun insert(note: Note): Single<List<Long>> {
+    suspend fun insert(note: Note): List<Long> {
         logTiming("insert itemId=${note.itemId}") {
             return noteDao.insert(note)
         }
     }
 
-    fun update(note: Note): Single<Int> {
+    suspend fun update(note: Note): Int {
         logTiming("update itemId=${note.itemId}") {
             return noteDao.update(note)
         }
     }
 
-    fun delete(note: Note): Single<Int> {
+    suspend fun delete(note: Note): Int {
         logTiming("delete itemId=${note.itemId}") {
             return noteDao.delete(note)
         }

@@ -30,30 +30,22 @@ import com.balch.auctionbrowser.R
 import com.balch.auctionbrowser.auction.model.Auction
 import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.dagger.ActivityScope
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+
+typealias AuctionHandler = (Auction) -> Unit
 
 @ActivityScope
 class AuctionAdapter @Inject constructor() :
         PagedListAdapter<Auction, RecyclerView.ViewHolder>(diffCallback) {
 
-    // public properties
-    val onClickAuction: Observable<Auction>
-        get() = clickAuctionSubject
-
-    val onClickNote: Observable<Auction>
-        get() = clickNoteSubject
-
-    // backing for exposing user initiated events to Activity
-    private val clickAuctionSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
-    private val clickNoteSubject: PublishSubject<Auction> = PublishSubject.create<Auction>()
+    var onClickAuction: AuctionHandler? = null
+    var onClickNote: AuctionHandler? = null
 
     private var networkState: NetworkState? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.item_auction_list -> AuctionViewHolder(parent, clickAuctionSubject, clickNoteSubject)
+            R.layout.item_auction_list -> AuctionViewHolder(parent, onClickAuction, onClickNote)
             R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }

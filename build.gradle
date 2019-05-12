@@ -14,14 +14,11 @@ buildscript {
     ext.gson="2.8.0"
     ext.okhttp_logging_xcepter="3.12.1"
     ext.retrofit="2.3.0"
-    ext.rxjava2="2.1.0"
-    ext.rxandroid="2.1.0"
     ext.androidx_core= '1.0.0'
     ext.androidx_appcompat= '1.0.2'
     ext.androidx_paging="2.1.0"
     ext.glide="4.8.0"
     ext.joda="2.10.1.1"
-    ext.uber_autodispose="1.2.0"
 
     ext.support_test="0.5"
     ext.junit="4.12"
@@ -35,7 +32,6 @@ buildscript {
     ext.extJUnitVersion = "1.1.0"
     ext.runnerVersion = "1.1.1"
     ext.rulesVersion = "1.1.1"
-    ext.rxidler = "0.9.1"
     ext.mockwebserver = "3.12.1"
 
     repositories {

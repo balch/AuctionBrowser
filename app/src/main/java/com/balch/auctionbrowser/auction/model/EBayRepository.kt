@@ -23,7 +23,6 @@
 package com.balch.auctionbrowser.auction.model
 
 import com.balch.auctionbrowser.dagger.BaseApplicationModule
-import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -42,10 +41,10 @@ class EBayRepository
         LOWEST_PRICE("PricePlusShippingLowest")
     }
 
-    fun getAuctions(keyword: String, start: Long,
-                    count: Int, sortColumn: SortColumn): Single<AuctionData> {
+    suspend fun getAuctions(keyword: String, start: Long,
+                    count: Int, sortColumn: SortColumn): AuctionData {
         return if (keyword.isNotEmpty())
-            ebayApi.findItemsByKeywords(keyword, start, count, sortColumn.sortTerm, eBayApiKey)
-        else Single.just(AuctionData())
+            ebayApi.findItemsByKeywords(keyword, start, count, sortColumn.sortTerm, eBayApiKey).await()
+        else AuctionData()
     }
 }
