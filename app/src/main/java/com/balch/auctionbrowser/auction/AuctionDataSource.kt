@@ -54,46 +54,43 @@ class AuctionDataSource constructor(
     override fun loadInitial(params: LoadInitialParams<Long>,
                     callback: LoadInitialCallback<Long, Auction>) {
 
-        networkState.postValue(NetworkState.LOADING)
-
-        loadAuctions(1) {
-            auctionData ->
-                callback.onResult(auctionData.auctions, null,
-                        if (auctionData.totalPages > 1) 2 else null)
-        }
+        val auctionData = loadAuctions(1)
+        callback.onResult(auctionData.auctions, null,
+                if (auctionData.totalPages > 1) 2 else null)
     }
 
     override fun loadBefore(params: LoadParams<Long>,
                    callback: LoadCallback<Long, Auction>) {
-
     }
 
     override fun loadAfter(params: LoadParams<Long>,
                   callback: LoadCallback<Long, Auction>) {
-
-        networkState.postValue(NetworkState.LOADING)
-        loadAuctions(params.key) {
-            auctionData ->
-                callback.onResult(auctionData.auctions,
-                        if (auctionData.totalPages > params.key) params.key + 1 else null)
-        }
+        val auctionData = loadAuctions(params.key)
+        callback.onResult(auctionData.auctions,
+                if (auctionData.totalPages > params.key) params.key + 1 else null)
     }
 
-    private fun loadAuctions(page:Long, callback:(AuctionData) -> Unit) = try {
-        val auctionData = auctionRepository.getAuctions(searchText, page, AUCTION_FETCH_COUNT, sortColumn)
-            .flatMap { auctionData ->
-                notesRepository.getNotes(auctionData.auctions).toSingle(mutableMapOf())
-                .map {notes ->
-                        auctionData.auctions.forEach{it.note = notes[it.itemId]}
-                        auctionData
+    private fun loadAuctions(page:Long): AuctionData {
+        try {
+            networkState.postValue(NetworkState.LOADING)
+
+            val auctionData = auctionRepository.getAuctions(searchText, page, AUCTION_FETCH_COUNT, sortColumn)
+                    .flatMap { auctionData ->
+                        notesRepository.getNotes(auctionData.auctions).toSingle(mutableMapOf())
+                                .map { notes ->
+                                    auctionData.auctions.forEach { it.note = notes[it.itemId] }
+                                    auctionData
+                                }
                     }
-            }
-            .blockingGet()
-        callback(auctionData)
-        networkState.postValue(NetworkState.LOADED)
-    } catch (ex: Throwable) {
-        Timber.e(ex, "Error in .getAuctions()")
-        networkState.postValue(NetworkState(NetworkState.Status.FAILED,
-                ex.message ?: "Unknown Error"))
+                    .blockingGet()
+
+            networkState.postValue(NetworkState.LOADED)
+            return auctionData
+        } catch (ex: Throwable) {
+            Timber.e(ex, "Error in .getAuctions()")
+            networkState.postValue(NetworkState(NetworkState.Status.FAILED,
+                    ex.message ?: "Unknown Error"))
+            return AuctionData()
+        }
     }
 }
