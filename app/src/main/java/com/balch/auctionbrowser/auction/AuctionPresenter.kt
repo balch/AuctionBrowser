@@ -94,7 +94,11 @@ class AuctionPresenter
 
     @VisibleForTesting
     fun saveNote(auction: Auction, note: Note?, text: String) {
-        auctionViewModel.saveNote(auction, note, text, auctionAdapter)
+        when {
+            text.isBlank() -> auctionViewModel.clearNote(auction, note, auctionAdapter)
+            note == null -> auctionViewModel.newNote(auction, text, auctionAdapter)
+            else -> auctionViewModel.updateNote(auction, note, text)
+        }
     }
 
     fun clearNote(auction: Auction, note: Note?) {

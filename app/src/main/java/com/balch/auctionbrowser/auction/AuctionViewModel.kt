@@ -24,7 +24,6 @@ package com.balch.auctionbrowser.auction
 
 import android.content.Context
 import androidx.annotation.MainThread
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.Transformations.switchMap
@@ -58,26 +57,36 @@ class AuctionViewModel(private val context: Context,
         private const val AUCTION_FETCH_COUNT = 30
     }
 
+    // data need to perform a search, provided by user
     private class SearchData(val searchText: String,
                              val sortColumn: EBayRepository.SortColumn)
 
+    // trigger searchAuctions when searchQuery changes
     private val searchQuery = MutableLiveData<SearchData>()
     private val auctionResult = map(searchQuery) {
         searchAuctions(it.searchText, it.sortColumn, AUCTION_FETCH_COUNT)
     }
+
+    // switch the observer stream to the current LiveData source
     val auctionData = switchMap(auctionResult) { it.pagedList }!!
     val networkState = switchMap(auctionResult) { it.networkState }!!
 
+    // read only searchData props
     val searchText: String
         get() = searchQuery.value?.searchText ?: ""
-
     val sortColumn: EBayRepository.SortColumn
         get() = searchQuery.value?.sortColumn ?: EBayRepository.SortColumn.BEST_MATCH
 
+    // trigger searchAuctions call and auctionData emits by setting searchQuery LiveData
     fun loadAuctions(searchText: String, sortColumn: EBayRepository.SortColumn)  {
         searchQuery.value = SearchData(searchText, sortColumn)
     }
 
+    /**
+     * The logic to query the Auction endpoint is in AuctionDataSource. This method initializes
+     * LivePagedList with a factory for creating the AuctionDataSource. This will cause auctionData
+     * and network state to emit when data pages are fetched
+     */
     @MainThread
     private fun searchAuctions(searchQuery: String, sortColumn: EBayRepository.SortColumn, pageSize: Int): Listing<Auction> {
         val factory = auctionDataSourceFactory(searchQuery, sortColumn)
@@ -105,27 +114,26 @@ class AuctionViewModel(private val context: Context,
                 .build()
     }
 
-    @VisibleForTesting
-    fun saveNote(auction: Auction, note: Note?, text: String, adapter: AuctionAdapter) {
-        if (note == null) {
-            viewModelScope.launch {
-                try {
-                    val newNote = Note(auction.itemId, text)
-                    notesRepository.insert(newNote)
-                    auction.note = newNote
-                    adapter.notifyDataSetChanged()
-                } catch (ex: Exception) {
-                    Timber.e(ex, "insert error")
-                }
+    fun newNote(auction: Auction, text: String, adapter: AuctionAdapter) {
+        viewModelScope.launch {
+            try {
+                val newNote = Note(auction.itemId, text)
+                notesRepository.insert(newNote)
+                auction.note = newNote
+                adapter.notifyDataSetChanged()
+            } catch (ex: Exception) {
+                Timber.e(ex, "insert error")
             }
-        } else {
-            viewModelScope.launch {
-                try {
-                    note.noteText = text
-                    notesRepository.update(note)
-                } catch (ex: Exception) {
-                    Timber.e(ex, "update error")
-                }
+        }
+    }
+
+    fun updateNote(auction: Auction, note: Note, text: String) {
+        viewModelScope.launch {
+            try {
+                note.noteText = text
+                notesRepository.update(note)
+            } catch (ex: Exception) {
+                Timber.e(ex, "update error")
             }
         }
     }
