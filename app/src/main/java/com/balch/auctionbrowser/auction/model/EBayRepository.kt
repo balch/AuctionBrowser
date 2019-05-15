@@ -23,6 +23,9 @@
 package com.balch.auctionbrowser.auction.model
 
 import com.balch.auctionbrowser.dagger.BaseApplicationModule
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -43,8 +46,15 @@ class EBayRepository
 
     suspend fun getAuctions(keyword: String, start: Long,
                     count: Int, sortColumn: SortColumn): AuctionData {
-        return if (keyword.isNotEmpty())
-            ebayApi.findItemsByKeywords(keyword, start, count, sortColumn.sortTerm, eBayApiKey).await()
-        else AuctionData()
+        val deferred = CompletableDeferred<AuctionData>()
+        withContext(Dispatchers.IO) {
+            val auctionData = if (keyword.isNotEmpty())
+                ebayApi.findItemsByKeywords(keyword, start, count, sortColumn.sortTerm, eBayApiKey).await()
+            else AuctionData()
+
+            deferred.complete(auctionData)
+        }
+
+        return deferred.await()
     }
 }
