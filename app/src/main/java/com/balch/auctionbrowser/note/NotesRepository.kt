@@ -27,7 +27,6 @@ import com.balch.auctionbrowser.auction.model.Auction
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,8 +39,6 @@ class NotesRepository @Inject constructor(private val noteDao: NoteDao) {
     suspend fun getNotes(auctions: List<Auction>): Map<Long, Note> {
         val deferred = CompletableDeferred<Map<Long, Note>>()
         withContext(Dispatchers.IO) {
-            val t = Thread.currentThread().name
-            Timber.d(t)
             val noteMap: Map<Long, Note> = if (auctions.isNotEmpty()) {
                 val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
                 val notes: List<Note> = noteDao.loadAllByIds(itemIdsList.toLongArray())
