@@ -25,6 +25,7 @@ package com.balch.auctionbrowser
 import androidx.test.platform.app.InstrumentationRegistry
 
 open class BaseTest {
+    protected val app by lazy { InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestAuctionApplication }
 
     fun getJson(jsonFile : String) : String {
         val ctx = InstrumentationRegistry.getInstrumentation().context

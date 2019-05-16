@@ -24,10 +24,9 @@ package com.balch.auctionbrowser.note
 
 import android.annotation.SuppressLint
 import com.balch.auctionbrowser.auction.model.Auction
-import com.balch.auctionbrowser.ext.logTiming
-import io.reactivex.Maybe
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,32 +36,43 @@ import javax.inject.Singleton
 @Singleton
 class NotesRepository @Inject constructor(private val noteDao: NoteDao) {
     @SuppressLint("UseSparseArrays")
-    fun getNotes(auctions: List<Auction>): Maybe<Map<Long, Note>> {
-        return if (auctions.isNotEmpty()) {
-            val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
-            noteDao.loadAllByIds(itemIdsList.toLongArray())
-                    .subscribeOn(Schedulers.io())
-                    .map {notes -> notes.associateBy { it.itemId } }
-        } else {
-            Maybe.empty()
+    suspend fun getNotes(auctions: List<Auction>): Map<Long, Note> {
+        val deferred = CompletableDeferred<Map<Long, Note>>()
+        withContext(Dispatchers.IO) {
+            val noteMap: Map<Long, Note> = if (auctions.isNotEmpty()) {
+                val itemIdsList: List<Long> = auctions.map { (itemId) -> itemId }
+                val notes: List<Note> = noteDao.loadAllByIds(itemIdsList.toLongArray())
+                notes.associateBy { it.itemId }
+            } else {
+                mutableMapOf()
+            }
+            deferred.complete(noteMap)
         }
+        return deferred.await()
     }
 
-    fun insert(note: Note): Single<List<Long>> {
-        logTiming("insert itemId=${note.itemId}") {
-            return noteDao.insert(note)
+    suspend fun insert(note: Note): List<Long> {
+        val deferred = CompletableDeferred<List<Long>>()
+        withContext(Dispatchers.IO) {
+            deferred.complete(noteDao.insert(note))
         }
+
+        return deferred.await()
     }
 
-    fun update(note: Note): Single<Int> {
-        logTiming("update itemId=${note.itemId}") {
-            return noteDao.update(note)
+    suspend fun update(note: Note): Int {
+        val deferred = CompletableDeferred<Int>()
+        withContext(Dispatchers.IO) {
+            deferred.complete(noteDao.update(note))
         }
+        return deferred.await()
     }
 
-    fun delete(note: Note): Single<Int> {
-        logTiming("delete itemId=${note.itemId}") {
-            return noteDao.delete(note)
+    suspend fun delete(note: Note): Int {
+        val deferred = CompletableDeferred<Int>()
+        withContext(Dispatchers.IO) {
+            deferred.complete(noteDao.delete(note))
         }
+        return deferred.await()
     }
 }

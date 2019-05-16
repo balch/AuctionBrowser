@@ -20,7 +20,7 @@
  *
  */
 
-package com.balch.auctionbrowser.auction;
+package com.balch.auctionbrowser.auction
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -31,6 +31,7 @@ import com.balch.auctionbrowser.auction.model.EBayRepository
 import com.balch.auctionbrowser.base.NetworkState
 import com.balch.auctionbrowser.ext.component
 import com.balch.auctionbrowser.note.NotesRepository
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -53,14 +54,14 @@ class AuctionDataSource constructor(
 
     override fun loadInitial(params: LoadInitialParams<Long>,
                     callback: LoadInitialCallback<Long, Auction>) {
-
         val auctionData = loadAuctions(1)
         callback.onResult(auctionData.auctions, null,
-                if (auctionData.totalPages > 1) 2 else null)
+                    if (auctionData.totalPages > 1) 2 else null)
     }
 
     override fun loadBefore(params: LoadParams<Long>,
                    callback: LoadCallback<Long, Auction>) {
+
     }
 
     override fun loadAfter(params: LoadParams<Long>,
@@ -70,27 +71,24 @@ class AuctionDataSource constructor(
                 if (auctionData.totalPages > params.key) params.key + 1 else null)
     }
 
-    private fun loadAuctions(page:Long): AuctionData {
+    private fun loadAuctions(page:Long) : AuctionData {
+        networkState.postValue(NetworkState.LOADING)
+
+        lateinit var auctionData: AuctionData
         try {
-            networkState.postValue(NetworkState.LOADING)
-
-            val auctionData = auctionRepository.getAuctions(searchText, page, AUCTION_FETCH_COUNT, sortColumn)
-                    .flatMap { auctionData ->
-                        notesRepository.getNotes(auctionData.auctions).toSingle(mutableMapOf())
-                                .map { notes ->
-                                    auctionData.auctions.forEach { it.note = notes[it.itemId] }
-                                    auctionData
-                                }
-                    }
-                    .blockingGet()
-
+            runBlocking {
+                auctionData = auctionRepository.getAuctions(searchText, page, AUCTION_FETCH_COUNT, sortColumn)
+                val notes = notesRepository.getNotes(auctionData.auctions)
+                auctionData.auctions.forEach { it.note = notes[it.itemId] }
+            }
             networkState.postValue(NetworkState.LOADED)
-            return auctionData
         } catch (ex: Throwable) {
-            Timber.e(ex, "Error in .getAuctions()")
+            Timber.e(ex)
             networkState.postValue(NetworkState(NetworkState.Status.FAILED,
                     ex.message ?: "Unknown Error"))
-            return AuctionData()
+            auctionData = AuctionData()
         }
+
+        return auctionData
     }
 }

@@ -37,9 +37,6 @@ class AuctionDataSourceFactory(
 
     val source = MutableLiveData<AuctionDataSource>()
 
-    override fun create(): DataSource<Long, Auction> {
-        val source = AuctionDataSource(context, searchQuery, sortColumn)
-        this.source.postValue(source)
-        return source
-    }
+    override fun create(): DataSource<Long, Auction> =
+        AuctionDataSource(context, searchQuery, sortColumn).also { source.postValue(it) }
 }

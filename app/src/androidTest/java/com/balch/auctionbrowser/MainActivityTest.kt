@@ -53,7 +53,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.balch.auctionbrowser.dagger.TestApplicationComponent
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -65,8 +64,6 @@ import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest : BaseTest() {
-
-    val app by lazy { InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestAuctionApplication }
 
     @Inject
     lateinit var mockWebServer: MockWebServer

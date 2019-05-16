@@ -28,8 +28,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.balch.auctionbrowser.MainActivity;
 import com.balch.auctionbrowser.dagger.ActivityScope;
-import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
-import com.uber.autodispose.lifecycle.LifecycleScopeProvider;
 
 import dagger.Binds;
 import dagger.Module;
@@ -60,12 +58,5 @@ public abstract class AuctionModule {
                                                      AuctionViewModelFactory factory) {
         return ViewModelProviders.of(activity, factory).get(AuctionViewModel.class);
     }
-
-    @Provides
-    @ActivityScope
-    static LifecycleScopeProvider<?> providesScopeProvider(MainActivity activity) {
-        return AndroidLifecycleScopeProvider.from(activity);
-    }
-
 
 }
