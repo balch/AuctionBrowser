@@ -15,8 +15,6 @@ android {
         versionName rootProject.versionName
 
         testInstrumentationRunner "com.balch.auctionbrowser.runner.AuctionTestRunner"
-
-
     }
 
     buildTypes {
@@ -39,6 +37,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     testOptions {
@@ -72,10 +74,9 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rxjava2"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid"
 
-    implementation "androidx.legacy:legacy-support-v4:$androidx_core"
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.recyclerview:recyclerview:$androidx_core"
-    implementation "androidx.cardview:cardview:$androidx_core"
+    implementation "androidx.cardview:cardview:$androidx_cardview"
     implementation "androidx.paging:paging-common:$androidx_paging"
     implementation "androidx.paging:paging-runtime:$androidx_paging"
     implementation "androidx.paging:paging-runtime-ktx:$androidx_paging"
@@ -106,8 +107,8 @@ dependencies {
 
     implementation "com.uber.autodispose:autodispose-android:$uber_autodispose"
     implementation "com.uber.autodispose:autodispose-lifecycle:$uber_autodispose"
-    implementation "com.uber.autodispose:autodispose-lifecycle-jdk8:$uber_autodispose"
-    implementation "com.uber.autodispose:autodispose-lifecycle-ktx:$uber_autodispose"
+    implementation "com.uber.autodispose:autodispose-lifecycle-jdk8:$uber_autodispose_jdk8"
+    implementation "com.uber.autodispose:autodispose-lifecycle-ktx:$uber_autodispose_ktx"
     implementation "com.uber.autodispose:autodispose-android-archcomponents:$uber_autodispose"
 
     // Testing-only dependencies
@@ -119,11 +120,11 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$runnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso"
-    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:3.1.1"
+    androidTestImplementation 'androidx.test.espresso.idling:idling-concurrent:3.2.0'
 
     androidTestImplementation "com.squareup.rx.idler:rx2-idler:$rxidler"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
-    androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:1.3.21"
+    androidTestImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.3.72'
 
     kaptAndroidTest "com.google.dagger:dagger-android-processor:$dagger2"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger2"

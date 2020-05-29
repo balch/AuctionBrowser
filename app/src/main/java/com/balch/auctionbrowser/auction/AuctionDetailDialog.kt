@@ -64,8 +64,6 @@ class AuctionDetailDialog : androidx.fragment.app.DialogFragment() {
     val onClearNote: Observable<Unit>
         get() = clearNoteSubject
 
-    private val noteEditText: EditText by lazy { dialog.auction_detail_note }
-
     private val saveNoteSubject: PublishSubject<String> = PublishSubject.create()
     private val clearNoteSubject: PublishSubject<Unit> = PublishSubject.create()
 
@@ -87,7 +85,7 @@ class AuctionDetailDialog : androidx.fragment.app.DialogFragment() {
 
         val args: Bundle? = arguments
         if (args?.containsKey(ARG_NOTE) == true) {
-            noteEditText.setText(args.getString(ARG_NOTE))
+            dialog?.auction_detail_note?.setText(args.getString(ARG_NOTE))
         }
 
         if (args?.containsKey(ARG_AUCTION) == true) {
@@ -95,32 +93,37 @@ class AuctionDetailDialog : androidx.fragment.app.DialogFragment() {
 
             enableSaveButtons = auction.itemId != -1L
 
-            with(auction) {
-                dialog.auction_detail_title.text = title
-                dialog.auction_detail_item_img.loadUrl(imageUrl) { it.apply(RequestOptions.centerCropTransform())}
-                dialog.auction_detail_end_time.value = endTime.toLongDateTimeString()
-                dialog.auction_detail_price.value = currentPrice.getFormatted(2)
-                dialog.auction_detail_location.value = location
-                dialog.auction_detail_shipping_cost.value = shippingCost.getFormatted(2)
-                dialog.auction_detail_buy_it_now.value = if (isBuyItNow) "\u2714" else "\u2718"
+            dialog?.let {
+                with(auction) {
+                    it.auction_detail_title.text = title
+                    it.auction_detail_item_img.loadUrl(imageUrl) { it.apply(RequestOptions.centerCropTransform()) }
+                    it.auction_detail_end_time.value = endTime.toLongDateTimeString()
+                    it.auction_detail_price.value = currentPrice.getFormatted(2)
+                    it.auction_detail_location.value = location
+                    it.auction_detail_shipping_cost.value = shippingCost.getFormatted(2)
+                    it.auction_detail_buy_it_now.value = if (isBuyItNow) "\u2714" else "\u2718"
+                }
             }
         }
 
-        val saveButton = dialog.member_detail_button_save
-        val clearButton = dialog.member_detail_button_clear
-        if (enableSaveButtons) {
-            saveButton.setOnClickListener { _ ->
-                saveNoteSubject.onNext(noteEditText.text.toString())
-                dismiss()
-            }
+        dialog?.let {
+            val saveButton = it.member_detail_button_save
+            val clearButton = it.member_detail_button_clear
+            if (enableSaveButtons) {
+                saveButton.setOnClickListener { _ ->
 
-            clearButton.setOnClickListener { _ ->
-                clearNoteSubject.onNext(Unit)
-                dismiss()
+                    saveNoteSubject.onNext(it.auction_detail_note.text.toString())
+                    dismiss()
+                }
+
+                clearButton.setOnClickListener { _ ->
+                    clearNoteSubject.onNext(Unit)
+                    dismiss()
+                }
+            } else {
+                saveButton.visibility = View.GONE
+                clearButton.visibility = View.GONE
             }
-        } else {
-            saveButton.visibility = View.GONE
-            clearButton.visibility = View.GONE
         }
     }
 }
